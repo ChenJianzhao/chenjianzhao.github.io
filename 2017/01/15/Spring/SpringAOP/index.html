@@ -1,0 +1,725 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="导语
+AOP称为面向切面编程，在程序开发中主要用来解决一些系统层面上的问题，比如日志，事务，权限等。
+一、AOP的基本概念
+(1)Aspect(切面):通常是一个类，里面可以定义切入点和通知(2)JointPoint(连接点):程序执行过程中明确的点，一般是方法的调用(3)Advice(通知):AOP在特定的切入点上执行的增强处理，有before,after,afterReturning,afte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AOP">
+<meta property="og:url" content="http://yoursite.com/2017/01/15/Spring/SpringAOP/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="导语
+AOP称为面向切面编程，在程序开发中主要用来解决一些系统层面上的问题，比如日志，事务，权限等。
+一、AOP的基本概念
+(1)Aspect(切面):通常是一个类，里面可以定义切入点和通知(2)JointPoint(连接点):程序执行过程中明确的点，一般是方法的调用(3)Advice(通知):AOP在特定的切入点上执行的增强处理，有before,after,afterReturning,afte">
+<meta property="og:updated_time" content="2017-03-29T09:59:02.081Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AOP">
+<meta name="twitter:description" content="导语
+AOP称为面向切面编程，在程序开发中主要用来解决一些系统层面上的问题，比如日志，事务，权限等。
+一、AOP的基本概念
+(1)Aspect(切面):通常是一个类，里面可以定义切入点和通知(2)JointPoint(连接点):程序执行过程中明确的点，一般是方法的调用(3)Advice(通知):AOP在特定的切入点上执行的增强处理，有before,after,afterReturning,afte">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/15/Spring/SpringAOP/"/>
+
+
+
+
+
+  <title> AOP | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/15/Spring/SpringAOP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                AOP
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-15T19:17:00+08:00">
+                2017-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="导语"><a href="#导语" class="headerlink" title="导语"></a>导语</h2><hr>
+<p>AOP称为面向切面编程，在程序开发中主要用来解决一些系统层面上的问题，比如日志，事务，权限等。</p>
+<h2 id="一、AOP的基本概念"><a href="#一、AOP的基本概念" class="headerlink" title="一、AOP的基本概念"></a>一、AOP的基本概念</h2><hr>
+<p>(1)<code>Aspect(切面)</code>:通常是一个类，里面可以定义切入点和通知<br>(2)<code>JointPoint(连接点)</code>:程序执行过程中明确的点，一般是方法的调用<br>(3)<code>Advice(通知)</code>:AOP在特定的切入点上执行的增强处理，有<code>before</code>,<code>after</code>,<code>afterReturning</code>,<code>afterThrowing</code>,<code>around</code><br>(4)<code>Pointcut(切入点)</code>:就是带有通知的连接点，在程序中主要体现为书写切入点表达式<br>(5)<code>AOP代理</code>：AOP框架创建的对象，代理就是目标对象的加强。Spring中的AOP代理可以使JDK动态代理，也可以是CGLIB代理，前者基于接口，后者基于子类</p>
+<h2 id="二、Spring-AOP"><a href="#二、Spring-AOP" class="headerlink" title="二、Spring AOP"></a>二、Spring AOP</h2><hr>
+<p>　　Spring中的AOP代理还是离不开Spring的IOC容器，代理的生成，管理及其依赖关系都是由IOC容器负责，<strong>Spring默认使用JDK动态代理</strong>，在需要代理类而不是代理接口的时候，Spring会自动切换为使用CGLIB代理，不过现在的项目都是面向接口编程，所以JDK动态代理相对来说用的还是多一些。</p>
+<h2 id="三、基于注解的AOP配置方式"><a href="#三、基于注解的AOP配置方式" class="headerlink" title="三、基于注解的AOP配置方式"></a>三、基于注解的AOP配置方式</h2><hr>
+<h3 id="1-启用-AsjectJ支持"><a href="#1-启用-AsjectJ支持" class="headerlink" title="1. 启用@AsjectJ支持"></a>1. 启用@AsjectJ支持</h3><p>在applicationContext.xml中配置下面一句:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 设置包扫描目录，该包内的所有POJO受 spring 管理   --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"org.demo"</span>/&gt;</span></div><div class="line"><span class="comment">&lt;!--1.启用 @AsjectJ 支持--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">aop:aspectj-autoproxy</span> /&gt;</span></div></pre></td></tr></table></figure></p>
+<h3 id="2-通知类型介绍"><a href="#2-通知类型介绍" class="headerlink" title="2.通知类型介绍"></a>2.通知类型介绍</h3><p>(1)<code>Before</code>:在目标方法被调用之前做增强处理,@Before只需要指定切入点表达式即可<br>(2)<code>AfterReturning</code>:在目标方法<strong>正常完成后做增强</strong>,@AfterReturning除了指定切入点表达式后，还可以指定一个返回值形参名returning,代表目标方法的返回值<br>(3)<code>AfterThrowing</code>:主要用来处理程序中未处理的异常,@AfterThrowing除了指定切入点表达式后，还可以指定一个throwing的返回值形参名,可以通过该形参名<br>来访问目标方法中所抛出的异常对象<br>(4)<code>After</code>:在目标方法完成之后做增强，<strong>无论目标方法时候成功完成</strong>。@After可以指定一个切入点表达式<br>(5)<code>Around</code>:环绕通知,在目标方法完成前后做增强处理,环绕通知是最重要的通知类型,像事务,日志等都是环绕通知,注意编程中核心是一个 <code>ProceedingJoinPoint</code></p>
+<h3 id="3-通知执行的优先级"><a href="#3-通知执行的优先级" class="headerlink" title="3.通知执行的优先级"></a>3.通知执行的优先级</h3><p>进入目标方法时,先织入Around,再织入Before，退出目标方法时，先织入Around,再织入After,最后才织入AfterReturning。</p>
+<h3 id="4-切入点的定义和表达式"><a href="#4-切入点的定义和表达式" class="headerlink" title="4.切入点的定义和表达式"></a>4.切入点的定义和表达式</h3><p>切入点表达式的定义算是整个AOP中的核心，有一套自己的规范<br><strong>Spring AOP支持的切入点指示符：</strong><br>(1)<code>execution</code>:用来匹配执行方法的连接点<br> <code>@Pointcut(&quot;execution(* com.aijava.springcode.service..*.*(..))&quot;)</code><br>第一个<code>*</code>表示匹配任意的方法返回值，<code>..</code>(两个点)表示零个或多个，上面的第一个<code>..</code>表示service包及其子包,第二个<code>*</code>表示所有类,第三个<code>*</code>表示所有方法，第二个<code>..</code>表示<br>方法的任意参数个数<br>(2) <code>@Pointcut(&quot;within(com.aijava.springcode.service.*)&quot;)</code><br>within限定匹配方法的连接点,上面的就是表示匹配service包下的任意连接点<br>(3) <code>@Pointcut(&quot;this(com.aijava.springcode.service.UserService)&quot;)</code><br>this用来限定AOP代理必须是指定类型的实例，如上，指定了一个特定的实例，就是UserService<br>(4) <code>@Pointcut(&quot;bean(userService)&quot;)</code><br>bean也是非常常用的,bean可以指定IOC容器中的bean的名称</p>
+<h3 id="5、基于注解示例代码"><a href="#5、基于注解示例代码" class="headerlink" title="5、基于注解示例代码"></a>5、基于注解示例代码</h3><p><strong>定义切面类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Component</span>  <span class="comment">//缺少会使切面类不受Spring容器管理，代理将不生效</span></div><div class="line"><span class="meta">@Aspect</span>     <span class="comment">//注解类为一个切面</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Operator</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 注解切入点表达式</span></div><div class="line">    <span class="meta">@Pointcut</span>(<span class="string">"execution(* org.demo.service.*.*(..))"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pointCut</span><span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="meta">@Before</span>(<span class="string">"pointCut()"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doBefore</span><span class="params">(JoinPoint joinPoint)</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"AOP Before Advice...\n"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@After</span>(<span class="string">"pointCut()"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doAfter</span><span class="params">(JoinPoint joinPoint)</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"AOP After Advice...\n"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@AfterReturning</span>(pointcut=<span class="string">"pointCut()"</span>,returning=<span class="string">"returnVal"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterReturn</span><span class="params">(JoinPoint joinPoint,Object returnVal)</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"AOP AfterReturning Advice:"</span> + returnVal + <span class="string">"\n"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@AfterThrowing</span>(pointcut=<span class="string">"pointCut()"</span>,throwing=<span class="string">"error"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowing</span><span class="params">(JoinPoint joinPoint,Throwable error)</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"AOP AfterThrowing Advice..."</span> + error);</div><div class="line">        System.out.println(<span class="string">"AfterThrowing...\n"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Around</span>(<span class="string">"pointCut()"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">around</span><span class="params">(ProceedingJoinPoint pjp)</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"AOP Aronud before...\n"</span>);</div><div class="line">        Object result = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            result = pjp.proceed(); <span class="comment">//此处需要将返回值返回，否则被切入方法将获取不到返回值</span></div><div class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(<span class="string">"AOP Aronud after...\n"</span>);</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>定义业务接口</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IFindUserService</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> UserInfo <span class="title">findUser</span><span class="params">(Serializable id)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>业务接口实现类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Service</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FindUserService</span> <span class="keyword">implements</span> <span class="title">IFindUserService</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> UserDao <span class="title">getUserDao</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> userDao;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.userDao = userDao;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> UserDao userDao = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> UserInfo <span class="title">findUser</span><span class="params">(Serializable id)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> getUserDao().get(id);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>测试类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</div><div class="line"><span class="meta">@ContextConfiguration</span>(locations = <span class="string">"classpath:applicationContext.xml"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAspect</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    IFindUserService findUserService = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> IFindUserService <span class="title">getFindUserService</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> findUserService;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFindUserService</span><span class="params">(IFindUserService findUserService)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.findUserService = findUserService;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Test</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testAspect</span><span class="params">()</span></span>&#123;</div><div class="line">        UserInfo userInfo = getFindUserService().findUser(<span class="number">1</span>);</div><div class="line">        System.out.println(<span class="string">"out of service : "</span> +  userInfo.getUsername() + <span class="string">" which id is "</span> + userInfo.getId() + <span class="string">"\n"</span>);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>输出结果</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">AOP Aronud before...</div><div class="line">AOP Before Advice...</div><div class="line">inner service found user : test which id is 1</div><div class="line">AOP Aronud after...</div><div class="line">AOP After Advice...</div><div class="line">AOP AfterReturning Advice:org.demo.model.UserInfo@4351171a</div><div class="line">out of service : test which id is 1</div><div class="line">Process finished with exit code 0</div></pre></td></tr></table></figure></p>
+<h3 id="6-基于XML的切面编程"><a href="#6-基于XML的切面编程" class="headerlink" title="6.基于XML的切面编程"></a>6.基于XML的切面编程</h3><p><strong>定义日志类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Log</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Integer id;</div><div class="line"></div><div class="line">    <span class="comment">//操作名称，方法名</span></div><div class="line">    <span class="keyword">private</span> String operName;</div><div class="line"></div><div class="line">    <span class="comment">//操作人</span></div><div class="line">    <span class="keyword">private</span> String operator;</div><div class="line"></div><div class="line">    <span class="comment">//操作参数</span></div><div class="line">    <span class="keyword">private</span> String operParams;</div><div class="line"></div><div class="line">    <span class="comment">//操作结果 成功/失败</span></div><div class="line">    <span class="keyword">private</span> String operResult;</div><div class="line"></div><div class="line">    <span class="comment">//结果消息</span></div><div class="line">    <span class="keyword">private</span> String resultMsg;</div><div class="line"></div><div class="line">    <span class="comment">//操作时间</span></div><div class="line">    <span class="keyword">private</span> Date operTime = <span class="keyword">new</span> Date();</div><div class="line"></div><div class="line">    setter,getter</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>定义Aspect切面类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 日志记录器 （AOP日志通知）</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Logger</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    <span class="keyword">private</span> LogService logService;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">record</span><span class="params">(ProceedingJoinPoint pjp)</span></span>&#123;</div><div class="line">        </div><div class="line">        Log log = <span class="keyword">new</span> Log();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            log.setOperator(<span class="string">"admin"</span>);</div><div class="line">            String mname = pjp.getSignature().getName();</div><div class="line">            log.setOperName(mname);</div><div class="line">            </div><div class="line">            <span class="comment">//方法参数,本例中是User user</span></div><div class="line">            Object[] args = pjp.getArgs();</div><div class="line">            log.setOperParams(Arrays.toString(args));</div><div class="line">            </div><div class="line">            <span class="comment">//执行目标方法，返回的是目标方法的返回值，本例中 void</span></div><div class="line">            Object obj = pjp.proceed();</div><div class="line">            <span class="keyword">if</span>(obj != <span class="keyword">null</span>)&#123;</div><div class="line">                log.setResultMsg(obj.toString());</div><div class="line">            &#125;<span class="keyword">else</span>&#123;</div><div class="line">                log.setResultMsg(<span class="keyword">null</span>);</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">            log.setOperResult(<span class="string">"success"</span>);</div><div class="line">            log.setOperTime(<span class="keyword">new</span> Date());</div><div class="line">            </div><div class="line">            <span class="keyword">return</span> obj;</div><div class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">            log.setOperResult(<span class="string">"failure"</span>);</div><div class="line">            log.setResultMsg(e.getMessage());</div><div class="line">        &#125; <span class="keyword">finally</span>&#123;</div><div class="line">            logService.saveLog(log);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>applicationContext.xml</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">aop:aspect</span> <span class="attr">id</span>=<span class="string">"loggerAspect"</span> <span class="attr">ref</span>=<span class="string">"logger"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">aop:around</span> <span class="attr">method</span>=<span class="string">"record"</span> <span class="attr">pointcut</span>=<span class="string">"execution(* com.aijava.springcode.service..*.*(..)) and !bean(logService)"</span>/&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">aop:aspect</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></div><div class="line"><span class="comment">&lt;!-- 注意切入点表达式,!bean(logService) 做日志通知的时候，不要给日志本身做日志，否则会造成无限循环！ --&gt;</span></div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/15/Spring/JPA-GeneratedValue/" rel="next" title="JPA @GeneratedValue 主键的产生策略">
+                <i class="fa fa-chevron-left"></i> JPA @GeneratedValue 主键的产生策略
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/15/Spring/transaction/" rel="prev" title="Spring 声明式事务">
+                Spring 声明式事务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#导语"><span class="nav-number">1.</span> <span class="nav-text">导语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、AOP的基本概念"><span class="nav-number">2.</span> <span class="nav-text">一、AOP的基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、Spring-AOP"><span class="nav-number">3.</span> <span class="nav-text">二、Spring AOP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、基于注解的AOP配置方式"><span class="nav-number">4.</span> <span class="nav-text">三、基于注解的AOP配置方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-启用-AsjectJ支持"><span class="nav-number">4.1.</span> <span class="nav-text">1. 启用@AsjectJ支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-通知类型介绍"><span class="nav-number">4.2.</span> <span class="nav-text">2.通知类型介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-通知执行的优先级"><span class="nav-number">4.3.</span> <span class="nav-text">3.通知执行的优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-切入点的定义和表达式"><span class="nav-number">4.4.</span> <span class="nav-text">4.切入点的定义和表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、基于注解示例代码"><span class="nav-number">4.5.</span> <span class="nav-text">5、基于注解示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-基于XML的切面编程"><span class="nav-number">4.6.</span> <span class="nav-text">6.基于XML的切面编程</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

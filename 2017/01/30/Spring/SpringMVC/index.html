@@ -1,0 +1,735 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、配置web.xml文件
+1、在web.xml文件配置 spring 容器启动监听器并指定容器的配置文件的位置，启动“业务层”的 spring 容器123456789101112131415&amp;lt;!-- 通过指定的spring配置文件和启动监听器，启动“业务层”的spring容器 --&amp;gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MVC">
+<meta property="og:url" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="一、配置web.xml文件
+1、在web.xml文件配置 spring 容器启动监听器并指定容器的配置文件的位置，启动“业务层”的 spring 容器123456789101112131415&amp;lt;!-- 通过指定的spring配置文件和启动监听器，启动“业务层”的spring容器 --&amp;gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;web">
+<meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/23-41-41.jpg">
+<meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/17-22-10.jpg">
+<meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/00-30-35.jpg">
+<meta property="og:updated_time" content="2017-03-29T09:59:04.835Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring MVC">
+<meta name="twitter:description" content="一、配置web.xml文件
+1、在web.xml文件配置 spring 容器启动监听器并指定容器的配置文件的位置，启动“业务层”的 spring 容器123456789101112131415&amp;lt;!-- 通过指定的spring配置文件和启动监听器，启动“业务层”的spring容器 --&amp;gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&amp;lt;web">
+<meta name="twitter:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/23-41-41.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/30/Spring/SpringMVC/"/>
+
+
+
+
+
+  <title> Spring MVC | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/30/Spring/SpringMVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring MVC
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-30T20:35:00+08:00">
+                2017-01-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、配置web-xml文件"><a href="#一、配置web-xml文件" class="headerlink" title="一、配置web.xml文件"></a>一、配置web.xml文件</h2><hr>
+<p><strong>1、在<code>web.xml</code>文件配置 spring 容器启动监听器并指定容器的配置文件的位置，启动“业务层”的 spring 容器</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 通过指定的spring配置文件和启动监听器，启动“业务层”的spring容器 --&gt;</span></div><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">web-app</span> <span class="attr">xmlns</span>=<span class="string">"http://java.sun.com/xml/ns/j2ee"</span></span></div><div class="line">         <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">         <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://java.sun.com/xml/ns/j2ee</span></div><div class="line">          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"</div><div class="line">         <span class="attr">version</span>=<span class="string">"2.4"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">context-param</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:applicationContext.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><strong>2、配置 SpringMVC 的 Servlet，默认查找<code>&lt;servlet-Name&gt;-servlet.xml</code>的 SpringMVC 配置文件，来启动web层的spring容器</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springmvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!--默认加载 /WEB-INF/&lt;servlet-Name&gt;-servlet.xml 的Spring配置文件，启动web层的spring容器 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springmvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h2 id="二、配置-SpringMVC-的配置文件-springmvc-servlet-xml"><a href="#二、配置-SpringMVC-的配置文件-springmvc-servlet-xml" class="headerlink" title="二、配置 SpringMVC 的配置文件 springmvc-servlet.xml"></a>二、配置 SpringMVC 的配置文件 springmvc-servlet.xml</h2><hr>
+<p><strong>1、打开注解打开注解</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></div><div class="line">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">       <span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span></div><div class="line">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></div><div class="line">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></div><div class="line">       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</div><div class="line">       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd</div><div class="line">       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd</div><div class="line">        "&gt;</div><div class="line"></div><div class="line">    <span class="comment">&lt;!-- 需要在 controller 中注入的properties属性必须在 springmvc-servlet.xml 中读入--&gt;</span></div><div class="line">    <span class="comment">&lt;!--  加入 ignore-unresolvable="true" ，避免 could not resolve placeholder 异常--&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">context:property-placeholder</span> <span class="attr">location</span>=<span class="string">"classpath:config.properties"</span> <span class="attr">ignore-unresolvable</span>=<span class="string">"true"</span>/&gt;</span></div><div class="line">    <span class="comment">&lt;!--打开spring 包扫描功能，不可缺少--&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"org.demo.controller"</span>/&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 打开mvc注解  --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">mvc:annotation-driven</span>/&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 将静态文件指定到某个特殊的文件夹中统一处理  --&gt;</span></div><div class="line">    <span class="comment">&lt;!--  一个*表文件夹中内容，第二个星指子文件夹中的内容 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">mvc:resources</span> <span class="attr">location</span>=<span class="string">"/resource/"</span> <span class="attr">mapping</span>=<span class="string">"/resources/**"</span> /&gt;</span></div></pre></td></tr></table></figure></p>
+<p><strong>2、配置JSP视图解析器 <code>InternalResourceViewResolver</code></strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">    <span class="comment">&lt;!-- 配置 JSP 视图解析器(ViewResolver) 一般JSP使用 InternalResourceViewResolver --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.web.servlet.view.InternalResourceViewResolver"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"prefix"</span> <span class="attr">value</span>=<span class="string">"/WEB-INF/jsp/"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"suffix"</span> <span class="attr">value</span>=<span class="string">".jsp"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h2 id="三、Web项目整合-Tomcat-的-Intellij-设置"><a href="#三、Web项目整合-Tomcat-的-Intellij-设置" class="headerlink" title="三、Web项目整合 Tomcat 的 Intellij 设置"></a>三、Web项目整合 Tomcat 的 Intellij 设置</h2><hr>
+<p><strong>1、Modules 增加 web 模块</strong><br><img src="/2017/01/30/Spring/SpringMVC/23-41-41.jpg" alt=""></p>
+<p><strong>2、增加 Tomcat 依赖库</strong><br><img src="/2017/01/30/Spring/SpringMVC/17-22-10.jpg" alt=""></p>
+<p><strong>3、设置 Artifacts</strong><br><img src="/2017/01/30/Spring/SpringMVC/00-30-35.jpg" alt=""></p>
+<h2 id="三、编写控制器类"><a href="#三、编写控制器类" class="headerlink" title="三、编写控制器类"></a>三、编写控制器类</h2><hr>
+<p><strong>1、注解控制器</strong><br><code>@Controller</code><br>　　负责注册一个bean 到spring 上下文中<br><code>@RequestMapping</code><br>　　注解为控制器指定可以处理哪些 URL 请求，支持 Ant 风格（即?、*和的**的字符）和带{xxx}占位符的URL</p>
+<p><strong>2、处理入参</strong><br><code>@PathVariable</code><br>　　绑定 URL 占位符到入参<br><code>@RequestParam</code><br>　　在处理方法入参处使用 @RequestParam 可以把请求参 数传递给请求方法<br><code>@CookieValue</code><br>　略<br><code>@RequestHeader</code><br>　略</p>
+<p><strong>使用 ServletAPI 对象作为入参</strong><br>　　SpringMVC 自动将 web 层对应的 Servlet 对象传递给处理方法的入参，如果自行使用 HttpServletResponse 返回响应，则处理方法的返回参数设置为 void 即可</p>
+<p><strong>3、处理模型数据</strong></p>
+<ul>
+<li><strong>ModelAndView</strong><br>方法体通过该对象添加模型数据，既包含视图信息，也包含模型数据</li>
+<li><strong><code>@ModelAttribute</code></strong><br>在方法定义上使用 ：Spring MVC 在调用目标处理方法前，会先逐个调用在方法级上标注了@ModelAttribute 的方法<br>在方法的入参前使用 ：入参的对象就会放到模型数据中</li>
+<li><strong>Map and Model</strong><br>入参为 org.pringframework.ui.Model、org.pringframework.ui.ModelMap 或 java。util.Map 时，处理方法返回时，Map中的数据会自动添加到模型中。<br>调用方法前会创建一个隐含的的模型对象“隐含模型”，如果方法的入参为上述几种，Spring会将隐含模型的引用传递给这些入参，在方法体内可以访问到数据，也可以添加属性</li>
+<li><strong><code>@SessionAttitude</code></strong><br>将模型中的某个属性暂存到 HttpSession 中，以便多个请求之间可以共享这个属性</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//控制器类Demo</span></div><div class="line"><span class="meta">@Controller</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginController</span> </span>&#123;</div><div class="line"></div><div class="line">    IFindUserService findUserService = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/login"</span>, method = RequestMethod.GET)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">login</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"loginPage"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/user/&#123;userID&#125;"</span>, method = RequestMethod.GET)</div><div class="line">    <span class="function"><span class="keyword">public</span> ModelAndView <span class="title">detail</span><span class="params">(@PathVariable String userID, ModelMap modelMap)</span> </span>&#123;</div><div class="line">        UserInfo prepareUser = (UserInfo)modelMap.get(<span class="string">"prepareUser"</span>);</div><div class="line">        System.out.println(prepareUser.getUsername());</div><div class="line">        UserInfo user = findUserService.findUser(Integer.valueOf(userID));</div><div class="line">        ModelAndView model = <span class="keyword">new</span> ModelAndView();</div><div class="line">        model.setViewName(<span class="string">"userDetail"</span>);</div><div class="line">        model.addObject(<span class="string">"user"</span>, user);</div><div class="line">        <span class="keyword">return</span> model;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@ModelAttribute</span>(value = <span class="string">"prepareUser"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> UserInfo <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">        UserInfo user = <span class="keyword">new</span> UserInfo();</div><div class="line">        user.setUsername(<span class="string">"prepareUser"</span>);</div><div class="line">        <span class="keyword">return</span> user;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> IFindUserService <span class="title">getFindUserService</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> findUserService;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFindUserService</span><span class="params">(IFindUserService findUserService)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.findUserService = findUserService;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="四、返回-JSON-数据"><a href="#四、返回-JSON-数据" class="headerlink" title="四、返回 JSON 数据"></a>四、返回 JSON 数据</h2><hr>
+<p>　　待补充</p>
+<h2 id="五、-国际化"><a href="#五、-国际化" class="headerlink" title="五、 国际化"></a>五、 国际化</h2><hr>
+<p>　　略</p>
+<h2 id="六、文件上传"><a href="#六、文件上传" class="headerlink" title="六、文件上传"></a>六、文件上传</h2><hr>
+<p><strong>1、springmvc-servlet.xml 增加文件上传视图解析器<code>CommonsMultipartResolver</code></strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--配置文件上传 MultipartResolver  --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"multipartResolver"</span> <span class="attr">class</span>=<span class="string">"org.springframework.web.multipart.commons.CommonsMultipartResolver"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxUploadSize"</span> <span class="attr">value</span>=<span class="string">"5000000"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"uploadTempDir"</span> <span class="attr">value</span>=<span class="string">"WEB-INF/upload/temp"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"defaultEncoding"</span> <span class="attr">value</span>=<span class="string">"UTF-8"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><strong>2、添加依赖</strong><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span> <span class="comment">&lt;!-- makesure correct version here --&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-io<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-io<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><strong>3、编写文件上传控制器类</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//UserController</span></div><div class="line"><span class="meta">@Controller</span></div><div class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/user"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/uploadPage"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">uploadPage</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"uploadPage"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">upload</span><span class="params">(@RequestParam(value = <span class="string">"name"</span>)</span> String name,</span></div><div class="line">                         @<span class="title">RequestParam</span><span class="params">(value = <span class="string">"file"</span>)</span>MultipartFile file) <span class="keyword">throws</span> IOException &#123;</div><div class="line">        <span class="keyword">if</span>(!file.isEmpty()) &#123;</div><div class="line">            file.transferTo(<span class="keyword">new</span> File(<span class="string">"D:/upload/"</span> + file.getOriginalFilename()));</div><div class="line">            <span class="keyword">return</span> <span class="string">"redirect:uploadResult"</span>;</div><div class="line">        &#125;<span class="keyword">else</span></div><div class="line">            <span class="keyword">return</span> <span class="string">"redirect:uploadResult"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>4、编写上传页面</strong><br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;上传用户头像&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">    &lt;form method="post" enctype="multipart/form-data" action="/user/upload"&gt;</div><div class="line">        &lt;input type="text" name="name" /&gt;</div><div class="line">        &lt;input type="file" name="file" /&gt;</div><div class="line">        &lt;input type="submit" /&gt;</div><div class="line">    &lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/15/Spring/transaction/" rel="next" title="Spring 声明式事务">
+                <i class="fa fa-chevron-left"></i> Spring 声明式事务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/12/Linux/shell/" rel="prev" title="初识Shell脚本">
+                初识Shell脚本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、配置web-xml文件"><span class="nav-number">1.</span> <span class="nav-text">一、配置web.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、配置-SpringMVC-的配置文件-springmvc-servlet-xml"><span class="nav-number">2.</span> <span class="nav-text">二、配置 SpringMVC 的配置文件 springmvc-servlet.xml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、Web项目整合-Tomcat-的-Intellij-设置"><span class="nav-number">3.</span> <span class="nav-text">三、Web项目整合 Tomcat 的 Intellij 设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、编写控制器类"><span class="nav-number">4.</span> <span class="nav-text">三、编写控制器类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、返回-JSON-数据"><span class="nav-number">5.</span> <span class="nav-text">四、返回 JSON 数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、-国际化"><span class="nav-number">6.</span> <span class="nav-text">五、 国际化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、文件上传"><span class="nav-number">7.</span> <span class="nav-text">六、文件上传</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
