@@ -4,11 +4,13 @@ categories:
   - 'Java 设计模式'
 date: 2017-03-29 20:26
 status: public
-title: 原型模式（Prototype）
+title: Java设计模式（五）原型模式（Prototype）
 ---
 
-##介绍 
+## 介绍 
 原型模式虽然是创建型的模式，但是与工程模式没有关系，从名字即可看出，该模式的思想就是将一个对象作为原型，对其进行复制、克隆，产生一个和原对象类似的新对象。本小结会通过对象的复制，进行讲解。
+<!-- more -->
+
 在Java中，复制对象是通过clone()实现的，先创建一个原型类：
 ```java
 public class Prototype implements Cloneable {  

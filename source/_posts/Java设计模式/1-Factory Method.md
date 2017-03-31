@@ -4,15 +4,19 @@ categories:
   - 'Java 设计模式'
 date: 2017-03-29 19:09
 status: public
-title: 工厂方法模式（Factory Method）
+title: 'Java设计模式（一）工厂方法模式（Factory Method）'
 ---
 
 ## 介绍
-***
+
 **工厂方法模式分为三种：**
 1. 普通工厂模式
+
 2. 多个工厂方法模式
+
 3. 静态工厂方法模式
+
+<!-- more -->
 
 ## 1、普通工厂模式
 ***
