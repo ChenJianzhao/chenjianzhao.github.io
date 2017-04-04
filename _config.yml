@@ -76,4 +76,5 @@ backup:
     type: git
     repository:
        github: git@github.com:ChenJianzhao/chenjianzhao.github.io.git,backup
+       branch: backup
 ##gitcafe: git@github.com:ChenJianzhao/chenjianzhao.github.io.git,backup
