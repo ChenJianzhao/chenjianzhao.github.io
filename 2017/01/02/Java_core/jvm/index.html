@@ -1,0 +1,754 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1. 运行时数据区域程序计数器（Program Counter Register）：当前线程所执行的字节码的行号指示器。　　线程私有内存，较小的内存空间。　　此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。
+Java虚拟机栈（Java Virtual Machine Stacks）：描述Java方法执行的内存模型，每个方法在执行的同时都会创建一个栈">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内存区域与内存溢出异常">
+<meta property="og:url" content="http://yoursite.com/2017/01/02/Java_core/jvm/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="1. 运行时数据区域程序计数器（Program Counter Register）：当前线程所执行的字节码的行号指示器。　　线程私有内存，较小的内存空间。　　此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。
+Java虚拟机栈（Java Virtual Machine Stacks）：描述Java方法执行的内存模型，每个方法在执行的同时都会创建一个栈">
+<meta property="og:updated_time" content="2017-05-07T01:49:27.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java内存区域与内存溢出异常">
+<meta name="twitter:description" content="1. 运行时数据区域程序计数器（Program Counter Register）：当前线程所执行的字节码的行号指示器。　　线程私有内存，较小的内存空间。　　此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。
+Java虚拟机栈（Java Virtual Machine Stacks）：描述Java方法执行的内存模型，每个方法在执行的同时都会创建一个栈">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/02/Java_core/jvm/"/>
+
+
+
+
+
+  <title> Java内存区域与内存溢出异常 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/02/Java_core/jvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java内存区域与内存溢出异常
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-02T14:15:00+08:00">
+                2017-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-运行时数据区域"><a href="#1-运行时数据区域" class="headerlink" title="1. 运行时数据区域"></a>1. 运行时数据区域</h2><p><code>程序计数器</code>（Program Counter Register）：当前线程所执行的字节码的行号指示器。<br>　　<strong>线程私有内存，较小的内存空间。</strong><br>　　此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
+<p><code>Java虚拟机栈</code>（Java Virtual Machine Stacks）：描述Java方法执行的内存模型，每个方法在执行的同时都会创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。通常所说的“栈”指的就是虚拟机栈，或者说是虚拟机栈中的局部变量表部分。<br>　　<strong>线程私有内存，声明周期与线程相同。</strong><br>　　<strong>局部变量表</strong>存放了编译期可知的各种基本数据类型、对象引用类型。其中64位长度的long和double类型的数据会占用2个局部变量空间（Slot），其余的数据类型只占用1个。<strong>局部变量表所需的内存空间在编译期间完成分配</strong>，当进入一个方法时，这个方法所需要在帧中分配多大的局部变量空间是<strong>完全确定</strong>的，在方法的运行期间不会改变局部变量表的大小。</p>
+<p><code>本地方法栈</code>（Native Method Stack）与虚拟机栈所发挥的作用非常相似。Sun HotSpot 虚拟机直接就把本地方法栈和虚拟机栈合二为一（因此虚拟机设置本地方法栈大小的参数，-Xoss，在Hot Spot虚拟机实现中是无效的）。</p>
+<p><code>Java堆</code>（Java Heap）：存放对象实例，几乎所有的对象实例都在这里分配内存。但随着JIT编译器的发展与逃逸分析技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化，因此所有对象都分配在堆上不是那么绝对。<br><strong>Java虚拟机所管理的内存中最大的一块，线程共享，在虚拟机启动时创建。</strong><br>Java堆是垃圾收集器管理的主要区域，因此也称作“GC堆”(Garbage Collected Heap)</p>
+<p><code>方法区</code>（Menthod Area）：<strong>线程共享</strong>，用于存储已被虚拟机加载的类信息、常量 、静态变量、即时编译器编译后的代码等数据。<br>HotSpot虚拟机把GC分代收集拓展至方法区，使用永久代来实现方法区。</p>
+<p><code>运行时常量池</code>（Runtime Constant Pool）是方法区的一部分。Class文件中有一项信息是常量池（Constant Pool Table），用于存放在编译期生成的各种字面量和符号引用，<strong>这部分内容将在类加载后进入方法区的运行时常量池中存放。</strong></p>
+<p><code>直接内存</code>（Direct Memory）并不是虚拟机运行时数据区的一部分，属于<strong>堆外内存</strong>。<br>NIO类，引入了一种基于通道与缓冲区的I/O方式，他可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的 <code>DirectByteBuffer</code> 对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在Java堆和Native堆中来回复制数据。</p>
+<p>显然，本机直接内存的分配不会受到Java堆大小的限制，但是还是会受到本地总内存大小以及处理器寻址空间的限制。</p>
+<h2 id="2-普通Java对象的创建过程"><a href="#2-普通Java对象的创建过程" class="headerlink" title="2. 普通Java对象的创建过程"></a>2. 普通Java对象的创建过程</h2><p>（不包括数组和Class对象等）</p>
+<p><code>类加载检查 --&gt; 内存分配 --&gt; 初始化为零值 --&gt; 设置对象头 --&gt; 执行&lt;init&gt;方法</code></p>
+<h3 id="2-1-类加载检查"><a href="#2-1-类加载检查" class="headerlink" title="2.1 类加载检查"></a>2.1 类加载检查</h3><p>虚拟机遇到一条new指令时，首先将去<strong>检查这个指令的参数是否能在常量池中定位到一个类的符号引用</strong>，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那必须先执行相应的<strong>类加载过程。</strong></p>
+<h3 id="2-2-内存分配"><a href="#2-2-内存分配" class="headerlink" title="2.2 内存分配"></a>2.2 内存分配</h3><p>在类加载检查通过之后，虚拟机将为新生对象<strong>分配内存</strong>。</p>
+<h4 id="2-2-1-内存分配的方式有两种"><a href="#2-2-1-内存分配的方式有两种" class="headerlink" title="2.2.1 内存分配的方式有两种"></a>2.2.1 内存分配的方式有两种</h4><ol>
+<li><code>“指针碰撞”</code>：假设Java堆中内存是绝对规整的，用过的内存放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，那分配内存就仅仅是把那个指针向空闲空间那边<strong>挪动一段与对象大小相等的距离</strong>。</li>
+<li><code>“空闲列表”</code>：假设Java堆中的内存并不是规整的，已使用的内存和空闲的内存相互交错，虚拟机就必须<strong>维护一个列表</strong>，记录上哪些内存块是可用的，在分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的记录。</li>
+</ol>
+<p><strong>选择哪种分配方式由Java堆是否规整决定，而是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定。</strong></p>
+<h4 id="2-2-2-内存分配的线程安全"><a href="#2-2-2-内存分配的线程安全" class="headerlink" title="2.2.2 内存分配的线程安全"></a>2.2.2 内存分配的线程安全</h4><p>内存分配时，修改一个指针所指向的位置，在并发情况下也并不是线程安全的。解决方案有两种：</p>
+<ol>
+<li><strong>对分配内存空间的动作进行同步处理</strong>，实际上虚拟机采用CAS配上失败重试的方式保证更新操作的原子性。</li>
+<li>把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为<strong>本地线程分配缓冲（Thread Local Allocation Buffer，TLAB）</strong>。哪个线程要分配内存，就在哪个线程的TLAB上分配，只有TLAB用完并分配新的TLAB时，才需要<strong>同步锁定</strong>。虚拟机是否使用TLAB，可以通过 -XX:+/-UseTLAB 参数来设定。</li>
+</ol>
+<h3 id="2-3-初始化为零值"><a href="#2-3-初始化为零值" class="headerlink" title="2.3 初始化为零值"></a>2.3 初始化为零值</h3><p>内存分配完成后，虚拟机需要将分配到的内存空间都<strong>初始化为零值</strong>（不包括对象头），如果使用TLAB，这一工作过程也可以提前至TLAB分配时进行。这一操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用。</p>
+<h3 id="2-4-设置对象头"><a href="#2-4-设置对象头" class="headerlink" title="2.4 设置对象头"></a>2.4 设置对象头</h3><p>接下来，虚拟机要对对象进行必要的的设置，<strong>存放在对象的对象头</strong>（Object Header）中。</p>
+<h3 id="2-5-执行方法"><a href="#2-5-执行方法" class="headerlink" title="2.5 执行方法"></a>2.5 执行<init>方法</init></h3><p>完成以上工作后，从虚拟机的角度讲，一个新的对象已经产生了，但从Java程序的视角来看，执行new指令之后会接着<strong>执行<init>方法</init></strong>，把对象按照程序员的意愿进行初始化。</p>
+<h2 id="3-对象的内存布局"><a href="#3-对象的内存布局" class="headerlink" title="3. 对象的内存布局"></a>3. 对象的内存布局</h2><p>　　HotSpot虚拟机中，对象在内存中存储的布局可分为3块区域：<strong>对象头（Header）、实例数据（Instance Data）和对齐填充（Padding）</strong>。</p>
+<ol>
+<li><strong>对象头</strong>：包括两部分。<ul>
+<li>对象本身的运行时数据（哈希码、GC分代年龄、锁状态标识、线程持有的锁、偏向线程ID、偏向时间戳等）</li>
+<li>类型指针，即对象指向它的类元数据的指针。</li>
+</ul>
+</li>
+<li><strong>实例数据</strong>：对象真正存储的有效信息，也是在程序代码中所定义的各种类型的字段内容。</li>
+<li><strong>对齐填充</strong>：并不是 必然存在的，也没有特别的含义，它仅仅起着占位符的作用。</li>
+</ol>
+<h2 id="4-对象的访问定位"><a href="#4-对象的访问定位" class="headerlink" title="4. 对象的访问定位"></a>4. 对象的访问定位</h2><p>　　Java程序通过栈上的reference数据来操作堆上的具体对象。对象的访问方式取决于虚拟机的实现。<br>主流的访问方式：<strong>句柄和直接指针</strong></p>
+<ol>
+<li><p><strong>句柄访问</strong>：Java堆中会划分出一块内存来作为句柄池，reference中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息。<br><code>reference</code> –&gt; <code>|到对象实例数据的指针｜到对象类型数据的指针</code> –&gt;  <code>对象类型数据</code><br>　　　　　　　　　　　　　　　｜<br>　　　　　　　　　　　　<code>对象实例数据</code></p>
+</li>
+<li><p><strong>直接指针访问</strong>：<br><code>reference</code>  –&gt;  <code>对象实例数据【到对象类型数据的指针】</code> –&gt;  <code>对象类型数据</code></p>
+</li>
+</ol>
+<p><strong>各自的优势：</strong><br>句柄访问：reference中存储的是稳定的句柄地址，在对象移动（垃圾收集）时只会改变句柄中的实例数据指针，而reference本身不需要修改。<br>直接指针：访问速度快，它节省了一次指针定位的时间开销。sun HotSpot 使用第二种方式进行对象的访问。</p>
+<h2 id="5-内存溢出"><a href="#5-内存溢出" class="headerlink" title="5. 内存溢出"></a>5. 内存溢出</h2>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/28/db/Oracle-analyse/" rel="next" title="Oracle-analyse">
+                <i class="fa fa-chevron-left"></i> Oracle-analyse
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/12/Spring/Spring-Exception/" rel="prev" title="Spring 常见异常">
+                Spring 常见异常 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">76</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-运行时数据区域"><span class="nav-text">1. 运行时数据区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-普通Java对象的创建过程"><span class="nav-text">2. 普通Java对象的创建过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-类加载检查"><span class="nav-text">2.1 类加载检查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-内存分配"><span class="nav-text">2.2 内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-内存分配的方式有两种"><span class="nav-text">2.2.1 内存分配的方式有两种</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-内存分配的线程安全"><span class="nav-text">2.2.2 内存分配的线程安全</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-初始化为零值"><span class="nav-text">2.3 初始化为零值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-设置对象头"><span class="nav-text">2.4 设置对象头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-执行方法"><span class="nav-text">2.5 执行方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-对象的内存布局"><span class="nav-text">3. 对象的内存布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-对象的访问定位"><span class="nav-text">4. 对象的访问定位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-内存溢出"><span class="nav-text">5. 内存溢出</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

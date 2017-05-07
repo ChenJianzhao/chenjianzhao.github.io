@@ -1,0 +1,723 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Demo以下代码使用 ServerSocketChannel 和 SocketChannel 搭建一个 客户端/服务端 通信的示例，客户端发起三个连接，每个连接连续读写三次数据。
+1. 服务端代码：12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java NIO（十二）之 Channel  Demo">
+<meta property="og:url" content="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="Demo以下代码使用 ServerSocketChannel 和 SocketChannel 搭建一个 客户端/服务端 通信的示例，客户端发起三个连接，每个连接连续读写三次数据。
+1. 服务端代码：12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455">
+<meta property="og:image" content="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/client.png">
+<meta property="og:image" content="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/server.png">
+<meta property="og:updated_time" content="2017-05-07T01:49:27.981Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java NIO（十二）之 Channel  Demo">
+<meta name="twitter:description" content="Demo以下代码使用 ServerSocketChannel 和 SocketChannel 搭建一个 客户端/服务端 通信的示例，客户端发起三个连接，每个连接连续读写三次数据。
+1. 服务端代码：12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455">
+<meta name="twitter:image" content="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/client.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/"/>
+
+
+
+
+
+  <title> Java NIO（十二）之 Channel  Demo | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/java_nio/12-nio-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java NIO（十二）之 Channel  Demo
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T09:49:27+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>以下代码使用 <code>ServerSocketChannel</code> 和 <code>SocketChannel</code> 搭建一个 客户端/服务端 通信的示例，客户端发起三个连接，每个连接连续读写三次数据。</p>
+<h2 id="1-服务端代码："><a href="#1-服务端代码：" class="headerlink" title="1. 服务端代码："></a>1. 服务端代码：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.nio;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</div><div class="line"><span class="keyword">import</span> java.nio.channels.*;</div><div class="line"><span class="keyword">import</span> java.util.Iterator;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/4/3.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TCPServer</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        ServerSocketChannel serverSocketChannel = <span class="keyword">null</span>;</div><div class="line">        Selector selector = <span class="keyword">null</span>;</div><div class="line">        Iterator&lt;SelectionKey&gt; iterator = <span class="keyword">null</span>;</div><div class="line">        SelectionKey selectionKey = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="comment">/*</span></div><div class="line">             * 启动服务端</div><div class="line">             */</div><div class="line">            selector = Selector.open();</div><div class="line">            serverSocketChannel = ServerSocketChannel.open();</div><div class="line">            serverSocketChannel.socket().bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">9999</span>));</div><div class="line">            serverSocketChannel.configureBlocking(<span class="keyword">false</span>);                   <span class="comment">//设置 Channel 非阻塞模式</span></div><div class="line">            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);         <span class="comment">//ServerSocketChannel 注册“接收就绪”</span></div><div class="line">        &#125;<span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        ServerHandler handler = <span class="keyword">new</span> ServerHandler(selector);</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line">         * 服务端循环等待客户端连接或读数据</div><div class="line">         */</div><div class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</div><div class="line"></div><div class="line">            <span class="keyword">try</span>&#123;</div><div class="line">                <span class="comment">/*</span></div><div class="line">                 * 检测是否有 Channel 就绪</div><div class="line">                 */</div><div class="line">                <span class="keyword">while</span> (selector.select()==<span class="number">0</span> )&#123;</div><div class="line">                    <span class="keyword">continue</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                iterator = selector.selectedKeys().iterator();</div><div class="line"></div><div class="line">                <span class="keyword">while</span>(iterator.hasNext()) &#123;</div><div class="line">                    selectionKey  = iterator.next();</div><div class="line">                    <span class="keyword">if</span>(selectionKey.isAcceptable())</div><div class="line">                        handler.handleAccept(selectionKey);</div><div class="line">                    <span class="keyword">else</span> <span class="keyword">if</span>(selectionKey.isReadable())</div><div class="line">                        handler.handleRead(selectionKey);</div><div class="line">                    <span class="keyword">else</span> <span class="keyword">if</span>(selectionKey.isWritable())</div><div class="line">                        handler.handleWrite(selectionKey);</div><div class="line"></div><div class="line">                    <span class="comment">/*</span></div><div class="line">                     * 处理后的通道必须从集合中移除，否则无法向客户端写数据，会一直重复 “写就绪”</div><div class="line">                     */</div><div class="line">                    iterator.remove();</div><div class="line">                &#125;</div><div class="line">            &#125;<span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">                <span class="comment">/*</span></div><div class="line">                 * 遇到异常，如客户端断开，需要移除</div><div class="line">                 */</div><div class="line">                iterator.remove();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-服务端连接处理类："><a href="#2-服务端连接处理类：" class="headerlink" title="2. 服务端连接处理类："></a>2. 服务端连接处理类：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.nio;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SelectionKey;</div><div class="line"><span class="keyword">import</span> java.nio.channels.Selector;</div><div class="line"><span class="keyword">import</span> java.nio.channels.ServerSocketChannel;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SocketChannel;</div><div class="line"><span class="keyword">import</span> java.nio.charset.Charset;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/4/3.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    Selector selector = <span class="keyword">null</span>;</div><div class="line">    ServerHandler(Selector selector) &#123;</div><div class="line">        <span class="keyword">this</span>.selector = selector;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> clientChannelCount = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 处理连接</div><div class="line">     * <span class="doctag">@param</span> selectionKey</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleAccept</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException</span>&#123;</div><div class="line">        ServerSocketChannel serverChannel = (ServerSocketChannel) selectionKey.channel();</div><div class="line">        SocketChannel channel = serverChannel.accept();</div><div class="line">        channel.configureBlocking(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">        <span class="comment">//设置通道信息，用户客户端提示信息</span></div><div class="line">        Integer[] channelMsg = <span class="keyword">new</span> Integer[<span class="number">2</span>];</div><div class="line">        channelMsg[<span class="number">0</span>] = clientChannelCount++;</div><div class="line">        channelMsg[<span class="number">1</span>] = <span class="number">0</span>;</div><div class="line"></div><div class="line">        SelectionKey clientSelectionKey = channel.register(selector, SelectionKey.OP_READ);</div><div class="line">        clientSelectionKey.attach(channelMsg);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 处理读</div><div class="line">     * <span class="doctag">@param</span> selectionKey</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleRead</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException</span>&#123;</div><div class="line"></div><div class="line">        Integer[] channelMsg =  (Integer[]) selectionKey.attachment();</div><div class="line">        Integer channelNum = channelMsg[TCPClient.CHANNEL_NUM_INT];</div><div class="line">        Integer msgNum = channelMsg[TCPClient.MSG_NUM_INT];</div><div class="line">        SocketChannel channel = (SocketChannel) selectionKey.channel();</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(<span class="number">100</span>);</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line">         * 读取不到内容说明，客户端断开连接，关闭服务端的channel（目前还不知道会不会出问题）</div><div class="line">         */</div><div class="line">        <span class="keyword">if</span>(channel.read(buffer) &lt;<span class="number">0</span> ) &#123;</div><div class="line">            selectionKey.channel().close();</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        buffer.flip();</div><div class="line">        <span class="keyword">while</span> (buffer.hasRemaining()) &#123;</div><div class="line">            String clientMsg = Charset.forName(<span class="string">"UTF-8"</span>).newDecoder().decode(buffer).toString();</div><div class="line">            System.out.println(<span class="string">"Server Received Message From Server Channel ["</span> + channelNum + <span class="string">"] :"</span> + clientMsg);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line">         * 重新设置关注的事件</div><div class="line">         */</div><div class="line">        selectionKey.interestOps(SelectionKey.OP_WRITE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 处理写</div><div class="line">     * <span class="doctag">@param</span> selectionKey</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleWrite</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        Integer[] channelMsg =  (Integer[]) selectionKey.attachment();</div><div class="line">        Integer channelNum = channelMsg[TCPClient.CHANNEL_NUM_INT];</div><div class="line">        Integer msgNum = channelMsg[TCPClient.MSG_NUM_INT];</div><div class="line">        SocketChannel channel = (SocketChannel) selectionKey.channel();</div><div class="line"></div><div class="line">        String ServerMsg = <span class="string">"Server Message "</span> + channelNum + <span class="string">"-"</span> + msgNum;</div><div class="line">        ByteBuffer respBuffer = ByteBuffer.wrap(ServerMsg.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">        System.out.println(<span class="string">"Server Sending Message To Server Channel ["</span> + channelNum + <span class="string">"] :"</span> + ServerMsg);</div><div class="line">        <span class="keyword">while</span> (respBuffer.hasRemaining())</div><div class="line">            channel.write(respBuffer);</div><div class="line"></div><div class="line">         <span class="comment">/*</span></div><div class="line">         * 重新设置关注的事件</div><div class="line">         */</div><div class="line">        selectionKey.interestOps(SelectionKey.OP_READ);</div><div class="line">        channelMsg[TCPClient.MSG_NUM_INT]++;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="3-客户端代码："><a href="#3-客户端代码：" class="headerlink" title="3. 客户端代码："></a>3. 客户端代码：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.nio;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.net.InetSocketAddress;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SelectionKey;</div><div class="line"><span class="keyword">import</span> java.nio.channels.Selector;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SocketChannel;</div><div class="line"><span class="keyword">import</span> java.util.Iterator;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/4/3.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TCPClient</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Integer CHANNEL_NUM_INT = <span class="number">0</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Integer MSG_NUM_INT = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Selector selector = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            selector = Selector.open();</div><div class="line"></div><div class="line">            ClientHandler handler = <span class="keyword">new</span> ClientHandler(selector);</div><div class="line"></div><div class="line">            <span class="comment">/*</span></div><div class="line">             * 开启三个客户端连接，每个连接会发送三次信息到服务端</div><div class="line">             */</div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++) &#123;</div><div class="line"></div><div class="line">                SocketChannel channel = SocketChannel.open();</div><div class="line">                channel.configureBlocking(<span class="keyword">false</span>);</div><div class="line">                channel.connect(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">9999</span>));</div><div class="line">                SelectionKey selectionKey = channel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);</div><div class="line"></div><div class="line">                <span class="comment">//设置通道信息，用于组装客户端信息</span></div><div class="line">                Integer[] channelMsg = <span class="keyword">new</span> Integer[<span class="number">2</span>];</div><div class="line">                channelMsg[CHANNEL_NUM_INT] = i;</div><div class="line">                channelMsg[MSG_NUM_INT] = <span class="number">0</span>;</div><div class="line">                selectionKey.attach(channelMsg);</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</div><div class="line">                <span class="comment">/*</span></div><div class="line">                 * 检测是否有 Channel 就绪</div><div class="line">                 */</div><div class="line">                <span class="keyword">while</span>(selector.select()==<span class="number">0</span>)</div><div class="line">                    <span class="keyword">continue</span>;</div><div class="line"></div><div class="line">                Iterator&lt;SelectionKey&gt; iterator = selector.selectedKeys().iterator();</div><div class="line"></div><div class="line">                <span class="keyword">while</span>(iterator.hasNext()) &#123;</div><div class="line">                    SelectionKey selectionKey = iterator.next();</div><div class="line">                    <span class="keyword">if</span> (selectionKey.isConnectable())</div><div class="line">                        handler.handleConnect(selectionKey);</div><div class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (selectionKey.isReadable())</div><div class="line">                        handler.handleRead(selectionKey);</div><div class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (selectionKey.isWritable())</div><div class="line">                        handler.handleWrite(selectionKey);</div><div class="line"></div><div class="line"></div><div class="line">                    <span class="comment">/*</span></div><div class="line">                     * “连接就绪”处理后会进入“写就绪状态”</div><div class="line">                     * 写处理后的通道必须从集合中移除，否则无法向服务端写数据，会一直重复 “写就绪”</div><div class="line">                     */</div><div class="line">                    iterator.remove();</div><div class="line">                &#125;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception exc) &#123;</div><div class="line">            exc.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="4-客户端连接处理类"><a href="#4-客户端连接处理类" class="headerlink" title="4. 客户端连接处理类"></a>4. 客户端连接处理类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.nio;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SelectionKey;</div><div class="line"><span class="keyword">import</span> java.nio.channels.Selector;</div><div class="line"><span class="keyword">import</span> java.nio.channels.SocketChannel;</div><div class="line"><span class="keyword">import</span> java.nio.charset.Charset;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/4/3.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> Selector selector = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    ClientHandler(Selector selector) &#123;</div><div class="line">        <span class="keyword">this</span>.selector = selector;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleConnect</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        Integer[] channelMsg =  (Integer[]) selectionKey.attachment();</div><div class="line">        Integer channelNum = channelMsg[TCPClient.CHANNEL_NUM_INT];</div><div class="line"></div><div class="line">        SocketChannel channel = (SocketChannel) selectionKey.channel();</div><div class="line">        <span class="comment">//非阻塞可能尚未连接完成</span></div><div class="line">        <span class="keyword">while</span>(!channel.finishConnect()) &#123;</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        &#125;</div><div class="line">        System.out.println(<span class="string">"Client Channel ["</span>+ channelNum + <span class="string">"] Connected"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleRead</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        Integer[] channelMsg =  (Integer[]) selectionKey.attachment();</div><div class="line">        Integer channelNum = channelMsg[TCPClient.CHANNEL_NUM_INT];</div><div class="line"></div><div class="line">        SocketChannel channel = (SocketChannel) selectionKey.channel();</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(<span class="number">100</span>);</div><div class="line">        channel.read(buffer);</div><div class="line"></div><div class="line">        buffer.flip();</div><div class="line">        String serverMsg = Charset.forName(<span class="string">"UTF-8"</span>).newDecoder().decode(buffer).toString();</div><div class="line">        System.out.println(<span class="string">"Client Channel ["</span>+ channelNum + <span class="string">"] received Message From Server: "</span> + serverMsg);</div><div class="line"></div><div class="line">        selectionKey.interestOps(SelectionKey.OP_WRITE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleWrite</span><span class="params">(SelectionKey selectionKey)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        Integer[] channelMsg =  (Integer[]) selectionKey.attachment();</div><div class="line">        Integer channelNum = channelMsg[TCPClient.CHANNEL_NUM_INT];</div><div class="line">        Integer msgNum = channelMsg[TCPClient.MSG_NUM_INT];</div><div class="line">        SocketChannel channel = (SocketChannel) selectionKey.channel();</div><div class="line"></div><div class="line">        <span class="comment">//每个通道只连续向服务端发送3次信息。</span></div><div class="line">        <span class="keyword">if</span>(msgNum &gt;= <span class="number">3</span>) &#123;</div><div class="line">            channel.close();</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        String clientMsg = <span class="string">"Client Message "</span> + channelNum + <span class="string">"-"</span> + msgNum;</div><div class="line">        ByteBuffer buffer = ByteBuffer.wrap(clientMsg.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">        System.out.println(<span class="string">"Client Channel ["</span>+ channelNum + <span class="string">"] Sending Message To Server: "</span> + clientMsg);</div><div class="line"></div><div class="line">        <span class="keyword">if</span>(buffer.hasRemaining())</div><div class="line">            channel.write(buffer);</div><div class="line"></div><div class="line">        selectionKey.interestOps(SelectionKey.OP_READ);</div><div class="line">        channelMsg[TCPClient.MSG_NUM_INT]++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="5-运行结果"><a href="#5-运行结果" class="headerlink" title="5. 运行结果"></a>5. 运行结果</h2><p><strong>客户端</strong></p>
+<p><img src="/2017/05/07/java_nio/12-nio-demo/client.png" alt="client"></p>
+<p><strong>服务端</strong></p>
+<p><img src="/2017/05/07/java_nio/12-nio-demo/server.png" alt="client"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/07/java_nio/11-nio-pipe/" rel="next" title="Java NIO（十一）之 Pipe">
+                <i class="fa fa-chevron-left"></i> Java NIO（十一）之 Pipe
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/07/java_nio/2-nio-channel/" rel="prev" title="Java NIO（二）之Channel">
+                Java NIO（二）之Channel <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">76</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-text">Demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-服务端代码："><span class="nav-text">1. 服务端代码：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-服务端连接处理类："><span class="nav-text">2. 服务端连接处理类：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-客户端代码："><span class="nav-text">3. 客户端代码：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-客户端连接处理类"><span class="nav-text">4. 客户端连接处理类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-运行结果"><span class="nav-text">5. 运行结果</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

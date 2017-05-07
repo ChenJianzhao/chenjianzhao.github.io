@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/java_nio/10-nio-dataGramChaanel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -279,8 +279,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/hello-world/" itemprop="url">
-                  Hello World
+                <a class="post-title-link" href="/2017/05/07/java_nio/10-nio-dataGramChaanel/" itemprop="url">
+                  Java NIO（十）之 DatagramChannel
                 </a>
               
             
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T10:04:52+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T09:49:27+08:00">
+                2017-05-07
               </time>
             
 
@@ -306,6 +306,39 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -334,11 +367,13 @@
       
         
           
-          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in 
+          DatagramChannelJava NIO中的DatagramChannel是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包。
+1. 打开 DatagramChannel下面是 DatagramChannel 的打开方式：
+12D
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/hello-world/#more" rel="contents">
+            <a class="btn" href="/2017/05/07/java_nio/10-nio-dataGramChaanel/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -384,7 +419,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/27/Java集合/LinkedList/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/java_nio/1-nio/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -406,8 +441,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/27/Java集合/LinkedList/" itemprop="url">
-                  Java集合类深入分析之LinkedList
+                <a class="post-title-link" href="/2017/05/07/java_nio/1-nio/" itemprop="url">
+                  Java NIO（一）之概述
                 </a>
               
             
@@ -423,8 +458,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-27T00:41:00+08:00">
-                2017-03-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T09:49:27+08:00">
+                2017-05-07
               </time>
             
 
@@ -457,8 +492,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
                   </a>
                 </span>
 
@@ -494,171 +529,17 @@
       
         
           
-          
-          
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/27/Java集合/LinkedList/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
+          NIO 概述Java NIO 由以下几个核心部分组成：
 
-    <div>
-      
-    </div>
+Channels
+Buffers
+Selectors
 
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/27/Java集合/ArrayList/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/27/Java集合/ArrayList/" itemprop="url">
-                  Java集合类深入分析之ArrayList
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-27T00:37:00+08:00">
-                2017-03-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          1. ArrayList概述：   ArrayList是List接口的可变数组的实现。实现了所有可选列表操作，并允许包括 null 在内的所有元素。除了实现 List 接口外，此类还提供一些方法来操作内部用来存储列表的数组的大小。   每个ArrayList实例都有一个容量，该容量是指用来存储列表元
+1. Channel 和 Buffer基本上，所有的 IO 在NIO 中都从一个Channel 开始。Channel 有点象流。 数据可以从Channel读到Buffer中，也可以从Bu
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/27/Java集合/ArrayList/#more" rel="contents">
+            <a class="btn" href="/2017/05/07/java_nio/1-nio/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -704,7 +585,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Java集合/LinkedHashMap/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/dev_tool/git/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -726,8 +607,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/26/Java集合/LinkedHashMap/" itemprop="url">
-                  Java集合类深入分析之LinkedHashMap
+                <a class="post-title-link" href="/2017/05/07/dev_tool/git/" itemprop="url">
+                  git 教程
                 </a>
               
             
@@ -743,8 +624,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T22:53:00+08:00">
-                2017-03-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T00:00:00+08:00">
+                2017-05-07
               </time>
             
 
@@ -766,19 +647,155 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
+                  <a href="/categories/开发工具/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
                   </a>
                 </span>
 
                 
                 
-                  ， 
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Git是目前世界上最先进的分布式版本控制系统（没有之一）</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/05/07/dev_tool/git/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/MyBatis-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
                 
+                <a class="post-title-link" href="/2017/04/25/mybatis/MyBatis-config/" itemprop="url">
+                  MyBatis基本配置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
+                2017-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
+                    <span itemprop="name">MyBatis</span>
                   </a>
                 </span>
 
@@ -814,12 +831,17 @@
       
         
           
-          原文：深入Java集合学习系列：LinkedHashMap的实现原理参考：深入Java集合学习系列：HashMap的实现原理
-1. LinkedHashMap概述：   LinkedHashMap是Map接口的哈希表和链接列表实现，具有可预知的迭代顺序（默认为插入顺序），并允许使用null值和nul
+          
+原文 mybatis 中文教程
+
+XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，它们会改变 MyBatis 的运行时行为。下表描述了设置中各项的意图、默认值等。
+表格：略。
+一个配置完整的 settings 元素的示例如下：（可整合Spring）
+12345678
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/26/Java集合/LinkedHashMap/#more" rel="contents">
+            <a class="btn" href="/2017/04/25/mybatis/MyBatis-config/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -865,7 +887,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Java集合/serialization/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/mybatis-mapper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -887,8 +909,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/26/Java集合/serialization/" itemprop="url">
-                  深入理解Java对象序列化
+                <a class="post-title-link" href="/2017/04/25/mybatis/mybatis-mapper/" itemprop="url">
+                  MyBatis Mapper
                 </a>
               
             
@@ -904,8 +926,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T14:54:00+08:00">
-                2017-03-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
+                2017-04-25
               </time>
             
 
@@ -927,19 +949,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
+                    <span itemprop="name">MyBatis</span>
                   </a>
                 </span>
 
@@ -975,13 +986,15 @@
       
         
           
-          原文：理解Java对象序列化——John Jiang
-一、 什么是Java对象序列化
-Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保
+          Mapper XML 文件
+cache – 给定命名空间的缓存配置。
+cache-ref – 其他命名空间缓存配置的引用。
+resultMap – 是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
+parameterMap – 已废弃！老式风格的参数映射。内联参数是首选,这个元素可
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/26/Java集合/serialization/#more" rel="contents">
+            <a class="btn" href="/2017/04/25/mybatis/mybatis-mapper/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1027,7 +1040,7 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/25/Java集合/HashMap/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/Mybatis-generator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1049,8 +1062,8 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
             
               
                 
-                <a class="post-title-link" href="/2017/03/25/Java集合/HashMap/" itemprop="url">
-                  Java集合类深入分析之HashMap(jdk1.6中的实现)
+                <a class="post-title-link" href="/2017/04/25/mybatis/Mybatis-generator/" itemprop="url">
+                  MyBatis-Generator
                 </a>
               
             
@@ -1066,8 +1079,8 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-25T22:46:00+08:00">
-                2017-03-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
+                2017-04-25
               </time>
             
 
@@ -1089,19 +1102,8 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
+                    <span itemprop="name">MyBatis</span>
                   </a>
                 </span>
 
@@ -1137,15 +1139,15 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
       
         
           
-          整理转载自java集合类深入分析之HashSet, HashMap篇
-一、HashMap概述：
-HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
+          
+原文 MyBatis Generator 详解 先膜拜一下大神
+MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻译的不是特别好，觉得拗口的地方建议直接看原文档
 
-最常见的两种操作方法是get, put方法。get方法用于根据K
+配置文件需要命名为 generatorConfig.xml 才能被 MyBatis-Generator 识别
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/25/Java集合/HashMap/#more" rel="contents">
+            <a class="btn" href="/2017/04/25/mybatis/Mybatis-generator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1191,7 +1193,7 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/22/Java线程/lock/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/09/Java_core/regular/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1213,8 +1215,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
             
               
                 
-                <a class="post-title-link" href="/2017/03/22/Java线程/lock/" itemprop="url">
-                  Java线程之Lock
+                <a class="post-title-link" href="/2017/04/09/Java_core/regular/" itemprop="url">
+                  正则表达式高级用法(分组与捕获)
                 </a>
               
             
@@ -1230,8 +1232,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-22T23:17:00+08:00">
-                2017-03-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-09T15:40:00+08:00">
+                2017-04-09
               </time>
             
 
@@ -1264,8 +1266,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
+                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
                   </a>
                 </span>
 
@@ -1301,12 +1303,39 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
       
         
           
-          重入锁Java中的重入锁（即ReentrantLock）与Java内置锁一样，是一种排它锁。使用synchronized的地方一定可以用ReentrantLock代替。
-重入锁需要显示请求获取锁，并显示释放锁。为了避免获得锁后，没有释放锁，而造成其它线程无法获得锁而造成死锁，一般建议将释放锁操作放在
+          1. 分组的引入对于要重复单个字符，非常简单，直接在字符后卖弄加上限定符即可，例如 
+这些限定符如下所示：
+
+
+
+公式
+含义
+
+
+
+
+X ?
+X ，一次或一次也没有
+
+
+X *
+X ，零次或多次
+
+
+X +
+X ，一次或多次
+
+
+X { n }
+X ，恰好 n 次
+
+
+X { n ,}
+X ，至少 
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/22/Java线程/lock/#more" rel="contents">
+            <a class="btn" href="/2017/04/09/Java_core/regular/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1352,7 +1381,7 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/19/Java线程/CountDownLatch/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/09/Java_core/io/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1374,8 +1403,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
             
               
                 
-                <a class="post-title-link" href="/2017/03/19/Java线程/CountDownLatch/" itemprop="url">
-                  Java线程之CountDownLatch、CyclicBarrier、Parser
+                <a class="post-title-link" href="/2017/04/09/Java_core/io/" itemprop="url">
+                  Java IO
                 </a>
               
             
@@ -1391,8 +1420,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-19T14:01:00+08:00">
-                2017-03-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-09T11:35:00+08:00">
+                2017-04-09
               </time>
             
 
@@ -1425,8 +1454,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
+                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
                   </a>
                 </span>
 
@@ -1462,12 +1491,41 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
       
         
           
-           本文转发自 Jason’s Blog
-##CountDownLatchCountDownLatch适用场景Java多线程编程中经常会碰到这样一种场景——某个线程需要等待一个或多个线程操作结束（或达到某种状态）才开始执行。比如开发一个并发测试工具时，主线程需要等到所有测试线程均执行完成再开始统计总共
+          原文：Java IO流学习总结-Oubo的博客 
+Java流操作有关的类或接口：
+
+
+类
+说明
+
+
+
+
+File
+文件类
+
+
+RandomAccessFile
+随机存取文件类
+
+
+InputStream
+字节输入流
+
+
+OutputStream
+字节输出流
+
+
+Reader
+字节输入流
+
+
+Writ
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/19/Java线程/CountDownLatch/#more" rel="contents">
+            <a class="btn" href="/2017/04/09/Java_core/io/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1513,7 +1571,7 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/12/Java线程/synchronize/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/23-Interpreter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1535,8 +1593,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
             
               
                 
-                <a class="post-title-link" href="/2017/03/12/Java线程/synchronize/" itemprop="url">
-                  Java线程之synchronized
+                <a class="post-title-link" href="/2017/03/31/Java_dp/23-Interpreter/" itemprop="url">
+                  Java设计模式（二十三）解释器模式（Interpreter）
                 </a>
               
             
@@ -1552,8 +1610,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-12T21:50:00+08:00">
-                2017-03-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T23:06:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1586,8 +1644,8 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1622,16 +1680,10 @@ HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和
 
       
         
-          
-          摘自Java进阶（三）多线程开发关键技术
-一、内置锁
-每个Java对象都可以用做一个实现同步的互斥锁，这些锁被称为内置锁。线程进入同步代码块或方法时自动获得内置锁，退出同步代码块或方法时自动释放该内置锁。进入同步代码块或者同步方法是获得内置锁的唯一途径。
-二、实例同步方法
-synchronized用
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>解释器模式是我们暂时的最后一讲，一般主要应用在OOP开发中的编译器的开发中，所以适用面比较窄。<br>Context类是一个上下文环境类，Plus和Minus分别是用来计算的实现，代码如下：<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/12/Java线程/synchronize/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/23-Interpreter/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1677,7 +1729,7 @@ synchronized用
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/12/Java线程/volatile/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/22-Mediator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1699,8 +1751,8 @@ synchronized用
             
               
                 
-                <a class="post-title-link" href="/2017/03/12/Java线程/volatile/" itemprop="url">
-                  Java线程之Volatile
+                <a class="post-title-link" href="/2017/03/31/Java_dp/22-Mediator/" itemprop="url">
+                  Java设计模式（二十二）中介者模式（Mediator）
                 </a>
               
             
@@ -1716,8 +1768,8 @@ synchronized用
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-12T20:50:00+08:00">
-                2017-03-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T23:00:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1750,8 +1802,8 @@ synchronized用
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1786,12 +1838,10 @@ synchronized用
 
       
         
-          
-          
-          
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>中介者模式也是用来降低类类之间的耦合的，因为如果类类之间有依赖关系的话，不利于功能的拓展和维护，因为只要修改一个对象，其它关联的对象都得进行修改。如果使用中介者模式，只需关心和Mediator类的关系，具体类类之间的关系及调度交给Mediator就行，这有点像spring容器的作用<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/12/Java线程/volatile/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/22-Mediator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1832,7 +1882,7 @@ synchronized用
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1877,7 +1927,7 @@ synchronized用
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">76</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1888,7 +1938,7 @@ synchronized用
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

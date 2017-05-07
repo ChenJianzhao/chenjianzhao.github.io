@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/12/Spring/Spring-Exception/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/11-Composite/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -279,8 +279,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/01/12/Spring/Spring-Exception/" itemprop="url">
-                  Spring 常见异常
+                <a class="post-title-link" href="/2017/03/30/Java_dp/11-Composite/" itemprop="url">
+                  Java设计模式（十一）组合模式（Composite）
                 </a>
               
             
@@ -296,158 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-12T00:10:00+08:00">
-                2017-01-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name ‘sessionFactory’ defined in class path resource [ap
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/01/12/Spring/Spring-Exception/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/02/Java进阶/jvm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/01/02/Java进阶/jvm/" itemprop="url">
-                  Java内存区域与内存溢出异常
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-02T14:15:00+08:00">
-                2017-01-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T00:50:00+08:00">
+                2017-03-30
               </time>
             
 
@@ -480,8 +330,8 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -516,14 +366,10 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
 
       
         
-          
-          一、运行时数据区域
-程序计数器（Program Counter Register）：当前线程所执行的字节码的行号指示器。　　线程私有内存，较小的内存空间。　　此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。
-Java虚拟机栈（Java Virtual
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>组合模式有时又叫<strong>部分-整体模式</strong>在处理类似树形结构的问题时比较方便。<br>使用场景：将多个对象组合在一起进行操作，常用于表示树形结构中，例如二叉树，数等。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/01/02/Java进阶/jvm/#more" rel="contents">
+            <a class="btn" href="/2017/03/30/Java_dp/11-Composite/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -569,7 +415,7 @@ Java虚拟机栈（Java Virtual
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/28/数据库/Oracle-analyse/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/10-Bridge/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -591,8 +437,8 @@ Java虚拟机栈（Java Virtual
             
               
                 
-                <a class="post-title-link" href="/2016/12/28/数据库/Oracle-analyse/" itemprop="url">
-                  Oracle-analyse
+                <a class="post-title-link" href="/2017/03/30/Java_dp/10-Bridge/" itemprop="url">
+                  Java设计模式（十）桥接模式（Bridge）
                 </a>
               
             
@@ -608,460 +454,8 @@ Java虚拟机栈（Java Virtual
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-28T10:50:00+08:00">
-                2016-12-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          Oracle优化器
-Oracle查询会经过优化器的判断选择查询方式。oracle优化器：RBO（基于规则优化器）和CBO（基于成本优化器）两种， 从oracle10g开始优化器已经抛弃了RBO
-CBO（Cost Base Optimizer）
-CBO的预测结果跟统计信息有关，如果统计信息陈旧，Ora
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/12/28/数据库/Oracle-analyse/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/26/开发工具/intellj-debug/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/26/开发工具/intellj-debug/" itemprop="url">
-                  Intellij Debug 快捷键
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-26T23:36:00+08:00">
-                2016-12-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/开发工具/" itemprop="url" rel="index">
-                    <span itemprop="name">开发工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          Debug 快捷键
-
-
-按键
-功能
-
-
-
-
-F9
-resume programe 恢复程序
-
-
-Alt+F10
-show execution point 显示执行断点
-
-
-F8
-Step Over 相当于eclipse的f6      跳到下一步
-
-
-F7
-Step Into 相当于eclipse的
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/12/26/开发工具/intellj-debug/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/25/java_core/2016-12-25-Dynamic-Proxy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/25/java_core/2016-12-25-Dynamic-Proxy/" itemprop="url">
-                  Java动态代理
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-25T22:54:00+08:00">
-                2016-12-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          几个概念代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
-静态代理：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。
-静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/12/25/java_core/2016-12-25-Dynamic-Proxy/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/25/Java进阶/Dynamic-Proxy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/12/25/Java进阶/Dynamic-Proxy/" itemprop="url">
-                  Java动态代理
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-25T22:54:00+08:00">
-                2016-12-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T00:39:00+08:00">
+                2017-03-30
               </time>
             
 
@@ -1094,8 +488,8 @@ Step Into 相当于eclipse的
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1130,15 +524,10 @@ Step Into 相当于eclipse的
 
       
         
-          
-          几个概念
-代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
-静态代理：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。
-静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>桥接模式就是把事物和其具体实现分开，使他们可以各自独立的变化。<br>桥接的用意是：<strong>将抽象化与实现化解耦，使得二者可以独立变化</strong>。<br>像我们常用的JDBC桥DriverManager一样，JDBC进行连接数据库的时候，在各个数据库之间进行切换，基本不需要动太多的代码，甚至丝毫不用动，原因就是JDBC提供统一接口，每个数据库提供各自的实现，用一个叫做数据库驱动的程序来桥接就行了。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/25/Java进阶/Dynamic-Proxy/#more" rel="contents">
+            <a class="btn" href="/2017/03/30/Java_dp/10-Bridge/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1184,7 +573,7 @@ Step Into 相当于eclipse的
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/20/Java进阶/java-core-skill/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/9-Facade/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1206,8 +595,8 @@ Step Into 相当于eclipse的
             
               
                 
-                <a class="post-title-link" href="/2016/12/20/Java进阶/java-core-skill/" itemprop="url">
-                  Java的核心技能
+                <a class="post-title-link" href="/2017/03/30/Java_dp/9-Facade/" itemprop="url">
+                  Java设计模式（九）外观模式（Facade）
                 </a>
               
             
@@ -1223,8 +612,8 @@ Step Into 相当于eclipse的
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-20T23:44:00+08:00">
-                2016-12-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T00:08:00+08:00">
+                2017-03-30
               </time>
             
 
@@ -1257,8 +646,8 @@ Step Into 相当于eclipse的
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1293,12 +682,12 @@ Step Into 相当于eclipse的
 
       
         
-          
-          Java的核心技能有如下几项：（1）JVM的调优（2）类加载器（3）反射（4）动态编译（5）动态代理（6）注解（7）多线程（8）IO,NIO,Socket，Channel等网络编程除了JAVA的基础，面向对象的思想外，这些既是java里面核心技术，也是面试时候，面试官经常爱问的几个知识，了解，熟悉和
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><ul>
+<li>外观模式是为了解决类与类之家的依赖关系的，像spring一样，可以将类和类之间的关系配置到配置文件中，而外观模式就是将他们的关系放在一个Facade类中，降低了类类之间的耦合度，该模式中没有涉及到接口。（我们以一个计算机的启动过程为例）</li>
+<li>如果我们没有Computer类，那么，CPU、Memory、Disk他们之间将会相互持有实例，产生关系，这样会造成严重的依赖，修改一个类，可能会带来其他类的修改，这不是我们想要看到的，有了Computer类，他们之间的关系被放在了Computer类里，这样就起到了解耦的作用，这，就是外观模式！</li></ul>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/20/Java进阶/java-core-skill/#more" rel="contents">
+            <a class="btn" href="/2017/03/30/Java_dp/9-Facade/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1344,7 +733,7 @@ Step Into 相当于eclipse的
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/20/Java进阶/Generics/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/8-Proxy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1366,8 +755,8 @@ Step Into 相当于eclipse的
             
               
                 
-                <a class="post-title-link" href="/2016/12/20/Java进阶/Generics/" itemprop="url">
-                  泛型接口和泛型方法
+                <a class="post-title-link" href="/2017/03/29/Java_dp/8-Proxy/" itemprop="url">
+                  Java设计模式（八）代理模式（Proxy）
                 </a>
               
             
@@ -1383,8 +772,8 @@ Step Into 相当于eclipse的
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-20T22:13:00+08:00">
-                2016-12-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:59:00+08:00">
+                2017-03-29
               </time>
             
 
@@ -1417,8 +806,8 @@ Step Into 相当于eclipse的
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1453,16 +842,11 @@ Step Into 相当于eclipse的
 
       
         
-          
-          一、泛型接口
-
-在泛型接口中，生成器是一个很好的理解，看如下的生成器接口定义：123public interface Generator&lt;T&gt; &#123;    public T next();&#125;
-
-然后定义一个生成器类来实现这个接口：123456789public clas
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><hr>
+<p>代理模式就是多一个代理类出来，替原对象进行一些操作。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/20/Java进阶/Generics/#more" rel="contents">
+            <a class="btn" href="/2017/03/29/Java_dp/8-Proxy/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1508,7 +892,7 @@ Step Into 相当于eclipse的
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/19/开发工具/intellij-key/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/7-Decorator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1530,8 +914,8 @@ Step Into 相当于eclipse的
             
               
                 
-                <a class="post-title-link" href="/2016/12/19/开发工具/intellij-key/" itemprop="url">
-                  Idea与Eclipse快捷键的区别
+                <a class="post-title-link" href="/2017/03/29/Java_dp/7-Decorator/" itemprop="url">
+                  Java设计模式（七）装饰器模式（Decorator）
                 </a>
               
             
@@ -1547,8 +931,8 @@ Step Into 相当于eclipse的
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-19T23:51:00+08:00">
-                2016-12-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:51:00+08:00">
+                2017-03-29
               </time>
             
 
@@ -1570,8 +954,19 @@ Step Into 相当于eclipse的
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/开发工具/" itemprop="url" rel="index">
-                    <span itemprop="name">开发工具</span>
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1606,37 +1001,11 @@ Step Into 相当于eclipse的
 
       
         
-          
-          
-
-
-功能
-Eclipse快捷键
-Intellij快捷键
-
-
-
-
-查找类名
-CTRL + SHIFT + R
-CTRL + N
-
-
-查找JAR包中的类
-CTRL + SHIFT + T
-两次 CTRL + N
-
-
-查找文件
-CTRL + SHEFT + R
-CTRL + SHEFT + N
-
-
-查找
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><hr>
+<p>顾名思义，装饰模式就是给一个对象增加一些新的功能，而且是<strong>动态的</strong>，<strong>要求装饰对象和被装饰对象实现同一个接口，装饰对象持有被装饰对象的实例</strong>。<br>实现描述：旧类已经实现了接口，装饰器同样实现该接口，创建一个旧类的对象，作为参数传入到装饰器的对象，调用装饰器类的方法，实现功能增强。<br>（在不改变旧类代码的前提下，装饰原类的每一个方法，实现功能增强）<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/19/开发工具/intellij-key/#more" rel="contents">
+            <a class="btn" href="/2017/03/29/Java_dp/7-Decorator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1682,7 +1051,7 @@ CTRL + SHEFT + N
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/17/开发工具/IntelliJ-Project-Error/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/6-Adapter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1704,8 +1073,8 @@ CTRL + SHEFT + N
             
               
                 
-                <a class="post-title-link" href="/2016/12/17/开发工具/IntelliJ-Project-Error/" itemprop="url">
-                  IntelliJ 项目异常
+                <a class="post-title-link" href="/2017/03/29/Java_dp/6-Adapter/" itemprop="url">
+                  Java设计模式（六）适配器模式（Adapter）
                 </a>
               
             
@@ -1721,8 +1090,8 @@ CTRL + SHEFT + N
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-17T20:04:00+08:00">
-                2016-12-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:36:00+08:00">
+                2017-03-29
               </time>
             
 
@@ -1744,8 +1113,19 @@ CTRL + SHEFT + N
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/开发工具/" itemprop="url" rel="index">
-                    <span itemprop="name">开发工具</span>
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1780,21 +1160,650 @@ CTRL + SHEFT + N
 
       
         
-          
-          
-idea @Override is not allowed when implementing interface method
-
-
-jdk6 以上的版本才支持 @override 注解实现接口的方法，需要设置两个地方
-
-
-
-
-导入了一个idea project ，编译运行时候，提示Error:j
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>适配器模式将某个类的接口转换成客户端期望的另一个接口表示，目的是<strong>消除由于接口不匹配所造成的类的兼容性问题</strong>。<br><strong>主要分为三类</strong></p>
+<ol>
+<li>类的适配器模式</li>
+<li>对象适配器模式</li>
+<li>接口的适配器模式</li></ol>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/17/开发工具/IntelliJ-Project-Error/#more" rel="contents">
+            <a class="btn" href="/2017/03/29/Java_dp/6-Adapter/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/5-Prototype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/29/Java_dp/5-Prototype/" itemprop="url">
+                  Java设计模式（五）原型模式（Prototype）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:26:00+08:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>原型模式虽然是创建型的模式，但是与工程模式没有关系，从名字即可看出，该模式的思想就是将一个对象作为原型，对其进行复制、克隆，产生一个和原对象类似的新对象。本小结会通过对象的复制，进行讲解。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/29/Java_dp/5-Prototype/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/4-Builder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/29/Java_dp/4-Builder/" itemprop="url">
+                  Java设计模式（四）建造者模式（Builder）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:01:00+08:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>工厂类模式提供的是创建单个类的模式，而建造者模式则是将各种产品集中起来进行管理，用来创建复合对象，所谓复合对象就是指某个类具有不同的属性，其实建造者模式就是前面抽象工厂模式和最后的Test结合起来得到的。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/29/Java_dp/4-Builder/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/3-Singleton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/29/Java_dp/3-Singleton/" itemprop="url">
+                  Java设计模式（三）单例模式（Singleton）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:35:00+08:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>单例对象（Singleton）是一种常用的设计模式。在Java应用中，单例对象能保证在一个JVM中，该对象只有一个实例存在。这样的模式有几个好处：</p>
+<ol>
+<li>某些类创建比较频繁，对于一些大型的对象，这是一笔很大的系统开销。</li>
+<li>省去了new操作符，降低了系统内存的使用频率，减轻GC压力。</li>
+<li>有些类如交易所的核心交易引擎，控制着交易流程，如果该类可以创建多个的话，系统完全乱了。（比如一个军队出现了多个司令员同时指挥，肯定会乱成一团），所以只有使用单例模式，才能保证核心交易服务器独立控制整个流程。</li></ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/29/Java_dp/3-Singleton/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/2-Abstract Factory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/29/Java_dp/2-Abstract Factory/" itemprop="url">
+                  Java设计模式（二）抽象工厂模式（Abstract Factory）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:25:00+08:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>工厂方法模式有一个问题就是，类的创建依赖工厂类，也就是说，如果想要拓展程序，必须对工厂类进行修改，这违背了闭包原则，所以，从设计角度考虑，有一定的问题，如何解决？<br>这就用到抽象工厂模式，创建多个工厂类，这样一旦需要增加新的功能，直接增加新的工厂类就可以了，不需要修改之前的代码。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/29/Java_dp/2-Abstract Factory/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1835,7 +1844,7 @@ jdk6 以上的版本才支持 @override 注解实现接口的方法，需要设�
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1880,7 +1889,7 @@ jdk6 以上的版本才支持 @override 注解实现接口的方法，需要设�
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">76</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1891,7 +1900,7 @@ jdk6 以上的版本才支持 @override 注解实现接口的方法，需要设�
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

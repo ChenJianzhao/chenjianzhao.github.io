@@ -1,0 +1,759 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="原文：理解Java对象序列化——John Jiang
+一、 什么是Java对象序列化
+Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。Java对象序列化就能够帮助我们实现该功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Java对象序列化">
+<meta property="og:url" content="http://yoursite.com/2017/03/26/Java_collection/serialization/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="原文：理解Java对象序列化——John Jiang
+一、 什么是Java对象序列化
+Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。Java对象序列化就能够帮助我们实现该功能。">
+<meta property="og:updated_time" content="2017-05-07T01:49:27.804Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解Java对象序列化">
+<meta name="twitter:description" content="原文：理解Java对象序列化——John Jiang
+一、 什么是Java对象序列化
+Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。Java对象序列化就能够帮助我们实现该功能。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/26/Java_collection/serialization/"/>
+
+
+
+
+
+  <title> 深入理解Java对象序列化 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Java_collection/serialization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                深入理解Java对象序列化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T14:54:00+08:00">
+                2017-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>原文：<a href="http://www.blogjava.net/jiangshachina/archive/2012/02/13/369898.html" target="_blank" rel="external">理解Java对象序列化——John Jiang</a></p>
+<h2 id="一、-什么是Java对象序列化"><a href="#一、-什么是Java对象序列化" class="headerlink" title="一、 什么是Java对象序列化"></a>一、 什么是Java对象序列化</h2><ol>
+<li>Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。Java对象序列化就能够帮助我们实现该功能。</li>
+<li>使用Java对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装成对象。必须注意地是，对象序列化保存的是对象的”状态”，即它的成员变量。由此可知，对象序列化不会关注类中的静态变量。</li>
+<li>除了在持久化对象时会用到对象序列化之外，当使用RMI(远程方法调用)，或在网络中传递对象时，都会用到对象序列化。Java序列化API为处理对象序列化提供了一个标准机制，该API简单易用，在本文的后续章节中将会陆续讲到。</li>
+</ol>
+<hr>
+<h2 id="二、简单示例"><a href="#二、简单示例" class="headerlink" title="二、简单示例"></a>二、简单示例</h2><p>在Java中，只要一个类实现了java.io.Serializable接口，那么它就可以被序列化。此处将创建一个可序列化的类Person，本文中的所有示例将围绕着该类或其修改版。<br>Gender类，是一个枚举类型，表示性别<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Gender &#123;  </div><div class="line">    MALE, FEMALE  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如果熟悉Java枚举类型的话，应该知道每个枚举类型都会默认继承类java.lang.Enum，而该类实现了Serializable接口，所以枚举类型对象都是默认可以被序列化的。</p>
+<p>Person类，实现了Serializable接口，它包含三个字段：name，String类型；age，Integer类型；gender，Gender类型。另外，还重写该类的toString()方法，以方便打印Person实例中的内容。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> String name = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Gender gender = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"none-arg constructor"</span>);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, Integer age, Gender gender)</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"arg constructor"</span>);  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> name;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getAge</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> age;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(Integer age)</span> </span>&#123;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> Gender <span class="title">getGender</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setGender</span><span class="params">(Gender gender)</span> </span>&#123;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> <span class="string">"["</span> + name + <span class="string">", "</span> + age + <span class="string">", "</span> + gender + <span class="string">"]"</span>;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>SimpleSerial，是一个简单的序列化程序，它先将一个Person对象保存到文件person.out中，然后再从该文件中读出被存储的Person对象，并打印该对象。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleSerial</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">        File file = <span class="keyword">new</span> File(<span class="string">"person.out"</span>);  </div><div class="line"> </div><div class="line">        ObjectOutputStream oout = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(file));  </div><div class="line">        Person person = <span class="keyword">new</span> Person(<span class="string">"John"</span>, <span class="number">101</span>, Gender.MALE);  </div><div class="line">        oout.writeObject(person);  </div><div class="line">        oout.close();  </div><div class="line"> </div><div class="line">        ObjectInputStream oin = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(file));  </div><div class="line">        Object newPerson = oin.readObject(); <span class="comment">// 没有强制转换到Person类型  </span></div><div class="line">        oin.close();  </div><div class="line">        System.out.println(newPerson);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上述程序的输出的结果为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arg constructor  </div><div class="line">[John, 31, MALE]</div></pre></td></tr></table></figure></p>
+<p><strong>此时必须注意的是，当重新读取被保存的Person对象时，并没有调用Person的任何构造器，看起来就像是直接使用字节将Person对象还原出来的。</strong><br>当Person对象被保存到person.out文件中之后，我们可以在其它地方去读取该文件以还原对象，但必须确保该读取程序的CLASSPATH中包含有Person.class(哪怕在读取Person对象时并没有显示地使用Person类，如上例所示)，否则会抛出ClassNotFoundException。</p>
+<hr>
+<h2 id="三、-Serializable的作用"><a href="#三、-Serializable的作用" class="headerlink" title="三、 Serializable的作用"></a>三、 Serializable的作用</h2><p>为什么一个类实现了Serializable接口，它就可以被序列化呢？在上节的示例中，使用ObjectOutputStream来持久化对象，在该类中有如下代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject0</span><span class="params">(Object obj, <span class="keyword">boolean</span> unshared)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">      ...</div><div class="line">    <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> String) &#123;  </div><div class="line">        writeString((String) obj, unshared);  </div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cl.isArray()) &#123;  </div><div class="line">        writeArray(obj, desc, unshared);  </div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Enum) &#123;  </div><div class="line">        writeEnum((Enum) obj, desc, unshared);  </div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Serializable) &#123;  </div><div class="line">        writeOrdinaryObject(obj, desc, unshared);  </div><div class="line">    &#125; <span class="keyword">else</span> &#123;  </div><div class="line">        <span class="keyword">if</span> (extendedDebugInfo) &#123;  </div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NotSerializableException(cl.getName() + <span class="string">"\n"</span> </div><div class="line">                    + debugInfoStack.toString());  </div><div class="line">        &#125; <span class="keyword">else</span> &#123;  </div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NotSerializableException(cl.getName());  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从上述代码可知，如果被写对象的类型是String，或数组，或Enum，或Serializable，那么就可以对该对象进行序列化，否则将抛出NotSerializableException。</p>
+<h2 id="五、-影响序列化（主要部分）"><a href="#五、-影响序列化（主要部分）" class="headerlink" title="五、 影响序列化（主要部分）"></a>五、 影响序列化（主要部分）</h2><p>在现实应用中，有些时候不能使用默认序列化机制。比如，希望在序列化过程中忽略掉敏感数据，或者简化序列化过程。下面将介绍若干影响序列化的方法。<br><strong>1) transient关键字</strong><br>当某个字段被声明为transient后，默认序列化机制就会忽略该字段。此处将Person类中的age字段声明为transient，如下所示，<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </div><div class="line">    ...  </div><div class="line">    <span class="keyword">transient</span> <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>再执行SimpleSerial应用程序，会有如下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arg constructor  </div><div class="line">[John, null, MALE]</div></pre></td></tr></table></figure></p>
+<p>可见，age字段未被序列化。</p>
+<p><strong>2) 自定义 writeObject()方法与readObject()方法</strong><br>对于上述已被声明为transitive的字段age，除了将transitive关键字去掉之外，是否还有其它方法能使它再次可被序列化？方法之一就是在Person类中添加两个方法：writeObject()与readObject()，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </div><div class="line">    ...  </div><div class="line">    <span class="keyword">transient</span> <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line">    ...  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(ObjectOutputStream out)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">        out.defaultWriteObject();  </div><div class="line">        out.writeInt(age);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;  </div><div class="line">        in.defaultReadObject();  </div><div class="line">        age = in.readInt();  </div><div class="line">    &#125;  </div><div class="line">&#125;</div><div class="line">``` </div><div class="line">在``writeObject()``方法中会先调用``ObjectOutputStream``中的``defaultWriteObject()``方法，该方法会执行默认的序列化机制，如 <span class="number">1</span>)，此时会忽略掉age字段。然后再调用``writeInt()``方法显示地将age字段写入到``ObjectOutputStream``中。``readObject()``的作用则是针对对象的读取，其原理与writeObject()方法相同。再次执行SimpleSerial应用程序，则又会有如下输出：</div><div class="line">```java</div><div class="line">arg constructor  </div><div class="line">[John, <span class="number">31</span>, MALE]</div></pre></td></tr></table></figure></p>
+<p>必须注意地是，<code>writeObject()</code>与<code>readObject()</code>都是private方法，那么它们是如何被调用的呢？毫无疑问，是使用<code>反射</code>。详情可以看看<code>ObjectOutputStream</code>中的<code>writeSerialData</code>方法，以及<code>ObjectInputStream</code>中的<code>readSerialData</code>方法。</p>
+<p><strong>3) Externalizable接口</strong><br>无论是使用transient关键字，还是使用writeObject()和readObject()方法，其实都是基于Serializable接口的序列化。JDK中提供了另一个序列化接口–<code>Externalizable</code>，使用该接口之后，之前<strong>基于Serializable接口的序列化机制就将失效</strong>。此时将Person类作如下修改，<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Externalizable</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> String name = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">transient</span> <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Gender gender = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"none-arg constructor"</span>);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, Integer age, Gender gender)</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"arg constructor"</span>);  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(ObjectOutputStream out)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">        out.defaultWriteObject();  </div><div class="line">        out.writeInt(age);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;  </div><div class="line">        in.defaultReadObject();  </div><div class="line">        age = in.readInt();  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeExternal</span><span class="params">(ObjectOutput out)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line"> </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readExternal</span><span class="params">(ObjectInput in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;  </div><div class="line"> </div><div class="line">    &#125;  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>此时再执行SimpleSerial程序之后会得到如下结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arg constructor  </div><div class="line">none-arg constructor  </div><div class="line">[null, null, null]</div></pre></td></tr></table></figure></p>
+<p>从该结果，一方面，可以看出Person对象中任何一个字段都没有被序列化。另一方面，如果细心的话，还可以发现这此次<strong>序列化过程调用了Person类的无参构造器</strong>。</p>
+<ol>
+<li>Externalizable继承于Serializable，当使用该接口时，<strong>序列化的细节需要由程序员去完成</strong>。如上所示的代码，由于writeExternal()与readExternal()方法未作任何处理，那么该序列化行为将不会保存/读取任何一个字段。这也就是为什么输出结果中所有字段的值均为空。</li>
+<li>另外，使用Externalizable进行序列化时，当读取对象时，会调用被序列化类的无参构造器去创建一个新的对象，然后再将被保存对象的字段的值分别填充到新对象中。这就是为什么在此次序列化过程中Person类的无参构造器会被调用。由于这个原因，<strong>实现Externalizable接口的类必须要提供一个无参的构造器，且它的访问权限为public</strong>。<br>对上述Person类进行进一步的修改，使其能够对name与age字段进行序列化，但忽略掉gender字段，如下代码所示：<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Externalizable</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> String name = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">transient</span> <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Gender gender = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"none-arg constructor"</span>);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, Integer age, Gender gender)</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"arg constructor"</span>);  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(ObjectOutputStream out)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">        out.defaultWriteObject();  </div><div class="line">        out.writeInt(age);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;  </div><div class="line">        in.defaultReadObject();  </div><div class="line">        age = in.readInt();  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeExternal</span><span class="params">(ObjectOutput out)</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">        out.writeObject(name);  </div><div class="line">        out.writeInt(age);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readExternal</span><span class="params">(ObjectInput in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;  </div><div class="line">        name = (String) in.readObject();  </div><div class="line">        age = in.readInt();  </div><div class="line">    &#125;  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>执行SimpleSerial之后会有如下结果：<br><figure class="highlight plain"><figcaption><span>constructor  </span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">none-arg constructor  </div><div class="line">[John, 31, null]</div></pre></td></tr></table></figure></p>
+<p><strong>4) readResolve()方法</strong><br>当我们使用<code>Singleton模式</code>时，应该是期望某个类的实例应该是唯一的，但如果该类是可序列化的，那么情况可能略有不同。此时对第2节使用的Person类进行修改，使其实现Singleton模式，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InstanceHolder</span> </span>&#123;  </div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Person instatnce = <span class="keyword">new</span> Person(<span class="string">"John"</span>, <span class="number">31</span>, Gender.MALE);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Person <span class="title">getInstance</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> InstanceHolder.instatnce;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> String name = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Gender gender = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"none-arg constructor"</span>);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Person</span><span class="params">(String name, Integer age, Gender gender)</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"arg constructor"</span>);  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line">    ...  </div><div class="line">&#125; </div><div class="line">同时要修改SimpleSerial应用，使得能够保存/获取上述单例对象，并进行对象相等性比较，如下代码所示：</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleSerial</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">        File file = <span class="keyword">new</span> File(<span class="string">"person.out"</span>);  </div><div class="line">        ObjectOutputStream oout = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(file));  </div><div class="line">        oout.writeObject(Person.getInstance()); <span class="comment">// 保存单例对象  </span></div><div class="line">        oout.close();  </div><div class="line"> </div><div class="line">        ObjectInputStream oin = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(file));  </div><div class="line">        Object newPerson = oin.readObject();  </div><div class="line">        oin.close();  </div><div class="line">        System.out.println(newPerson);  </div><div class="line"> </div><div class="line">        System.out.println(Person.getInstance() == newPerson); <span class="comment">// 将获取的对象与Person类中的单例对象进行相等性比较  </span></div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>执行上述应用程序后会得到如下结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arg constructor  </div><div class="line">[John, 31, MALE]  </div><div class="line">false</div></pre></td></tr></table></figure></p>
+<p><strong>值得注意的是，从文件person.out中获取的Person对象与Person类中的单例对象并不相等。</strong>为了能在序列化过程仍能保持单例的特性，可以在Person类中添加一个<code>readResolve()</code> 方法，在该方法中直接返回Person的单例对象，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InstanceHolder</span> </span>&#123;  </div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Person instatnce = <span class="keyword">new</span> Person(<span class="string">"John"</span>, <span class="number">31</span>, Gender.MALE);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Person <span class="title">getInstance</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> InstanceHolder.instatnce;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> String name = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Integer age = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Gender gender = <span class="keyword">null</span>;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"none-arg constructor"</span>);  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Person</span><span class="params">(String name, Integer age, Gender gender)</span> </span>&#123;  </div><div class="line">        System.out.println(<span class="string">"arg constructor"</span>);  </div><div class="line">        <span class="keyword">this</span>.name = name;  </div><div class="line">        <span class="keyword">this</span>.age = age;  </div><div class="line">        <span class="keyword">this</span>.gender = gender;  </div><div class="line">    &#125;  </div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">private</span> Object <span class="title">readResolve</span><span class="params">()</span> <span class="keyword">throws</span> ObjectStreamException </span>&#123;  </div><div class="line">        <span class="keyword">return</span> InstanceHolder.instatnce;  </div><div class="line">    &#125;  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>再次执行本节的SimpleSerial应用后将如下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arg constructor  </div><div class="line">[John, 31, MALE]  </div><div class="line">true</div></pre></td></tr></table></figure></p>
+<p>无论是实现Serializable接口，或是Externalizable接口，当从I/O流中读取对象时，readResolve()方法都会被调用到。实际上就是用readResolve()中返回的对象直接替换在反序列化过程中创建的对象。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>介绍了Java对象序列化，可以将Java对象持久化为一组字节，在未来，再将这些字节组装成对象。当使用RMI(远程方法调用)，或在网络中传递对象时，都会用到对象序列化。</li>
+<li>使用序列化要求被序列化的类实现 java.io.Serializable接口，默认序列化机制就会完成序列化过程，当重新读取被保存的序列化对象时，并没有调用序列化对象的任何构造器，看起来就像是直接使用字节将序列化对象还原出来的。</li>
+<li>当某个字段被声明为<code>transient</code>后，默认序列化机制就会忽略该字段。</li>
+<li>需要干预默认的序列化过程，可以在序列化类中添加 <code>writeObject(ObjectOutputStream out)</code>方法与<code>readObject(ObjectInputStream out)</code>方法，在writeObject()方法中会先调用<code>ObjectOutputStream中</code>的<code>defaultWriteObject()</code>方法，该方法会执行默认的序列化机制，然后再调用其他方法将其他字段写入到ObjectOutputStream中。readObject()的作用则是针对对象的读取，其原理与writeObject()方法相同。</li>
+<li>writeObject()与readObject()都是private方法，那么它们是如何被调用的呢？毫无疑问，是使用反射。详情可以看看ObjectOutputStream中的writeSerialData方法，以及ObjectInputStream中的readSerialData方法。</li>
+<li>JDK中提供了另一个序列化接口–Externalizable，使用该接口之后，之前基于Serializable接口的序列化机制就将失效。Externalizable继承于Serializable，当使用该接口时，序列化的细节需要由程序员去完成。实现Externalizable接口的类必须要提供一个无参的构造器，且它的访问权限为public。</li>
+<li>当我们使用Singleton模式时，需要在序列化类中添加 <code>readResolve()</code> 方法，在该方法中直接返回单例对象，际上就是用readResolve()中返回的对象直接替换在反序列化过程中创建的对象。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/25/Java_collection/HashMap/" rel="next" title="Java集合类深入分析之HashMap(jdk1.6中的实现)">
+                <i class="fa fa-chevron-left"></i> Java集合类深入分析之HashMap(jdk1.6中的实现)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/26/Java_collection/LinkedHashMap/" rel="prev" title="Java集合类深入分析之LinkedHashMap">
+                Java集合类深入分析之LinkedHashMap <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">76</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、-什么是Java对象序列化"><span class="nav-text">一、 什么是Java对象序列化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、简单示例"><span class="nav-text">二、简单示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、-Serializable的作用"><span class="nav-text">三、 Serializable的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、-影响序列化（主要部分）"><span class="nav-text">五、 影响序列化（主要部分）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

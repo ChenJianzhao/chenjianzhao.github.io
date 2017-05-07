@@ -1,0 +1,953 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1. 分组的引入对于要重复单个字符，非常简单，直接在字符后卖弄加上限定符即可，例如 
+这些限定符如下所示：
+
+
+
+公式
+含义
+
+
+
+
+X ?
+X ，一次或一次也没有
+
+
+X *
+X ，零次或多次
+
+
+X +
+X ，一次或多次
+
+
+X { n }
+X ，恰好 n 次
+
+
+X { n ,}
+X ，至少 n 次
+
+
+X { n , m }
+X ，至少 n 次，但是不超过 m 次
+
+
+
+但是我们如果要对多">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则表达式高级用法(分组与捕获)">
+<meta property="og:url" content="http://yoursite.com/2017/04/09/Java_core/regular/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="1. 分组的引入对于要重复单个字符，非常简单，直接在字符后卖弄加上限定符即可，例如 
+这些限定符如下所示：
+
+
+
+公式
+含义
+
+
+
+
+X ?
+X ，一次或一次也没有
+
+
+X *
+X ，零次或多次
+
+
+X +
+X ，一次或多次
+
+
+X { n }
+X ，恰好 n 次
+
+
+X { n ,}
+X ，至少 n 次
+
+
+X { n , m }
+X ，至少 n 次，但是不超过 m 次
+
+
+
+但是我们如果要对多">
+<meta property="og:updated_time" content="2017-05-07T01:49:27.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则表达式高级用法(分组与捕获)">
+<meta name="twitter:description" content="1. 分组的引入对于要重复单个字符，非常简单，直接在字符后卖弄加上限定符即可，例如 
+这些限定符如下所示：
+
+
+
+公式
+含义
+
+
+
+
+X ?
+X ，一次或一次也没有
+
+
+X *
+X ，零次或多次
+
+
+X +
+X ，一次或多次
+
+
+X { n }
+X ，恰好 n 次
+
+
+X { n ,}
+X ，至少 n 次
+
+
+X { n , m }
+X ，至少 n 次，但是不超过 m 次
+
+
+
+但是我们如果要对多">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/09/Java_core/regular/"/>
+
+
+
+
+
+  <title> 正则表达式高级用法(分组与捕获) | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/09/Java_core/regular/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                正则表达式高级用法(分组与捕获)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-09T15:40:00+08:00">
+                2017-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-分组的引入"><a href="#1-分组的引入" class="headerlink" title="1. 分组的引入"></a>1. 分组的引入</h2><p>对于要重复单个字符，非常简单，直接在字符后卖弄加上<code>限定符</code>即可，例如 </p>
+<p>这些限定符如下所示：</p>
+<table>
+<thead>
+<tr>
+<th>公式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>X</em> ?</td>
+<td><em>X</em> ，一次或一次也没有</td>
+</tr>
+<tr>
+<td><em>X</em> *</td>
+<td><em>X</em> ，零次或多次</td>
+</tr>
+<tr>
+<td><em>X</em> +</td>
+<td><em>X</em> ，一次或多次</td>
+</tr>
+<tr>
+<td><em>X</em> { <em>n</em> }</td>
+<td><em>X</em> ，恰好 <em>n</em> 次</td>
+</tr>
+<tr>
+<td><em>X</em> { <em>n</em> ,}</td>
+<td><em>X</em> ，至少 <em>n</em> 次</td>
+</tr>
+<tr>
+<td><em>X</em> { <em>n</em> , <em>m</em> }</td>
+<td><em>X</em> ，至少 <em>n</em> 次，但是不超过 <em>m</em> 次</td>
+</tr>
+</tbody>
+</table>
+<p>但是我们如果要对多个字符进行重复怎么办呢？此时我们就要用到分组，我们可以使用小括号”()”来指定要重复的子表达式，然后对这个子表达式进行重复，例如：(abc)? 表示0个或1个abc 这里一 个括号的表达式就表示一个分组 。</p>
+<p><strong>分组可以分为两种形式，捕获组和非捕获组。</strong></p>
+<h2 id="2-捕获组"><a href="#2-捕获组" class="headerlink" title="2. 捕获组"></a>2. 捕获组</h2><p>捕获组可以通过从左到右计算其开括号来编号 。例如，在表达式 (A)(B(C)) 中，存在四个这样的组：</p>
+<table>
+<thead>
+<tr>
+<th>分组号</th>
+<th>捕获的文本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0   </strong></td>
+<td>(A)(B(C))</td>
+</tr>
+<tr>
+<td><strong>1   </strong></td>
+<td>(A)</td>
+</tr>
+<tr>
+<td><strong>2   </strong></td>
+<td>(B(C))</td>
+</tr>
+<tr>
+<td><strong>3   </strong></td>
+<td>(C)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>组0 始终代表整个表达式</strong></p>
+<p>之所以这样命名捕获组是因为在匹配中，保存了与这些组匹配的输入序列的每个子序列。捕获的子序列稍后可以通过 Back 引用（反向引用） 在表达式中使用，也可以在匹配操作完成后从匹配器检索。</p>
+<h3 id="2-1-Back-引用"><a href="#2-1-Back-引用" class="headerlink" title="2.1 Back 引用"></a>2.1 Back 引用</h3><p>Back 引用是说在后面的表达式中我们可以使用组的编号来引用前面的表达式所捕获到的文本序列。</p>
+<p><strong>注意：</strong>反向引用，引用的是前面捕获组中的文本而不是正则，也就是说反向引用处匹配的文本应和前面捕获组中的文本相同，这一点很重要。</p>
+<p> 【例】([“‘]).*\1  </p>
+<p>其中使用了分组，\1就是对引号这个分组的引用，它匹配包含在两个引号或者两个单引号中的所有字符串，如，”abc” 或 “ ‘ “ 或 ‘ “ ‘  ，但是请注意，它并不会对” a’或者 ‘a”匹配。原因上面已经说明，Back引用只是引用文本而不是表达式。</p>
+<h2 id="3-非捕获组"><a href="#3-非捕获组" class="headerlink" title="3. 非捕获组"></a>3. 非捕获组</h2><p>以 (?) 开头的组是纯的<em>非捕获</em> 组，它不捕获文本 ，也不针对组合计进行计数。就是说，如果小括号中以?号开头，那么这个分组就不会捕获文本，当然也不会有组的编号，因此也不存在Back 引用。</p>
+<p>我们通过捕获组就能够得到我们想要匹配的内容了，那为什么还要有非捕获组呢？原因是捕获组捕获的内容是被存储在内存中，可供以后使用，比如反向引用就是引用的内存中存储的捕获组中捕获的内容。而非捕获组则不会捕获文本，也不会将它匹配到的内容单独分组来放到内存中。所以，使用非捕获组较使用捕获组更节省内存。在实际情况中我们要酌情选用。</p>
+<h3 id="3-1-非捕获组-Pattern"><a href="#3-1-非捕获组-Pattern" class="headerlink" title="3.1 非捕获组(?:Pattern)"></a>3.1 非捕获组(?:Pattern)</h3><p>它的作用就是匹配Pattern字符，好处就是不捕获文本，不将匹配到的字符存储到内存中，从而节省内存。</p>
+<p>【例】匹配indestry或者indestries</p>
+<p>我们可以使用indestr(y|ies)或者indestr(?:y|ies)</p>
+<p>【例】(?:a|A)123(?:b)可以匹配a123b或者A123b</p>
+<p><strong>非捕获组有很多种形式，其中包括：零宽度断言和模式修正符</strong></p>
+<h3 id="3-2-零宽度断言"><a href="#3-2-零宽度断言" class="headerlink" title="3.2 零宽度断言"></a>3.2 零宽度断言</h3><p>在使用正则表达式时，有时我们需要捕获的内容前后必须是特定内容，但又不捕获这些特定内容的时候，零宽断言就起到作用了。</p>
+<table>
+<thead>
+<tr>
+<th>公式</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(?=exp)</td>
+<td><strong>零宽度正预测先行断言</strong>，它断言自身出现的位置的后面能匹配表达式exp</td>
+</tr>
+<tr>
+<td>(?&lt;=exp)</td>
+<td><strong>零宽度正回顾后发断言</strong>，它断言自身出现的位置的前面能匹配表达式exp</td>
+</tr>
+<tr>
+<td>(?!exp)</td>
+<td><strong>零宽度负预测先行断言</strong>，断言此位置的后面不能匹配表达式exp</td>
+</tr>
+<tr>
+<td>(?&lt;!exp)</td>
+<td><strong>零宽度负回顾后发断言</strong>，断言此位置的前面不能匹配表达式exp</td>
+</tr>
+</tbody>
+</table>
+<p>这四个非捕获组用于匹配表达式X，但是不包含表达式的文本。</p>
+<table>
+<thead>
+<tr>
+<th>示例</th>
+<th>文本</th>
+<th>匹配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(?=_path)</td>
+<td>product_path</td>
+<td>product</td>
+</tr>
+<tr>
+<td>(?&lt;=name:)</td>
+<td>name:angelica</td>
+<td>angelica</td>
+</tr>
+<tr>
+<td>(?!_path)</td>
+<td>product_name</td>
+<td>product</td>
+</tr>
+<tr>
+<td>(?&lt;!name:)</td>
+<td>nick_name:angelica</td>
+<td>angelica</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-模式修正符"><a href="#3-3-模式修正符" class="headerlink" title="3.3 模式修正符"></a>3.3 模式修正符</h3>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/09/Java_core/io/" rel="next" title="Java IO">
+                <i class="fa fa-chevron-left"></i> Java IO
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/25/mybatis/Mybatis-generator/" rel="prev" title="MyBatis-Generator">
+                MyBatis-Generator <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">76</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-分组的引入"><span class="nav-text">1. 分组的引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-捕获组"><span class="nav-text">2. 捕获组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Back-引用"><span class="nav-text">2.1 Back 引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-非捕获组"><span class="nav-text">3. 非捕获组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-非捕获组-Pattern"><span class="nav-text">3.1 非捕获组(?:Pattern)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-零宽度断言"><span class="nav-text">3.2 零宽度断言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-模式修正符"><span class="nav-text">3.3 模式修正符</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
