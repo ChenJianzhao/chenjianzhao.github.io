@@ -12,31 +12,32 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 
 ## 一、HashMap概述：
 1. HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
- 
+
 2. 最常见的两种操作方法是``get``, ``put``方法。get方法用于根据Key来取得所需要的Value值，而put方法用于根据特定的Key来放置对应的Value。除了这两个方法以外还有判断Key,Value是否存在的containsKey, containsValue方法。
-    
+
 3. Map类型的数据结构有一个比较好的地方就是在存取元素的时候都能够有比较高的效率。 因为每次存取元素的时候都是通过计算Key的hash值再通过一定的映射规则来实现，在理想的情况下可以达到一个常量值。
-    
+
+   <!-- more -->
 **下面这部分是Map里面主要方法的列表：**
 
-| 方法名                | 方法详细定义                                         | 说明  |
-|:----------------- |:-----------------------------------------|:------|
-|containsKey       |boolean containsKey(Object key);	     |判断名是否存在|
-|containsValue   |boolean containsValue(Object value);	 |判断值是否存在|
-|get	                    |V get(Object key);	                                 |读取元素|
-|put	                    |V put(K key, V value);	                         |设置元素|
-|keySet                |Set<K> keySet();	                                 |所有key值合集|
-|values                |Collection<V> values();                        	 |所有value的集合|
-|entrySet             |Set<Map.Entry<K, V>> entrySet();	     |键值对集合|
+| 方法名           | 方法详细定义                               | 说明         |
+| :------------ | :----------------------------------- | :--------- |
+| containsKey   | boolean containsKey(Object key);     | 判断名是否存在    |
+| containsValue | boolean containsValue(Object value); | 判断值是否存在    |
+| get           | V get(Object key);                   | 读取元素       |
+| put           | V put(K key, V value);               | 设置元素       |
+| keySet        | Set<K> keySet();                     | 所有key值合集   |
+| values        | Collection<V> values();              | 所有value的集合 |
+| entrySet      | Set<Map.Entry<K, V>> entrySet();     | 键值对集合      |
 
 ***
 ## 二、HashMap的数据结构：
 **HashMap 实际上是一个链表数组。**
-![](~/hashmap.jpg)
+![](./HashMap/hashmap.jpg)
 
 **内部结构**
 　　我们根据这种链表数组的类型，可以推断它内部肯定是有一个链表的结构。在HashMap内部，有一个``transient`` Entry[] table;这样的结构数组，它保存所有Entry的一个列表。而Entry的定义是一个典型的链表结构，不过由于既要有Key也要有Value，所以包含了Key, Value两个值。他们的定义如下：（为何使用 transient 下文补充）
-    
+​    
 ```java
  static class Entry<K,V> implements Map.Entry<K,V> {  
     final K key;  
@@ -110,7 +111,7 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
     }   
 ```
 
-　　在我们需要调整数组长度的时候，它的过程和前面讨论过的List, Queue有些类似，但是又有不同的地方。相同的地方在于，它每次也是将原来的数组长度翻倍，同时将元素拷贝过去。但是由于HashMap本身的独特性质，它需要重新做一次映射。实现这个过程的方法如下：
+　　在我们需要调整数组长度的时候，它的过程和前面讨论过的List, Queue有些类似，但是又有不同的地方。相同的地方在于，它每次也是将原来的数组长度翻倍，同时将元素拷贝过去。**但是由于HashMap本身的独特性质，它需要重新做一次映射。**实现这个过程的方法如下：
 
 ```java
 void resize(int newCapacity) {  
@@ -137,7 +138,8 @@ void transfer(Entry[] newTable) {
         Entry<K,V> e = src[j];  
         if (e != null) {  
             src[j] = null;  
-            do {  //对该链表元素里面所有链接的<key, value>对做重新的映射  
+            do { 
+                //对该链表元素里面所有链接的<key, value>对做重新的映射  
                 Entry<K,V> next = e.next;  
                 int i = indexFor(e.hash, newCapacity); 
                 //这个过程是一个链表头插入的过程
@@ -150,7 +152,7 @@ void transfer(Entry[] newTable) {
 }  
 ```
 
-　　前面这部分的代码看起来比较长，实际上就是将旧的数组的元素挪到新的数组中来。因为新数组的长度不一样了，再映射的时候要对链表里面所有的元素根据新的长度进行重新映射来对应到不同的位置。
+　　前面这部分的代码看起来比较长，实际上就是将旧的数组的元素挪到新的数组中来。因为新数组的长度不一样了，再映射的时候要**对链表里面所有的元素根据新的长度进行重新映射来对应到不同的位置**。
 　　那么，我们可以看出来，元素存放的位置是和数组长度相关的。而这其中具体映射的过程和怎么放置元素的呢？我们在这里就可以找到一个入口点了。就是indexFor方法。
 
 ***
@@ -195,8 +197,8 @@ public V get(Object key) {
 }  
 ```
 　　它这里就是一个映射，查找的过程。找到映射的点之后再和链表里的元素逐个比较，保证找到目标值。因为是hash表，会存在多个值映射到同一个index里面，所以这里还要和链表里的元素做对比。
-    
-    
+​    
+​    
 2) ``put``的实现
 　　put元素就是一个放置元素的过程，首先也是找到对应的索引，然后再把元素放到链表里面去。如果链表里有和元素相同的，则更新对应的value，否则就放到链表头。
 ```java
@@ -276,13 +278,13 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
 ## 六、Set接口、
 Set接口里面主要定义了常用的集合操作方法，包括添加元素，判断元素是否在里面和对元素过滤。
 **常用的几个方法如下：**
- 
-| 方法名                | 方法详细定义                                         | 说明  |
-| ----------------- |:-----------------------------------------:| ------:|
-|contains	            |boolean contains(Object o);               	|判断元素是否存在|
-|add	                    |boolean add(E e);	                                |添加元素|
-|remove	            |boolean remove(Object o);	                |删除元素|
-|retainAll       	    |boolean retainAll(Collection<?> c);	|过滤元素|
+
+| 方法名       |               方法详细定义                |       说明 |
+| --------- | :---------------------------------: | -------: |
+| contains  |     boolean contains(Object o);     | 判断元素是否存在 |
+| add       |          boolean add(E e);          |     添加元素 |
+| remove    |      boolean remove(Object o);      |     删除元素 |
+| retainAll | boolean retainAll(Collection<?> c); |     过滤元素 |
 
 我们知道，集合里面要求保存的元素是不能重复的，所以它里面所有的元素都是唯一的。它的定义就有点不太一样。
 
@@ -312,7 +314,6 @@ public boolean contains(Object o) {
     }  
 ```
 
-
 ***
 ## 总结
 　　 在前面的参考资料里已经对HashMap做了一个很深入透彻的解析。这里在前人的基础上加入一点自己个人的理解体会。希望对以后使用类似的结构有一个更好的利用，也能够充分利用里面的设计思想。
@@ -320,7 +321,7 @@ public boolean contains(Object o) {
 ***
 ## 补充
 
-1) **使用` `transient`` 关键字**
+1) **使用` transient` 关键字**
 1. transient 是表明该数据不参与序列化。因为 HashMap 中的存储数据的数组数据成员中，数组还有很多的空间没有被使用，没有被使用到的空间被序列化没有意义。所以需要手动使用 writeObject() 方法，只序列化实际存储元素的数组。
 2. 由于不同的虚拟机对于相同 hashCode 产生的 Code 值可能是不一样的，如果你使用默认的序列化，那么反序列化后，元素的位置和之前的是保持一致的，可是由于 hashCode 的值不一样了，那么定位函数 indexOf（）返回的元素下标就会不同，这样不是我们所想要的结果.
 
@@ -398,7 +399,10 @@ JDK文档中并没有明确说明设置为私有的原因。方法是私有的�
 如果我实现了一个继承HashMap的类，我也想有自己的序列化和反序列化方法，那我也可以实现私有的readObject和writeObject方法，而不用关心HashMap自己的那一部分。
 下面的部分来自StackOverFlow:
 
-    We don't want these methods to be overridden by subclasses. Instead, each class can have its own writeObject method, and the serialization engine will call all of them one after the other. This is only possible with private methods (these are not overridden). (The same is valid for readObject.)
+```
+We don't want these methods to be overridden by subclasses. Instead, each class can have its own writeObject method, and the serialization engine will call all of them one after the other. This is only possible with private methods (these are not overridden). (The same is valid for readObject.)
+```
+
 
 
 **3)为什么HashMap要自己实现writeObject和readObject方法，而不是使用JDK统一的默认序列化和反序列化操作呢？**
@@ -409,7 +413,10 @@ JDK文档中并没有明确说明设置为私有的原因。方法是私有的�
 
 **在《Effective Java》中，Joshua大神对此有所解释:**
 
-    For example, consider the case of a hash table. The physical representation is a sequence of hash buckets containing key-value entries. The bucket that an entry resides in is a function of the hash code of its key, which is not, in general, guaranteed to be the same from JVM implementation to JVM implementation. In fact, it isn't even guaranteed to be the same from run to run. Therefore, accepting the default serialized form for a hash table would constitute a serious bug. Serializing and deserializing the hash table could yield an object whose invariants were seriously corrupt.
+```
+For example, consider the case of a hash table. The physical representation is a sequence of hash buckets containing key-value entries. The bucket that an entry resides in is a function of the hash code of its key, which is not, in general, guaranteed to be the same from JVM implementation to JVM implementation. In fact, it isn't even guaranteed to be the same from run to run. Therefore, accepting the default serialized form for a hash table would constitute a serious bug. Serializing and deserializing the hash table could yield an object whose invariants were seriously corrupt.
+```
+
 
 **所以为了避免这个问题，HashMap采用了下面的方式来解决：**
 1.  将可能会造成数据不一致的元素使用transient关键字修饰，从而避免JDK中默认序列化方法对该对象的序列化操作。不序列化的包括：Entry[] table,size,modCount。 

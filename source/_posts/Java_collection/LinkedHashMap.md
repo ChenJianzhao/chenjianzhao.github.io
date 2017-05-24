@@ -14,11 +14,11 @@ title: Java集合类深入分析之LinkedHashMap
    LinkedHashMap实现与HashMap的不同之处在于，前者维护着一个运行于所有条目（Entry）的双向链表。此链表定义了迭代顺序，该迭代顺序可以是插入顺序或者是访问顺序（默认为插入顺序）。
    注意，此实现不是同步的。如果多个线程同时访问链接的哈希映射，而其中至少一个线程从结构上修改了该映射，则它必须保持外部同步。
 
-*** 
+***
 ## 2. LinkedHashMap的实现：
  **LinkedHashMap 的内部结构**
 对于LinkedHashMap而言，它继承与HashMap、底层使用哈希表与双向链表来保存所有元素。其基本操作与父类HashMap相似，它通过重写父类相关的方法，来实现自己的链接列表特性。下面我们来分析LinkedHashMap的源代码：
-   
+
 **1) Entry元素：**
    LinkedHashMap采用的hash算法和HashMap相同，但是它重新定义了数组中保存的元素Entry，该Entry除了保存当前对象的引用外，还保存了其上一个元素before和下一个元素after的引用，从而在哈希表的基础上又构成了双向链接列表。看源代码：
 ```java
@@ -164,15 +164,19 @@ public LinkedHashMap(int initialCapacity,
     super(initialCapacity, loadFactor);  
     this.accessOrder = accessOrder;  
 }
-```  
+```
+
 该哈希映射的迭代顺序就是最后访问其条目的顺序，这种映射很适合构建``LRU缓存``。LinkedHashMap提供了removeEldestEntry(Map.Entry<K,V> eldest)方法，在将新条目插入到映射后，put和 putAll将调用此方法。该方法可以提供在每次添加新条目时移除最旧条目的实现程序，默认返回false，这样，此映射的行为将类似于正常映射，即永远不能移除最旧的元素。
+
 ```java
 protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {  
     return false;  
 } 
 ```
+
 此方法通常不以任何方式修改映射，相反允许映射在其返回值的指引下进行自我修改。如果用此映射构建LRU缓存，则非常方便，它允许映射通过删除旧条目来减少内存损耗。
    例如：重写此方法，维持此映射只保存100个条目的稳定状态，在每次添加新条目时删除最旧的条目。
+
 ```java
 private static final int MAX_ENTRIES = 100;  
 protected boolean removeEldestEntry(Map.Entry eldest) {  
