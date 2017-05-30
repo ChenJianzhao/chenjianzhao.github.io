@@ -2,6 +2,7 @@
 categories:
   - Java Core
   - Java NIO
+date: 2017-04-24 21:00
 title: Java NIO（五）之 transfer
 ---
 ##  通道之间的数据传输

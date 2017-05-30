@@ -2,6 +2,7 @@
 categories:
   - Java Core
   - Java NIO
+date: 2017-04-24 18:00
 title: Java NIO（二）之Channel
 ---
 ##  Channel

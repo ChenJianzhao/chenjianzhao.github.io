@@ -7,6 +7,8 @@ title: Java IO
 ---
 原文：[Java IO流学习总结-Oubo的博客](http://www.cnblogs.com/oubo/archive/2012/01/06/2394638.html) 
 
+参考：[Java I/O操作](http://www.jianshu.com/p/21ed71b26a5d)
+
 ## Java流操作有关的类或接口：
 
 | 类                | 说明      |
@@ -175,3 +177,323 @@ File类是对文件系统中文件以及文件夹进行封装的对象，可以�
 2. 该对象既可以对文件进行读操作，也能进行写操作，在进行对象实例化时可指定操作模式(r,rw)
 
 **注意：该对象在实例化时，如果要操作的文件不存在，会自动创建；如果文件存在，写数据未指定位置，会从头开始写，即覆盖原有的内容。** 可以用于多线程下载或多个线程同时写数据到文件。
+
+
+
+## 4.示例
+
+### 2. 使用字节流读写数据
+
+- 使用字节流读数据：
+
+```java
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class ReadByteStream {
+
+    public static void main(String[] args) {
+
+        FileInputStream fis = null; // 声明文件输入流对象
+        try {
+            fis = new FileInputStream("test.txt"); // test.txt文件在当前工程目录下事先创建好
+            byte input[] = new byte[30];
+            fis.read(input); // 读入到一个字节数组
+
+            String str = new String(input, "UTF-8"); // 字符编码要与读入的文件对应
+            System.out.println(str);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close(); // 关闭输入流
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+}
+```
+
+- 使用字节流写数据：
+
+```java
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class WriteByteStream {
+
+    public static void main(String[] args) {
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream("test2.txt");
+
+            String str = "1234567";
+            byte[] outStr = str.getBytes("UTF-8"); // 读入字节数组，并指定编码方式
+            fos.write(outStr); // 使用文件输出流写出到文件
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+}
+```
+
+- 使用字节流拷贝文件
+
+```java
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class CopyFile {
+
+    public static void main(String[] args) {
+
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+
+        try {
+            fis = new FileInputStream("test.png");
+            fos = new FileOutputStream("test_new.png");
+
+            byte input[] = new byte[50]; // 每次读取50 bytes
+
+            while (fis.read(input) != -1) { // read返回读入的数据大小，如果没有数据返回-1
+                fos.write(input); // 每次写入50 bytes
+            }
+
+            System.out.println("done");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+}
+```
+
+### 3. 使用带缓冲的字节流读写数据
+
+带缓冲的流和不带缓冲的流区别:
+
+- 不带缓冲的操作, 每读一个字节就要写入一个字节, 由于涉及磁盘的IO操作相比内存的操作要慢很多, 所以不带缓冲的流效率很低
+- 带缓冲的流, 可以一次读很多字节, 但不向磁盘中写入, 只是先放到内存里. 等凑够了缓冲区大小的时候一次性写入磁盘, 这种方式可以减少磁盘操作次数, 速度就会提高很多!
+- 带缓冲的流适合读写比较大的文件.
+
+```java
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
+public class ReadByBufferedByteStream {
+
+    public static void main(String[] args) {
+
+        try {
+            FileInputStream fis = new FileInputStream("movie.mp4");
+            BufferedInputStream bis = new BufferedInputStream(fis,1000000); // 缓冲区大小1000000字节
+            FileOutputStream fos = new FileOutputStream("moive_new.mp4");
+            BufferedOutputStream bos = new BufferedOutputStream(fos,1000000); // 缓冲区大小1000000字节
+            //大型文件对应的数组可以大一些，小文件对应的数组小一些
+            byte input[] = new byte[100000]; // 每次读写字节大写
+            int count = 0;
+            long before = System.currentTimeMillis(); // 开始计时
+            while (bis.read(input) != -1) {
+                bos.write(input);
+                count++;
+            }
+            bos.flush();
+            bis.close();
+            fis.close();
+            bos.close();
+            fos.close();
+            System.out.println(System.currentTimeMillis()-before+"ms"); // 总时长
+            System.out.println("读取了："+count+"次");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+```
+
+### 4. 使用字符流读写数据
+
+```java
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+public class RWByCharStream {
+
+    public static void main(String[] args) {
+
+        try {
+
+            FileInputStream fis = new FileInputStream("java.txt");
+            FileOutputStream fos = new FileOutputStream("java_new.txt");
+            InputStreamReader reader = new InputStreamReader(fis, "UTF-8"); // 字符流的使用要传入字节流作为参数
+            OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
+
+            char input[] = new char[100]; // 每次读取的数据大小
+            int l = 0;
+            while ((l = reader.read(input)) != -1) {
+                // void write(char cbuf[], int off, int len)
+                // 文件末尾的长度不一定是100，所以需要设置写入数据长度
+                writer.write(input, 0, l);
+            }
+
+            reader.close(); // 先关闭字符流
+            fis.close(); // 再关闭字节流
+            writer.close();
+            fos.close();
+
+            System.out.println("done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
+```
+
+### 5. 使用带缓冲的字符流读写数据
+
+使用字符流读取数据时不能按行读取，这时候就需要使用带有缓冲区的字符流。
+
+```java
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+
+public class RWByBufferedCharStream {
+
+    public static void main(String[] args) {
+
+        try {
+
+            FileInputStream fis = new FileInputStream("java.txt");
+            FileOutputStream fos = new FileOutputStream("java_new_buff.txt");
+
+            InputStreamReader reader = new InputStreamReader(fis, "UTF-8");
+            OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
+
+            BufferedReader br = new BufferedReader(reader);
+            // BufferedWriter bw = new BufferedWriter(writer);
+            // PrintWriter和BufferedWriter用法类似
+            // PrintWriter可以输出换行符
+            // 构造方法PrintWriter(Writer out,boolean autoFlush) 里可以设置缓冲区自动输出，这样就不需要手动调用flush方法了。
+            PrintWriter pw = new PrintWriter(writer, true);
+
+            String input;
+            while ((input = br.readLine()) != null) { // BufferedReader可以按行读取
+                // bw.write(input); //
+                // BufferedWriter的writer方法是带有缓冲区的，此时打印的文本是不带换行符的
+                pw.println(input);// PrintWriter的println方法支持不同平台的换行符输出
+            }
+
+            // bw.flush(); // 强制输出缓冲区内容。如果不加上flush，最后的缓冲区未读满将不输出内容
+
+            // bw.close();
+            pw.close();// 按顺序关闭流
+            writer.close();
+            fos.close();
+
+            br.close();
+            reader.close();
+            fis.close();
+
+            System.out.println("done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+```
+
+### 6. FileReader 和FileWriter
+
+FileReader 和FileWriter 专门用于操作文本文件. 用法与FileInputStream 类似.
+
+```java
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class FileRW {
+
+    public static void main(String[] args) {
+
+        FileReader fr = null;
+        BufferedReader br = null;
+        FileWriter fw = null;
+        BufferedWriter bw = null;
+
+        try {
+            fr = new FileReader("java.txt");
+            br = new BufferedReader(fr);
+            fw = new FileWriter("java_new.txt");
+            bw = new BufferedWriter(fw);
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                bw.write(line + "\n");
+            }
+            bw.flush();
+            System.out.println("done");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bw.close();
+                fw.close();
+                br.close();
+                fr.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+}
+```

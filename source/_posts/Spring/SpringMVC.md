@@ -81,13 +81,13 @@ title: 'Spring MVC'
 ## 三、Web项目整合 Tomcat 的 Intellij 设置
 ***
 **1、Modules 增加 web 模块**
-![](~/23-41-41.jpg)
+![](./SpringMVC/23-41-41.jpg)
 
 **2、增加 Tomcat 依赖库**
-![](~/17-22-10.jpg)
+![](./SpringMVC/17-22-10.jpg)
 
 **3、设置 Artifacts**
-![](~/00-30-35.jpg)
+![](./SpringMVC/00-30-35.jpg)
 
 ## 三、编写控制器类
 ***
@@ -112,15 +112,15 @@ title: 'Spring MVC'
 
 **3、处理模型数据**
 - **ModelAndView**
-方法体通过该对象添加模型数据，既包含视图信息，也包含模型数据
+  方法体通过该对象添加模型数据，既包含视图信息，也包含模型数据
 - **``@ModelAttribute``**
-在方法定义上使用 ：Spring MVC 在调用目标处理方法前，会先逐个调用在方法级上标注了@ModelAttribute 的方法
-在方法的入参前使用 ：入参的对象就会放到模型数据中
+  在方法定义上使用 ：Spring MVC 在调用目标处理方法前，会先逐个调用在方法级上标注了@ModelAttribute 的方法
+  在方法的入参前使用 ：入参的对象就会放到模型数据中
 - **Map and Model**
-入参为 org.pringframework.ui.Model、org.pringframework.ui.ModelMap 或 java。util.Map 时，处理方法返回时，Map中的数据会自动添加到模型中。
-调用方法前会创建一个隐含的的模型对象“隐含模型”，如果方法的入参为上述几种，Spring会将隐含模型的引用传递给这些入参，在方法体内可以访问到数据，也可以添加属性
+  入参为 org.pringframework.ui.Model、org.pringframework.ui.ModelMap 或 java。util.Map 时，处理方法返回时，Map中的数据会自动添加到模型中。
+  调用方法前会创建一个隐含的的模型对象“隐含模型”，如果方法的入参为上述几种，Spring会将隐含模型的引用传递给这些入参，在方法体内可以访问到数据，也可以添加属性
 - **``@SessionAttitude``**
-将模型中的某个属性暂存到 HttpSession 中，以便多个请求之间可以共享这个属性
+  将模型中的某个属性暂存到 HttpSession 中，以便多个请求之间可以共享这个属性
 
 ```java
 //控制器类Demo
@@ -166,7 +166,7 @@ public class LoginController {
 ## 四、返回 JSON 数据
 ***
 　　待补充
-    
+​    
 ## 五、 国际化
 ***
 　　略
