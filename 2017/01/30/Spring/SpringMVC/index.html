@@ -98,7 +98,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/23-41-41.jpg">
 <meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/17-22-10.jpg">
 <meta property="og:image" content="http://yoursite.com/2017/01/30/Spring/SpringMVC/00-30-35.jpg">
-<meta property="og:updated_time" content="2017-03-29T09:59:04.835Z">
+<meta property="og:updated_time" content="2017-05-31T05:25:14.532Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring MVC">
 <meta name="twitter:description" content="一、配置web.xml文件
@@ -383,7 +383,7 @@
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//控制器类Demo</span></div><div class="line"><span class="meta">@Controller</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginController</span> </span>&#123;</div><div class="line"></div><div class="line">    IFindUserService findUserService = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/login"</span>, method = RequestMethod.GET)</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">login</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"loginPage"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/user/&#123;userID&#125;"</span>, method = RequestMethod.GET)</div><div class="line">    <span class="function"><span class="keyword">public</span> ModelAndView <span class="title">detail</span><span class="params">(@PathVariable String userID, ModelMap modelMap)</span> </span>&#123;</div><div class="line">        UserInfo prepareUser = (UserInfo)modelMap.get(<span class="string">"prepareUser"</span>);</div><div class="line">        System.out.println(prepareUser.getUsername());</div><div class="line">        UserInfo user = findUserService.findUser(Integer.valueOf(userID));</div><div class="line">        ModelAndView model = <span class="keyword">new</span> ModelAndView();</div><div class="line">        model.setViewName(<span class="string">"userDetail"</span>);</div><div class="line">        model.addObject(<span class="string">"user"</span>, user);</div><div class="line">        <span class="keyword">return</span> model;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@ModelAttribute</span>(value = <span class="string">"prepareUser"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> UserInfo <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">        UserInfo user = <span class="keyword">new</span> UserInfo();</div><div class="line">        user.setUsername(<span class="string">"prepareUser"</span>);</div><div class="line">        <span class="keyword">return</span> user;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> IFindUserService <span class="title">getFindUserService</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> findUserService;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Resource</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFindUserService</span><span class="params">(IFindUserService findUserService)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.findUserService = findUserService;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h2 id="四、返回-JSON-数据"><a href="#四、返回-JSON-数据" class="headerlink" title="四、返回 JSON 数据"></a>四、返回 JSON 数据</h2><hr>
-<p>　　待补充</p>
+<p>　　待补充<br>​    </p>
 <h2 id="五、-国际化"><a href="#五、-国际化" class="headerlink" title="五、 国际化"></a>五、 国际化</h2><hr>
 <p>　　略</p>
 <h2 id="六、文件上传"><a href="#六、文件上传" class="headerlink" title="六、文件上传"></a>六、文件上传</h2><hr>
@@ -511,7 +511,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">76</span>
+                <span class="site-state-item-count">82</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -522,7 +522,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

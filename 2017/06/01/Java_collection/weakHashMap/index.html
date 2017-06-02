@@ -1,0 +1,762 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1. WeakHashMap简介
+WeakHashMap 继承于AbstractMap，实现了Map接口。
+和HashMap一样，WeakHashMap 也是一个散列表，它存储的内容也是键值对(key-value)映射，而且键和值都可以是null。
+不过WeakHashMap的键是“弱键”。在 WeakHashMap 中，当某个键不再正常使用时，会被从WeakHashMap中被自动移除。更精确地说">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WeakHashMap 简介和示例">
+<meta property="og:url" content="http://yoursite.com/2017/06/01/Java_collection/WeakHashMap/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="1. WeakHashMap简介
+WeakHashMap 继承于AbstractMap，实现了Map接口。
+和HashMap一样，WeakHashMap 也是一个散列表，它存储的内容也是键值对(key-value)映射，而且键和值都可以是null。
+不过WeakHashMap的键是“弱键”。在 WeakHashMap 中，当某个键不再正常使用时，会被从WeakHashMap中被自动移除。更精确地说">
+<meta property="og:updated_time" content="2017-06-01T07:23:01.622Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WeakHashMap 简介和示例">
+<meta name="twitter:description" content="1. WeakHashMap简介
+WeakHashMap 继承于AbstractMap，实现了Map接口。
+和HashMap一样，WeakHashMap 也是一个散列表，它存储的内容也是键值对(key-value)映射，而且键和值都可以是null。
+不过WeakHashMap的键是“弱键”。在 WeakHashMap 中，当某个键不再正常使用时，会被从WeakHashMap中被自动移除。更精确地说">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/06/01/Java_collection/WeakHashMap/"/>
+
+
+
+
+
+  <title> WeakHashMap 简介和示例 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/01/Java_collection/WeakHashMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                WeakHashMap 简介和示例
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-01T10:50:00+08:00">
+                2017-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-WeakHashMap简介"><a href="#1-WeakHashMap简介" class="headerlink" title="1. WeakHashMap简介"></a>1. WeakHashMap简介</h2><ul>
+<li>WeakHashMap 继承于AbstractMap，实现了Map接口。</li>
+<li>和<a href="http://www.cnblogs.com/skywang12345/p/3310835.html" target="_blank" rel="external">HashMap</a>一样，WeakHashMap 也是一个<strong>散列表</strong>，它存储的内容也是<strong>键值对(key-value)映射</strong>，而且<strong>键和值都可以是null</strong>。</li>
+<li>不过WeakHashMap的<strong>键是“弱键”</strong>。在 WeakHashMap 中，当某个键不再正常使用时，会被从WeakHashMap中被自动移除。更精确地说，对于一个给定的键，其映射的存在并不阻止垃圾回收器对该键的丢弃，这就使该键成为可终止的，被终止，然后被回收。某个键被终止时，它对应的键值对也就从映射中有效地移除了。</li>
+<li>这个“弱键”的原理呢？大致上就是，<strong>通过WeakReference和ReferenceQueue实现的</strong>。 WeakHashMap的key是“弱键”，即是WeakReference类型的；ReferenceQueue是一个队列，它会保存被GC回收的“弱键”。</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><p>实现步骤是：</p>
+<ol>
+<li>新建WeakHashMap，将“<strong>键值对</strong>”添加到WeakHashMap中。</li>
+</ol>
+<p>​       实际上，WeakHashMap是通过数组table保存Entry(键值对)；每一个Entry实际上是一个单向链表，即Entry是键值对链表。</p>
+<ol>
+<li>当<strong>某“弱键”不再被其它对象引用</strong>，并<strong>被GC回收</strong>时。在GC回收该“弱键”时，<strong>这个“弱键”也同时会被添加到ReferenceQueue(queue)队列</strong>中。</li>
+<li><p>当下一次我们需要操作WeakHashMap时，会先同步table和queue。table中保存了全部的键值对，而queue中保存被GC回收的键值对；同步它们，就是<strong>删除table中被GC回收的键值对</strong>。</p>
+<p>这就是“弱键”如何被自动从WeakHashMap中删除的步骤了。</p>
+</li>
+</ol>
+</li>
+<li><p>和HashMap一样，WeakHashMap是不同步的。可以使用 Collections.synchronizedMap 方法来构造同步的 WeakHashMap。</p>
+</li>
+</ul>
+<blockquote>
+<p>有关弱引用请参考 <a href="../../Java_core/reference">Java的四种引用</a></p>
+</blockquote>
+<!-- more -->
+<h2 id="2-WeakHashMap-使用示例"><a href="#2-WeakHashMap-使用示例" class="headerlink" title="2. WeakHashMap 使用示例"></a>2. WeakHashMap 使用示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.Map;</div><div class="line"><span class="keyword">import</span> java.util.WeakHashMap;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by pc on 2017/6/1.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestWeakHashMap</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Map&lt;User,String&gt; weakHashMap = <span class="keyword">new</span> WeakHashMap&lt;&gt;();</div><div class="line"></div><div class="line">        User a = <span class="keyword">new</span> User(<span class="string">"a"</span>,<span class="string">"a"</span>);</div><div class="line">        User b = <span class="keyword">new</span> User(<span class="string">"b"</span>,<span class="string">"b"</span>);</div><div class="line"></div><div class="line">        weakHashMap.put(a,<span class="string">"userA"</span>);</div><div class="line">        weakHashMap.put(b,<span class="string">"userB"</span>);</div><div class="line"></div><div class="line">        a = <span class="keyword">null</span>;		<span class="comment">//将 UserA 的强引用置空</span></div><div class="line">        <span class="comment">// b = null;	//保留 UserB 的强引用</span></div><div class="line"></div><div class="line">        System.gc();</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">          	<span class="comment">// 为 JVM gc 线程留出时间</span></div><div class="line">            Thread.sleep(<span class="number">10</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">for</span>(User user : weakHashMap.keySet()) &#123;</div><div class="line">            System.out.println(user);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</div><div class="line"></div><div class="line">        String number = <span class="keyword">null</span>;</div><div class="line">        String name = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String number, String name)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.number = number;</div><div class="line">            <span class="keyword">this</span>.name = name;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.number + <span class="string">":"</span> + name;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">b:b</div><div class="line">Process finished with exit code 0</div></pre></td></tr></table></figure>
+<h2 id="3-WeakHashMap-关键源码解析"><a href="#3-WeakHashMap-关键源码解析" class="headerlink" title="3. WeakHashMap 关键源码解析"></a>3. WeakHashMap 关键源码解析</h2><ul>
+<li>首先看一下 <code>WeakHashMap</code> 中  <code>Entry</code> 的定义：<ul>
+<li><code>Entry</code> 继承了 <code>WeakReference</code> ，将 <code>key</code> 和一个 <code>ReferenceQueue</code> 作为参数传入父类的构造器。</li>
+<li>从传入的参数看出 <code>WeakHashMap</code> 中的 <code>key</code> 是弱引用，在 JVM gc 时会被回收，并把<code>Entry</code> 本身加入到 <code>ReferenceQueue</code>  中。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Reference queue for cleared WeakEntries</div><div class="line"> */</div><div class="line"> <span class="keyword">private</span> <span class="keyword">final</span> ReferenceQueue&lt;Object&gt; queue = <span class="keyword">new</span> ReferenceQueue&lt;&gt;();</div><div class="line"></div><div class="line">...</div><div class="line">...</div><div class="line">...</div><div class="line">  </div><div class="line"><span class="comment">/**</span></div><div class="line"> * The entries in this hash table extend WeakReference, using its main ref</div><div class="line"> * field as the key.</div><div class="line"> */</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">Object</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">  V value;</div><div class="line">  <span class="keyword">final</span> <span class="keyword">int</span> hash;</div><div class="line">  Entry&lt;K,V&gt; next;</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">         * Creates new entry.</div><div class="line">         */</div><div class="line">  Entry(Object key, V value,</div><div class="line">        ReferenceQueue&lt;Object&gt; queue,</div><div class="line">        <span class="keyword">int</span> hash, Entry&lt;K,V&gt; next) &#123;</div><div class="line">    <span class="keyword">super</span>(key, queue);</div><div class="line">    <span class="keyword">this</span>.value = value;</div><div class="line">    <span class="keyword">this</span>.hash  = hash;</div><div class="line">    <span class="keyword">this</span>.next  = next;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  ...</div><div class="line">  ...</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>当 <code>WeakHashMap</code> 的 key 被 gc 之后，<code>WeakHashMap</code> 通过 <code>expungeStaleEntries</code> 方法删除被回收的条目</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Expunges stale entries from the table.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">expungeStaleEntries</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">for</span> (Object x; (x = queue.poll()) != <span class="keyword">null</span>; ) &#123;</div><div class="line">    <span class="keyword">synchronized</span> (queue) &#123;</div><div class="line">      <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line">      Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;) x;</div><div class="line">      <span class="keyword">int</span> i = indexFor(e.hash, table.length);</div><div class="line"></div><div class="line">      Entry&lt;K,V&gt; prev = table[i];</div><div class="line">      Entry&lt;K,V&gt; p = prev;</div><div class="line">      <span class="keyword">while</span> (p != <span class="keyword">null</span>) &#123;</div><div class="line">        Entry&lt;K,V&gt; next = p.next;</div><div class="line">        <span class="keyword">if</span> (p == e) &#123;			<span class="comment">// 【1】当前项目等于待移除项目</span></div><div class="line">          <span class="keyword">if</span> (prev == e)		<span class="comment">// 【1.1】链头等于待移除项目，链头 = e.next，移除 e</span></div><div class="line">            table[i] = next;</div><div class="line">          <span class="keyword">else</span></div><div class="line">            prev.next = next;	 <span class="comment">// 【1.2】e.prev.next = e.next，移除 e</span></div><div class="line">          <span class="comment">// Must not null out e.next;</span></div><div class="line">          <span class="comment">// stale entries may be in use by a HashIterator</span></div><div class="line">          e.value = <span class="keyword">null</span>; <span class="comment">// Help GC</span></div><div class="line">          size--;</div><div class="line">          <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        prev = p;			<span class="comment">// 【2】当前项目不等于待移除项目，指针下移</span></div><div class="line">        p = next;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="http://www.cnblogs.com/skywang12345/p/3311092.html" target="_blank" rel="external">Java 集合系列13之 WeakHashMap详细介绍(源码解析)和使用示例</a></p>
+<p><a href="http://liujiacai.net/blog/2015/09/27/java-weakhashmap/#WeakHashMap-expungeStaleEntries" target="_blank" rel="external">Java WeakHashMap 源码解析</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/01/Java_core/reference/" rel="next" title="Java的四种引用">
+                <i class="fa fa-chevron-left"></i> Java的四种引用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/02/algorithm/shell_sort/" rel="prev" title="希尔排序">
+                希尔排序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-WeakHashMap简介"><span class="nav-text">1. WeakHashMap简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-WeakHashMap-使用示例"><span class="nav-text">2. WeakHashMap 使用示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-WeakHashMap-关键源码解析"><span class="nav-text">3. WeakHashMap 关键源码解析</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
