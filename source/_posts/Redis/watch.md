@@ -38,24 +38,19 @@ public class SimpleMarketDemo {
 
 		SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
 
-		Date initStart = new Date(System.currentTimeMillis());
-		System.out.println("init start: \t" + format.format(initStart));
-		initData();
-		Date initEnd = new Date(System.currentTimeMillis());
-		System.out.println("init end: \t" + format.format(initEnd));
-		System.out.println("init cost: \t" + (initEnd.getTime()-initStart.getTime()) + "ms");
-		System.out.println("");
-
-		// 一个卖家
-		new Thread(new Seller("37")).start();
-      	 // 一个买家
-		new Thread(new Buyer("47", "37")).start();
+		initData(format);
+		
+		runSellerAndBuy1();
 	}
-  
- 	 /**
+
+	
+	/**
 	 * 初始化单个卖家商品数据
 	 */
-	public static void initData() {
+	public static void initData(SimpleDateFormat format) {
+		
+		Date initStart = new Date(System.currentTimeMillis());
+		System.out.println("init start: \t" + format.format(initStart));
 		
 		Jedis conn = null;
 		String seller = "inventory:37";
@@ -79,7 +74,26 @@ public class SimpleMarketDemo {
 		}finally{
 			conn.disconnect();
 		}
+		
+		Date initEnd = new Date(System.currentTimeMillis());
+		System.out.println("init end: \t" + format.format(initEnd));
+		System.out.println("init cost: \t" + (initEnd.getTime()-initStart.getTime()) + "ms");
+		System.out.println("");
 	}
+
+	/**
+	 * 1个卖家，1个买家
+	 */
+	protected static void runSellerAndBuy1() {
+		new Thread(new Seller("37",true)).start();
+//		try {
+//			Thread.sleep(100);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		new Thread(new Buyer("47", "37",true)).start();
+	}
+
   ......
   ......
 }
@@ -329,7 +343,7 @@ buyer:47 buy retryCounter: 	44291
 
 
 
-## 2. 多个卖家，一个卖家
+## 2. 5个卖家，1个卖家
 
 ### 2.1 数据结构和初始数据
 
@@ -365,34 +379,18 @@ hmset users:47 name Buyer funds 200000
 
 		SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
 
-		Date initStart = new Date(System.currentTimeMillis());
-		System.out.println("init start: \t" + format.format(initStart));
-		initBatchData();
-		Date initEnd = new Date(System.currentTimeMillis());
-		System.out.println("init end: \t" + format.format(initEnd));
-		System.out.println("init cost: \t" + (initEnd.getTime()-initStart.getTime()) + "ms");
-		System.out.println("");
+		initBatchData(format);
 		
-      	
-		new Thread(new Seller("35"), "Seller-1").start();
-     	 // 让第一个卖家线程跑一阵，因为买家线程只购买第一个买家的商品
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		new Thread(new Seller("36")).start();
-		new Thread(new Seller("37")).start();
-		new Thread(new Seller("38")).start();
-		new Thread(new Seller("39")).start();
-
-		new Thread(new Buyer("47", "37")).start();
+		runSellerAndBuy2();
 	}
-
+	
 	/**
 	 * 初始化多个卖家商品数据
 	 */
-	public static void initBatchData() {
+	public static void initBatchData(SimpleDateFormat format) {
+		
+		Date initStart = new Date(System.currentTimeMillis());
+		System.out.println("init start: \t" + format.format(initStart));
 		
 		Jedis conn = null;
 		int initCount = 50000;
@@ -418,6 +416,31 @@ hmset users:47 name Buyer funds 200000
 		}finally{
 			conn.disconnect();
 		}
+		
+		Date initEnd = new Date(System.currentTimeMillis());
+		System.out.println("init end: \t" + format.format(initEnd));
+		System.out.println("init cost: \t" + (initEnd.getTime()-initStart.getTime()) + "ms");
+		System.out.println("");
+		
+	}
+
+	/**
+	 * 5个卖家，1个买家
+	 */
+	protected static void runSellerAndBuy2() {
+
+		new Thread(new Seller("35"), "Seller-1").start();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		new Thread(new Seller("36")).start();
+		new Thread(new Seller("37")).start();
+		new Thread(new Seller("38")).start();
+		new Thread(new Seller("39")).start();
+
+		new Thread(new Buyer("47", "35",true)).start();
 	}
 ```
 
@@ -479,12 +502,175 @@ seller:39 sell retryCounter: 	0
 
 
 
-## 3. 结果对比分析
+## 3. 5个卖家，5个买家
+
+### 3.1 数据结构和初始数据
+
+```
+## 5个卖家，5个买家
+
+del market:
+del inventory:35
+del inventory:36
+del inventory:37
+del inventory:38
+del inventory:39
+del inventory:45
+del inventory:46
+del inventory:47
+del inventory:48
+del inventory:49
+del users:35
+del users:36
+del users:37
+del users:38
+del users:39
+del users:45
+del users:46
+del users:47
+del users:48
+del users:49
+
+hmset users:35 name Seller funds 2000000
+hmset users:36 name Seller funds 2000000
+hmset users:37 name Seller funds 2000000
+hmset users:38 name Seller funds 2000000
+hmset users:39 name Seller funds 2000000
+hmset users:45 name Buyer funds 200000
+hmset users:46 name Buyer funds 200000
+hmset users:47 name Buyer funds 200000
+hmset users:48 name Buyer funds 200000
+hmset users:49 name Buyer funds 200000
+
+```
+
+
+
+### 3.2 主类
+
+```java
+public static void main(String[] args) {
+
+		SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
+
+		initBatchData(format);
+		
+		runSellerAndBuy3();
+	}
+
+
+	/**
+	 * 5个卖家，5个买家(全部购买第一个买家的商品)
+	 */
+	protected static void runSellerAndBuy3() {
+		
+		new Thread(new Seller("35"), "Seller-1").start();
+		new Thread(new Seller("36")).start();
+		new Thread(new Seller("37")).start();
+		new Thread(new Seller("38")).start();
+		new Thread(new Seller("39")).start();
+
+		new Thread(new Buyer("45", "35")).start();
+		new Thread(new Buyer("46", "35")).start();
+		new Thread(new Buyer("47", "35")).start();
+		new Thread(new Buyer("48", "35")).start();
+		new Thread(new Buyer("49", "35")).start();
+	}
+```
+
+
+
+### 3.3 执行结果
+
+```
+init start: 	2017:07:06-10:10:03
+inventory:35 init count: 	50000
+inventory:36 init count: 	50000
+inventory:37 init count: 	50000
+inventory:38 init count: 	50000
+inventory:39 init count: 	50000
+init end: 	2017:07:06-10:10:05
+init cost: 	1958ms
+
+seller:35 sell start: 	2017:07:06-10:10:05
+seller:37 sell start: 	2017:07:06-10:10:06
+seller:39 sell start: 	2017:07:06-10:10:06
+buyer:46 buy start: 	2017:07:06-10:10:06
+seller:36 sell start: 	2017:07:06-10:10:06
+seller:38 sell start: 	2017:07:06-10:10:06
+buyer:45 buy start: 	2017:07:06-10:10:06
+buyer:47 buy start: 	2017:07:06-10:10:06
+buyer:49 buy start: 	2017:07:06-10:10:06
+buyer:48 buy start: 	2017:07:06-10:10:06
+
+seller:35 sell end: 	2017:07:06-10:10:35
+seller:35 sell cost: 	30001ms
+seller:35 sell Count: 	31550
+seller:35 avg sell cost: 	0ms
+seller:35 sell retryCounter: 	0
+
+seller:37 sell end: 	2017:07:06-10:10:36
+seller:37 sell cost: 	30002ms
+seller:37 sell Count: 	31837
+seller:37 avg sell cost: 	0ms
+seller:37 sell retryCounter: 	0
+
+seller:39 sell end: 	2017:07:06-10:10:36
+seller:39 sell cost: 	30000ms
+seller:39 sell Count: 	31893
+seller:39 avg sell cost: 	0ms
+seller:39 sell retryCounter: 	0
+
+buyer:46 buy end: 	2017:07:06-10:10:36
+buyer:46 buy cost: 	30000ms
+buyer:46 buy Count: 	0
+buyer:46 buy retryCounter: 	12
+
+seller:36 sell end: 	2017:07:06-10:10:36
+seller:36 sell cost: 	30009ms
+seller:36 sell Count: 	30518
+seller:36 avg sell cost: 	0ms
+seller:36 sell retryCounter: 	0
+
+
+buyer:47 buy end: 	2017:07:06-10:10:36
+buyer:47 buy cost: 	30001ms
+buyer:47 buy Count: 	0
+buyer:47 buy retryCounter: 	10
+
+seller:38 sell end: 	2017:07:06-10:10:36
+seller:38 sell cost: 	30004ms
+seller:38 sell Count: 	30493
+seller:38 avg sell cost: 	0ms
+seller:38 sell retryCounter: 	0
+
+buyer:45 buy end: 	2017:07:06-10:10:36
+buyer:45 buy cost: 	30003ms
+buyer:45 buy Count: 	759
+buyer:45 avg buy cost: 	39ms
+buyer:45 buy retryCounter: 	18763
+
+buyer:49 buy end: 	2017:07:06-10:10:36
+buyer:49 buy cost: 	30002ms
+buyer:49 buy Count: 	0
+buyer:49 buy retryCounter: 	9
+
+buyer:48 buy end: 	2017:07:06-10:10:36
+buyer:48 buy cost: 	30000ms
+buyer:48 buy Count: 	0
+buyer:48 buy retryCounter: 	7
+
+```
+
+
+
+## 4. 结果对比分析
 
 | 30秒性能对比   | 上架商品数量 | 买入商品数量 | 购买重试次数 | 每次购买的平均等待时间 |
-| --------- | ------ | ------ | ------ | ----------- |
+| :-------- | ------ | ------ | ------ | ----------- |
 | 1个卖家，1个买家 | 211883 | 44232  | 44291  | 0ms         |
 | 5个卖家，1个买家 | 99064  | 2012   | 30461  | 14ms        |
+| 5个卖家，5个买家 | 156291 | 352    | 17784  | 85ms        |
 
 
 
