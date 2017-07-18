@@ -1,12 +1,16 @@
 ---
-
+categories: Redis
+date: 2017-07-18 20:10
+title: Redis 之 Sentinel实操
 ---
 
 
 
-启动1个master，2个slave，
+# 启动Redis集群
 
-master 日志
+## 启动1个master，2个slave
+
+**master 日志**
 
 ```
 [3368] 18 Jul 09:49:34.648 # Server started, Redis version 2.6.12
@@ -50,7 +54,9 @@ master 日志
 [7316] 18 Jul 10:01:18.938 * Synchronization with slave succeeded
 ```
 
-slave1 日志
+
+
+**slave1 日志**
 
 ```
 [2040] 18 Jul 09:56:30.705 # Warning: 32 bit instance detected but no memory limit set. Setting 3 GB maxmemory limit with 'noeviction' policy now.
@@ -84,7 +90,9 @@ slave1 日志
 [2040] 18 Jul 09:56:32.480 * MASTER <-> SLAVE sync: Finished with success
 ```
 
-slave2 日志
+
+
+**slave2 日志**
 
 ```
 [976] 18 Jul 10:01:17.627 # Warning: 32 bit instance detected but no memory limit set. Setting 3 GB maxmemory limit with 'noeviction' policy now.
@@ -124,9 +132,9 @@ slave2 日志
 
 
 
-启动3个sentinel，可以看到
+## 分别启动3个sentinel
 
-sentinel1 日志
+**sentinel1 日志**
 
 ```
 [6876] 18 Jul 10:22:26.690 # Warning: 32 bit instance detected but no memory lim
@@ -149,19 +157,15 @@ it set. Setting 3 GB maxmemory limit with 'noeviction' policy now.
           `-._        _.-'
               `-.__.-'
 
-[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymast
-er 127.0.0.1 6379
-[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6379
-[6876] 18 Jul 10:23:48.375 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380
-@ mymaster 127.0.0.1 6379
-[6876] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381
-@ mymaster 127.0.0.1 6379
+[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[6876] 18 Jul 10:23:48.375 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380@ mymaster 127.0.0.1 6379
+[6876] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381@ mymaster 127.0.0.1 6379
 ```
 
 
 
-sentinel2 日志
+**sentinel2 日志**
 
 ```
 [4620] 18 Jul 10:23:43.361 # Warning: 32 bit instance detected but no memory lim
@@ -184,19 +188,15 @@ it set. Setting 3 GB maxmemory limit with 'noeviction' policy now.
           `-._        _.-'
               `-.__.-'
 
-[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymast
-er 127.0.0.1 6379
-[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6379
-[4620] 18 Jul 10:23:47.515 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379
-@ mymaster 127.0.0.1 6379
-[4620] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381
-@ mymaster 127.0.0.1 6379
+[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[4620] 18 Jul 10:23:47.515 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379
+[4620] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6379
 ```
 
 
 
-sentinel3 日志
+**sentinel3 日志**
 
 ```
 [6612] 18 Jul 10:29:09.713 # Warning: 32 bit instance detected but no memory lim
@@ -219,23 +219,17 @@ it set. Setting 3 GB maxmemory limit with 'noeviction' policy now.
           `-._        _.-'
               `-.__.-'
 
-[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymast
-er 127.0.0.1 6379
-[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6379
-[6612] 18 Jul 10:29:10.595 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379
-@ mymaster 127.0.0.1 6379
-[6612] 18 Jul 10:29:10.997 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380
-@ mymaster 127.0.0.1 6379
+[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[6612] 18 Jul 10:29:10.595 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379
+[6612] 18 Jul 10:29:10.997 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6379
 ```
 
 
 
+## 通过 sentinel API 查看 master 的信息   
 
-
-sentinel API
-
-**SENTINEL masters**
+- **SENTINEL masters**  查看所有监控的master的信息
 
 ```
 redis 127.0.0.1:26379> SENTINEL masters
@@ -267,7 +261,7 @@ redis 127.0.0.1:26379> SENTINEL masters
 
 
 
-**SENTINEL slaves mymaster**
+- **SENTINEL slaves mymaster** 查看指定master的所有slave 的信息
 
 ```
 redis 127.0.0.1:26379> SENTINEL slaves mymaster
@@ -331,7 +325,7 @@ redis 127.0.0.1:26379> SENTINEL slaves mymaster
 
 
 
-**SENTINEL get-master-addr-by-name mymaster**
+- **SENTINEL get-master-addr-by-name mymaster** 查看指定 master-name 的地址
 
 ```
 redis 127.0.0.1:26379> SENTINEL get-master-addr-by-name mymaster
@@ -341,103 +335,71 @@ redis 127.0.0.1:26379> SENTINEL get-master-addr-by-name mymaster
 
 
 
-断开1个sentinel之后reboot，其他sentinel收到事件信息
+断开的 sentinel 重新监控 master，其他 sentinel 收到事件信息
 
 ```
-[6612] 18 Jul 16:32:53.512 * -dup-sentinel master mymaster 127.0.0.1 6379 #dupli
-cate of 127.0.0.1:26379 or 6561ededb876035afd35f34bee089d06746327f1
-[6612] 18 Jul 16:32:53.512 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379
-@ mymaster 127.0.0.1 6379
+[6612] 18 Jul 16:32:53.512 * -dup-sentinel master mymaster 127.0.0.1 6379 #duplicate of 127.0.0.1:26379 or 6561ededb876035afd35f34bee089d06746327f1
+[6612] 18 Jul 16:32:53.512 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379
 ```
 
 
 
-当master下线后，触发failover
+## 断开 master，触发 failover
 
-sentinel1 日志
+**sentinel1 日志**
 
 ```
 [6060] 18 Jul 16:33:50.440 # +sdown master mymaster 127.0.0.1 6379
 [6060] 18 Jul 16:33:51.707 # +odown master mymaster 127.0.0.1 6379 #quorum 2/2
 [6060] 18 Jul 16:33:51.707 # +failover-triggered master mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:33:51.707 # +failover-state-wait-start master mymaster 127.0.0.
-1 6379 #starting in 11992 milliseconds
-[6060] 18 Jul 16:34:03.781 # +failover-state-select-slave master mymaster 127.0.
-0.1 6379
-[6060] 18 Jul 16:34:03.881 # +selected-slave slave 127.0.0.1:6380 127.0.0.1 6380
- @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:03.883 * +failover-state-send-slaveof-noone slave 127.0.0.1:
-6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:03.984 * +failover-state-wait-promotion slave 127.0.0.1:6380
- 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:03.986 # +promoted-slave slave 127.0.0.1:6380 127.0.0.1 6380
- @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:03.987 # +failover-state-reconf-slaves master mymaster 127.0
-.0.1 6379
-[6060] 18 Jul 16:34:04.085 * +slave-reconf-sent slave 127.0.0.1:6381 127.0.0.1 6
-381 @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:05.091 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1
- 6381 @ mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:06.165 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6
-381 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:33:51.707 # +failover-state-wait-start master mymaster 127.0.0.1 6379 #starting in 11992 milliseconds
+[6060] 18 Jul 16:34:03.781 # +failover-state-select-slave master mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:03.881 # +selected-slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:03.883 * +failover-state-send-slaveof-noone slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:03.984 * +failover-state-wait-promotion slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:03.986 # +promoted-slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:03.987 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:04.085 * +slave-reconf-sent slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:05.091 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[6060] 18 Jul 16:34:06.165 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
 [6060] 18 Jul 16:34:06.285 # +failover-end master mymaster 127.0.0.1 6379
-[6060] 18 Jul 16:34:06.285 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 63
-80
-[6060] 18 Jul 16:34:06.387 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6380
-[6060] 18 Jul 16:34:06.577 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380
-@ mymaster 127.0.0.1 6380
-[6060] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381
-@ mymaster 127.0.0.1 6380
+[6060] 18 Jul 16:34:06.285 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380
+[6060] 18 Jul 16:34:06.387 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380
+[6060] 18 Jul 16:34:06.577 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6380
+[6060] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6380
 ```
 
 
 
-sentinel2 日志
+**sentinel2 日志**
 
 ```
 [4620] 18 Jul 16:33:50.610 # +sdown master mymaster 127.0.0.1 6379
 [4620] 18 Jul 16:33:50.810 # +odown master mymaster 127.0.0.1 6379 #quorum 2/2
 [4620] 18 Jul 16:34:04.647 # +failover-detected master mymaster 127.0.0.1 6379
-[4620] 18 Jul 16:34:05.200 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1
- 6381 @ mymaster 127.0.0.1 6379
-[4620] 18 Jul 16:34:06.245 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6
-381 @ mymaster 127.0.0.1 6379
+[4620] 18 Jul 16:34:05.200 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[4620] 18 Jul 16:34:06.245 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
 [4620] 18 Jul 16:34:06.347 # +failover-end master mymaster 127.0.0.1 6379
-[4620] 18 Jul 16:34:06.350 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 63
-80
-[4620] 18 Jul 16:34:06.477 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6380
-[4620] 18 Jul 16:34:06.507 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379
-@ mymaster 127.0.0.1 6380
-[4620] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381
-@ mymaster 127.0.0.1 6380
+[4620] 18 Jul 16:34:06.350 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380
+[4620] 18 Jul 16:34:06.477 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380
+[4620] 18 Jul 16:34:06.507 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6380
+[4620] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6380
 ```
 
 
 
-sentinel3 日志
+**sentinel3 日志**
 
 ```
 [6612] 18 Jul 16:34:09.927 # +sdown master mymaster 127.0.0.1 6379
-Writing to socket 由于套接字没有连接并且(当使用一个 sendto 调用发送数据报套接字
-时)没有提供地址，发送或接收数据的请求没有被接受。
-Writing to socket 由于套接字没有连接并且(当使用一个 sendto 调用发送数据报套接字
-时)没有提供地址，发送或接收数据的请求没有被接受。
 [6612] 18 Jul 16:34:11.202 # +failover-detected master mymaster 127.0.0.1 6379
-[6612] 18 Jul 16:34:11.302 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1
- 6381 @ mymaster 127.0.0.1 6379
-[6612] 18 Jul 16:34:11.302 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6
-381 @ mymaster 127.0.0.1 6379
+[6612] 18 Jul 16:34:11.302 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
+[6612] 18 Jul 16:34:11.302 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379
 [6612] 18 Jul 16:34:11.402 # +failover-end master mymaster 127.0.0.1 6379
-[6612] 18 Jul 16:34:11.402 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 63
-80
-[6612] 18 Jul 16:34:11.502 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymast
-er 127.0.0.1 6380
-[6612] 18 Jul 16:34:11.622 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379
-@ mymaster 127.0.0.1 6380
-[6612] 18 Jul 16:34:11.702 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380
-@ mymaster 127.0.0.1 6380
+[6612] 18 Jul 16:34:11.402 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380
+[6612] 18 Jul 16:34:11.502 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380
+[6612] 18 Jul 16:34:11.622 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6380
+[6612] 18 Jul 16:34:11.702 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6380
 ```
 
 
