@@ -10,6 +10,8 @@ title: RabbitMQ —— Work Queues
 
 工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。
 
+![python-two](./worker/python-two.png)
+
 
 
 发布任务的进程代码，NewTask.java
@@ -257,7 +259,7 @@ channel.basicQos(prefetchCount);
 
 
 
-合并代码：
+## 合并代码
 
 **NewTask.java**
 

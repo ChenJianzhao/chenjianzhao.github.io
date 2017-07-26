@@ -1,3 +1,11 @@
+---
+categories: RabbitMQ
+date: 2017-07-26 22:00
+title: RabbitMQ —— publish/subscribe
+---
+
+
+
 在 work queue 一节 我们创建了work queue，其背后的构思是每个任务都分发给一个确定的 worker 。这一节，我们将会把消息交付给多个消费者，这种模式叫做“发布/订阅” （publish/subscribe）模式。
 
 我们将建立一个简单的日志系统，它由两个程序组成，一个负责发送日志信息，另外一个负责接收并打印日志。
@@ -123,25 +131,87 @@ channel.queueBind(queueName, "logs", "");
 
 生产者程序负责发送日志消息。和之前最大的不同的是，如果我们要发布消息，需要发布到 *logs* exchange 而不是未命名 exchange。 我们需要在发送消息的时候提供一个 `routingKey` ，但这个值在  fanout exchanges 中会被忽略。
 
-**EmitLog.javaprogram** :
+**EmitLog.java** :
 
 ```java
+package org.demo.rabbitMQDemo.logQueues.fanout;
 
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
 
+public class EmitLog {
+
+  private static final String EXCHANGE_NAME = "logs";
+
+  public static void main(String[] argv) throws Exception {
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost("localhost");
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    /** 定义Exchange，广播 */
+    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
+
+    String message = "info: Hello World!";
+
+    channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+    System.out.println(" [x] Sent '" + message + "'");
+
+    channel.close();
+    connection.close();
+  }
+}
 ```
 
 >  注：
 >
-> - 如上所述，建立了连接之后需要定义一个 exchange。这一步是必要的，因为向一个不存在的 exchange  发送的消息将被丢弃。
-> - 如果没有队列绑定了exchange ，发送的消息也将丢失。
+>  - 如上所述，建立了连接之后需要定义一个 exchange。这一步是必要的，因为向一个不存在的 exchange  发送的消息将被丢弃。
+>  - 如果没有队列绑定了exchange ，发送的消息也将丢失。
 
 
 
 **ReceiveLogs.java**
 
 ```java
+package org.demo.rabbitMQDemo.logQueues.fanout;
 
+import com.rabbitmq.client.*;
 
+import java.io.IOException;
+
+public class ReceiveLogs {
+  private static final String EXCHANGE_NAME = "logs";
+
+  public static void main(String[] argv) throws Exception {
+    ConnectionFactory factory = new ConnectionFactory();
+    factory.setHost("localhost");
+    Connection connection = factory.newConnection();
+    Channel channel = connection.createChannel();
+
+    /** 声明Exchange，类型为 fanout */
+    channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+    
+    /** 无参数定义一个非持久、独占、自动删除、随机命名的队列 */
+    String queueName = channel.queueDeclare().getQueue();
+    
+    /** 绑定 exchange 和 queue */
+    channel.queueBind(queueName, EXCHANGE_NAME, "");
+
+    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+    Consumer consumer = new DefaultConsumer(channel) {
+      @Override
+      public void handleDelivery(String consumerTag, Envelope envelope,
+                                 AMQP.BasicProperties properties, byte[] body) throws IOException {
+        String message = new String(body, "UTF-8");
+        System.out.println(" [x] Received '" + message + "'");
+      }
+    };
+    channel.basicConsume(queueName, true, consumer);
+  }
+}
 ```
 
 
@@ -154,6 +224,27 @@ sudo rabbitmqctl list_bindings
 # => logs    exchange        amq.gen-JzTY20BRgKO-HjmUJj0wLg  queue           []
 # => logs    exchange        amq.gen-vso0PVvyiRIL2WoV3i48Yg  queue           []
 # => ...done.
+```
+
+
+
+查看控制台输出
+
+```shell
+# EmitLog
+ [x] Sent 'info: Hello World!'
+```
+
+```shell
+# ReceiveLogs 1
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received 'info: Hello World!'
+```
+
+```shell
+# ReceiveLogs 2
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received 'info: Hello World!'
 ```
 
 
