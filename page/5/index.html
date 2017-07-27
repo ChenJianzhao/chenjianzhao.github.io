@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/7-Decorator/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/20-State/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -279,8 +279,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/7-Decorator/" itemprop="url">
-                  Java设计模式（七）装饰器模式（Decorator）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/20-State/" itemprop="url">
+                  Java设计模式（二十）状态模式（State）
                 </a>
               
             
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:51:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T22:23:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -366,11 +366,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><hr>
-<p>顾名思义，装饰模式就是给一个对象增加一些新的功能，而且是<strong>动态的</strong>，<strong>要求装饰对象和被装饰对象实现同一个接口，装饰对象持有被装饰对象的实例</strong>。<br>实现描述：旧类已经实现了接口，装饰器同样实现该接口，创建一个旧类的对象，作为参数传入到装饰器的对象，调用装饰器类的方法，实现功能增强。<br>（在不改变旧类代码的前提下，装饰原类的每一个方法，实现功能增强）<br></p>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>核心思想就是：当对象的状态改变时，同时改变其行为，很好理解！就拿QQ来说，有几种状态，在线、隐身、忙碌等，每个状态对应不同的操作，而且你的好友也能看到你的状态，所以，状态模式就两点：<br>1、可以通过改变状态来获得不同的行为。<br>2、你的好友能同时看到你的变化。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/7-Decorator/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/20-State/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -416,7 +415,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/6-Adapter/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/19-Memento/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -438,8 +437,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/6-Adapter/" itemprop="url">
-                  Java设计模式（六）适配器模式（Adapter）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/19-Memento/" itemprop="url">
+                  Java设计模式（十九）备忘录模式（Memento）
                 </a>
               
             
@@ -455,8 +454,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:36:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T21:55:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -525,14 +524,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>适配器模式将某个类的接口转换成客户端期望的另一个接口表示，目的是<strong>消除由于接口不匹配所造成的类的兼容性问题</strong>。<br><strong>主要分为三类</strong></p>
-<ol>
-<li>类的适配器模式</li>
-<li>对象适配器模式</li>
-<li>接口的适配器模式</li></ol>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>主要目的是保存一个对象的某个状态，以便在适当的时候恢复对象，个人觉得叫备份模式更形象些，通俗的讲下：假设有原始类A，A中有各种属性，A可以决定需要备份的属性，备忘录类B是用来存储A的一些内部状态，类C呢，就是一个用来存储备忘录的，且只能存储，不能修改等操作。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/6-Adapter/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/19-Memento/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -578,7 +573,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/5-Prototype/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/18-Command/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -600,8 +595,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/5-Prototype/" itemprop="url">
-                  Java设计模式（五）原型模式（Prototype）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/18-Command/" itemprop="url">
+                  Java设计模式（十八）命令模式（Command）
                 </a>
               
             
@@ -617,8 +612,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:26:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T00:54:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -687,10 +682,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>原型模式虽然是创建型的模式，但是与工程模式没有关系，从名字即可看出，该模式的思想就是将一个对象作为原型，对其进行复制、克隆，产生一个和原对象类似的新对象。本小结会通过对象的复制，进行讲解。<br></p>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>命令模式很好理解，举个例子，司令员下令让士兵去干件事情，从整个事情的角度来考虑，司令员的作用是，发出口令，口令经过传递，传到了士兵耳朵里，士兵去执行。这个过程好在，三者相互解耦，任何一方都不用去依赖其他人，只需要做好自己的事儿就行，司令员要的是结果，不会去关注到底士兵是怎么实现的。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/5-Prototype/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/18-Command/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -736,7 +731,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/4-Builder/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/17-Chain of Responsibility/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -758,8 +753,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/4-Builder/" itemprop="url">
-                  Java设计模式（四）建造者模式（Builder）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/17-Chain of Responsibility/" itemprop="url">
+                  Java设计模式（十七）责任链模式（Chain of Responsibility）
                 </a>
               
             
@@ -775,8 +770,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T20:01:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T00:51:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -845,10 +840,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>工厂类模式提供的是创建单个类的模式，而建造者模式则是将各种产品集中起来进行管理，用来创建复合对象，所谓复合对象就是指某个类具有不同的属性，其实建造者模式就是前面抽象工厂模式和最后的Test结合起来得到的。<br></p>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>接下来我们将要谈谈责任链模式，有多个对象，每个对象持有对下一个对象的引用，这样就会形成一条链，请求在这条链上传递，直到某一对象决定处理该请求。但是发出者并不清楚到底最终那个对象会处理该请求，所以，责任链模式可以实现，在隐瞒客户端的情况下，对系统进行动态的调整。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/4-Builder/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/17-Chain of Responsibility/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -894,7 +889,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/3-Singleton/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/16-Iterator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -916,8 +911,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/3-Singleton/" itemprop="url">
-                  Java设计模式（三）单例模式（Singleton）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/16-Iterator/" itemprop="url">
+                  Java设计模式（十六）迭代子模式（Iterator）
                 </a>
               
             
@@ -933,8 +928,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:35:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T00:40:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1003,14 +998,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>单例对象（Singleton）是一种常用的设计模式。在Java应用中，单例对象能保证在一个JVM中，该对象只有一个实例存在。这样的模式有几个好处：</p>
-<ol>
-<li>某些类创建比较频繁，对于一些大型的对象，这是一笔很大的系统开销。</li>
-<li>省去了new操作符，降低了系统内存的使用频率，减轻GC压力。</li>
-<li>有些类如交易所的核心交易引擎，控制着交易流程，如果该类可以创建多个的话，系统完全乱了。（比如一个军队出现了多个司令员同时指挥，肯定会乱成一团），所以只有使用单例模式，才能保证核心交易服务器独立控制整个流程。</li></ol>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>顾名思义，迭代器模式就是顺序访问聚集中的对象，一般来说，集合中非常常见，如果对集合类比较熟悉的话，理解本模式会十分轻松。<br>这句话包含两层意思：一是需要遍历的对象，即聚集对象，二是迭代器对象，用于对聚集对象进行遍历访问。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/3-Singleton/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/16-Iterator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1056,7 +1047,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/2-Abstract Factory/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/15-Observer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1078,8 +1069,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/2-Abstract Factory/" itemprop="url">
-                  Java设计模式（二）抽象工厂模式（Abstract Factory）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/15-Observer/" itemprop="url">
+                  Java设计模式（十五）观察者模式（Observer）
                 </a>
               
             
@@ -1095,8 +1086,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:25:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T00:26:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1165,10 +1156,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>工厂方法模式有一个问题就是，类的创建依赖工厂类，也就是说，如果想要拓展程序，必须对工厂类进行修改，这违背了闭包原则，所以，从设计角度考虑，有一定的问题，如何解决？<br>这就用到抽象工厂模式，创建多个工厂类，这样一旦需要增加新的功能，直接增加新的工厂类就可以了，不需要修改之前的代码。<br></p>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>包括这个模式在内的接下来的四个模式，都是类和类之间的关系，不涉及到继承。观察者模式很好理解，类似于邮件订阅和RSS订阅，当我们浏览一些博客或wiki时，经常会看到RSS图标，就这的意思是，当你订阅了该文章，如果后续有更新，会及时通知你。其实，简单来讲就一句话：当一个对象变化时，其它依赖该对象的对象都会收到通知，并且随着变化！<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/2-Abstract Factory/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/15-Observer/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1214,7 +1205,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/1-Factory Method/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/14-Template Method/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1236,8 +1227,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/1-Factory Method/" itemprop="url">
-                  Java设计模式（一）工厂方法模式（Factory Method）
+                <a class="post-title-link" href="/2017/03/31/Java_dp/14-Template Method/" itemprop="url">
+                  Java设计模式（十四）模板方法模式（Template Method）
                 </a>
               
             
@@ -1253,8 +1244,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:09:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T00:16:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1323,18 +1314,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><strong>工厂方法模式分为三种：</strong></p>
-<ol>
-<li><p>普通工厂模式</p>
-</li>
-<li><p>多个工厂方法模式</p>
-</li>
-<li><p>静态工厂方法模式</p>
-</li>
-</ol>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>一个抽象类中，有一个主方法，再定义1…n个方法，可以是抽象的，也可以是实际的方法，主方法调用抽象方法；再定义一个子类，继承该抽象类，重写那1…n个抽象方法，子类通过调用抽象类的主方法，主方法调用抽象方法时会从子类逐级向上寻找具体实现，实现对子类方法的调用。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/1-Factory Method/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/14-Template Method/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1380,7 +1363,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/0-java-design-patten/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/13-strategy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1402,8 +1385,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/0-java-design-patten/" itemprop="url">
-                  Java设计模式总览
+                <a class="post-title-link" href="/2017/03/30/Java_dp/13-strategy/" itemprop="url">
+                  Java设计模式（十三）策略模式（strategy）
                 </a>
               
             
@@ -1419,8 +1402,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:06:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T23:41:00+08:00">
+                2017-03-30
               </time>
             
 
@@ -1489,18 +1472,10 @@
 
       
         
-          
-          原文：Java之美[从菜鸟到高手演变]之设计模式
-设计模式的分类
- 总体来说设计模式分为三大类：
-
-创建型模式，共五种：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。
-结构型模式，共七种：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。
-行为型模式，共十一种：
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>策略模式定义了一系列算法，并将每个算法封装起来，使他们可以相互替换，且算法的变化不会影响到使用算法的客户。需要设计一个接口，为一系列实现类提供统一的方法，多个实现类实现该接口，设计一个抽象类（可有可无，属于辅助类），提供辅助函数。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/0-java-design-patten/#more" rel="contents">
+            <a class="btn" href="/2017/03/30/Java_dp/13-strategy/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1546,7 +1521,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/db/oracle-ExplainPlan/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/12-Flyweight]/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1568,8 +1543,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/db/oracle-ExplainPlan/" itemprop="url">
-                  Oracle 索引和执行计划详解
+                <a class="post-title-link" href="/2017/03/30/Java_dp/12-Flyweight]/" itemprop="url">
+                  Java设计模式（十二）享元模式（Flyweight）
                 </a>
               
             
@@ -1585,158 +1560,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T16:29:00+08:00">
-                2017-03-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一、几个概念
-Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列就不是用户定义，而是系统自己给加上的。 对每个表都有一个rowid的伪列，但是表中并不物理存储ROWID列的值。不过你可以像使用其它列那样使用它，但是不能删除改列，也不能对该列的值进行 修改、插入。一旦一行数据插入数据库
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/db/oracle-ExplainPlan/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_core/annotation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/29/Java_core/annotation/" itemprop="url">
-                  Java Annotation 自定义注解
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T16:22:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T00:54:00+08:00">
+                2017-03-30
               </time>
             
 
@@ -1769,8 +1594,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 进阶</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1805,20 +1630,168 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
       
         
-          
-          元注解
-　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
-
-@Target
-@Retention
-@Documented
-@Inherited
-
-这些类型和它们
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>享元模式的主要目的是实现对象的共享，即共享池，当系统中对象多的时候可以减少内存的开销，通常与工厂模式一起使用。<br>一提到共享池，我们很容易联想到Java里面的JDBC连接池，想想每个连接的特点，我们不难总结出：适用于作共享的一些个对象，他们有一些共有的属性，就拿数据库连接池来说，url、driverClassName、username、password及dbname，这些属性对于每个连接来说都是一样的，所以就适合用享元模式来处理，建一个工厂类，将上述类似属性作为内部数据，其它的作为外部数据，在方法调用时，当做参数传进来，这样就节省了空间，减少了实例的数量。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_core/annotation/#more" rel="contents">
+            <a class="btn" href="/2017/03/30/Java_dp/12-Flyweight]/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/30/Java_dp/11-Composite/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/30/Java_dp/11-Composite/" itemprop="url">
+                  Java设计模式（十一）组合模式（Composite）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T00:50:00+08:00">
+                2017-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>组合模式有时又叫<strong>部分-整体模式</strong>在处理类似树形结构的问题时比较方便。<br>使用场景：将多个对象组合在一起进行操作，常用于表示树形结构中，例如二叉树，数等。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/03/30/Java_dp/11-Composite/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1859,7 +1832,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1904,7 +1877,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-count">95</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1915,7 +1888,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

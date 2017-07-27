@@ -1,0 +1,744 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在前面的小节，我们构建了一个简单的日志系统，让我们能够向许多接受者广播日志消息。
+在这一小节，我们将增加一个特性，让接受者能够只订阅消息的一个子集。例如：我们能够只将重要的错误消息直接存储到日志文件中（写入到硬盘），而继续让所有的日志消息打印到控制台中。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ —— Rounting">
+<meta property="og:url" content="http://yoursite.com/2017/07/26/RabbitQM/routing/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="在前面的小节，我们构建了一个简单的日志系统，让我们能够向许多接受者广播日志消息。
+在这一小节，我们将增加一个特性，让接受者能够只订阅消息的一个子集。例如：我们能够只将重要的错误消息直接存储到日志文件中（写入到硬盘），而继续让所有的日志消息打印到控制台中。">
+<meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/direct-exchange.png">
+<meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/direct-exchange-multiple.png">
+<meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/python-four.png">
+<meta property="og:updated_time" content="2017-07-27T02:18:18.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ —— Rounting">
+<meta name="twitter:description" content="在前面的小节，我们构建了一个简单的日志系统，让我们能够向许多接受者广播日志消息。
+在这一小节，我们将增加一个特性，让接受者能够只订阅消息的一个子集。例如：我们能够只将重要的错误消息直接存储到日志文件中（写入到硬盘），而继续让所有的日志消息打印到控制台中。">
+<meta name="twitter:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/direct-exchange.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/26/RabbitQM/routing/"/>
+
+
+
+
+
+  <title> RabbitMQ —— Rounting | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/26/RabbitQM/routing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RabbitMQ —— Rounting
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-26T00:00:00+08:00">
+                2017-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前面的小节，我们构建了一个简单的日志系统，让我们能够向许多接受者广播日志消息。</p>
+<p>在这一小节，我们将增加一个特性，让接受者能够只订阅消息的一个子集。例如：我们能够只将重要的错误消息直接存储到日志文件中（写入到硬盘），而继续让所有的日志消息打印到控制台中。</p>
+<a id="more"></a>
+<h2 id="绑定（Bindings）"><a href="#绑定（Bindings）" class="headerlink" title="绑定（Bindings）"></a>绑定（Bindings）</h2><p>前面我们已经创建过 Bindings，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">channel.queueBind(queueName, EXCHANGE_NAME, <span class="string">""</span>);</div></pre></td></tr></table></figure>
+<p>绑定是 exchange 和 queue 之间的关联。上面的代码可以简单解释为：队列只对来自这个 exchange 的消息感兴趣。</p>
+<p>Bindings 还可以添加一个额外的参数。为了避免和 <code>basic_publish</code> 中的参数 <em>routingKey</em> 混淆，我们将这里的参数称为 binding key。我们可以这样绑定：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">channel.queueBind(queueName, EXCHANGE_NAME, <span class="string">"black"</span>);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>这个绑定的意义要视 exchange type 而定，如果是 fanout exchangs，会直接忽略这个key值</p>
+</blockquote>
+<h2 id="Direct-exchange"><a href="#Direct-exchange" class="headerlink" title="Direct exchange"></a>Direct exchange</h2><p>我们之前构建的日志系统会将所有的消息广播给所有的消费者。我们将拓展日志系统，让他能够通过日志额严重级别过滤消息。比如：我们将编写一个程序只将受到的 critical errors 日志写进磁盘，而不浪费磁盘空间记录 warning 或者 info 类型的日志消息。</p>
+<p>之前使用的 fanout exchange 并不灵活——它只能做到盲目地广播。</p>
+<p>接下来我们将使用 <code>direct exchange</code> 来代替，direct exchange 背后的路由算法其实很简单—— <strong>消息将进入 binding key 和 消息的 routing key 完全匹配的 queue 中</strong>。</p>
+<p><img src="/2017/07/26/RabbitQM/routing/direct-exchange.png" alt="direct-exchange"></p>
+<p>n this setup, we can see the direct exchange X with two queues bound to it. The first queue is bound with binding key orange, and the second has two bindings, one with binding key black and the other one with green.</p>
+<p>In such a setup a message published to the exchange with a routing key orange will be routed to queue Q1. Messages with a routing key of black or green will go to Q2. All other messages will be discarded.</p>
+<p>上面的例子中，我们看到 direct 类型的 exchange X 和两个队列绑定了，第一个队列使用 <strong>orange</strong> 的 banding key 和它绑定，第二个使用 <strong>black</strong> 和 <strong>green</strong> 两个 binding key 绑定。</p>
+<p>在这样的设置下，使用 <strong>orange</strong> routing key 的消息将被路由到 队列 Q1，而使用 <strong>black</strong> 和 <strong>green</strong> routing key 的消息将被路由到队列 Q2，其他的消息将被丢弃。</p>
+<h2 id="多个绑定（Multiple-bindings）"><a href="#多个绑定（Multiple-bindings）" class="headerlink" title="多个绑定（Multiple bindings）"></a>多个绑定（Multiple bindings）</h2><p><img src="/2017/07/26/RabbitQM/routing/direct-exchange-multiple.png" alt="direct-exchange-multiple"></p>
+<p>多个队列使用相同的 binding key 绑定到 exchange 和完全合法的，上图的例子中，<strong>direct</strong> 类型的 exchange 将表现的和 <strong>fanout</strong> 类型一样，向所有匹配的的队列广播。使用 <strong>black</strong> routing key 的消息将被同时分派到 Q1 和 Q2。</p>
+<h2 id="发送日志（Emitting-logs）"><a href="#发送日志（Emitting-logs）" class="headerlink" title="发送日志（Emitting logs）"></a>发送日志（Emitting logs）</h2><p>我们将在日志系统中使用这个模型。代替 fanout ，我们将会把消息发送到 <strong>direct</strong> 类型的 exchange，我们将提供日志严重等级（severity）作为 routing key。这样接收的程序就能够通过日志等级（severity）选择它要接收的日志。</p>
+<p>首先创建 direct 类型的 exchange</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">channel.exchangeDeclare(EXCHANGE_NAME, <span class="string">"direct"</span>);</div></pre></td></tr></table></figure>
+<p>接着发送消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">channel.basicPublish(EXCHANGE_NAME, severity, <span class="keyword">null</span>, message.getBytes());</div></pre></td></tr></table></figure>
+<p>为了简化程序，我们假设日志严重级别（severity）为 ‘info’, ‘warning’, ‘error’ 其中的一种。</p>
+<h2 id="订阅（Subscribing）"><a href="#订阅（Subscribing）" class="headerlink" title="订阅（Subscribing）"></a>订阅（Subscribing）</h2><p>和前面接收消息的程序类似，只有一点不同，我们要为每个日志等级创建一个 binding ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">String queueName = channel.queueDeclare().getQueue();</div><div class="line"></div><div class="line"><span class="keyword">for</span>(String severity : argv)&#123;</div><div class="line">  channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="合并代码"><a href="#合并代码" class="headerlink" title="合并代码"></a>合并代码</h2><p><img src="/2017/07/26/RabbitQM/routing/python-four.png" alt="python-four"></p>
+<p><strong>EmitLogDirect.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.logQueues.direct;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.BuiltinExchangeType;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmitLogDirect</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"direct_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line"></div><div class="line">    ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">    factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);</div><div class="line">    </div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  日志等级  'info', 'warning', 'error' </div><div class="line">     */</div><div class="line">    String severity = <span class="string">"info"</span>;  </div><div class="line">    String message = <span class="string">"Test error"</span>;</div><div class="line"></div><div class="line">    channel.basicPublish(EXCHANGE_NAME, severity, <span class="keyword">null</span>, message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">    System.out.println(<span class="string">" [x] Sent '"</span> + severity + <span class="string">"':'"</span> + message + <span class="string">"'"</span>);</div><div class="line"></div><div class="line">    channel.close();</div><div class="line">    connection.close();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>ReceiveLogsDirect.java</strong>（日志将打印到屏幕上）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.logQueues.direct;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.*;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReceiveLogsDirect</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"direct_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">    factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);</div><div class="line">    String queueName = channel.queueDeclare().getQueue();</div><div class="line"></div><div class="line">    <span class="comment">/** info 和 warning 级别的日志将打印到屏幕上 */</span></div><div class="line">    String[] severitys = <span class="keyword">new</span> String[]&#123;<span class="string">"info"</span>, <span class="string">"warning"</span>&#125;;</div><div class="line">    <span class="keyword">for</span>(String severity : severitys)&#123;</div><div class="line">      channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">    &#125;</div><div class="line">    System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">    Consumer consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">      <span class="meta">@Override</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope,</span></span></div><div class="line">                                 AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body) <span class="keyword">throws</span> IOException &#123;</div><div class="line">        String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line">        System.out.println(<span class="string">" [x] Received '"</span> + envelope.getRoutingKey() + <span class="string">"':'"</span> + message + <span class="string">"'"</span>);</div><div class="line">      &#125;</div><div class="line">    &#125;;</div><div class="line">    channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>ReceiveLogsDirectToDisk.java</strong> （日子将写入到日志文件）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.logQueues.direct;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</div><div class="line"><span class="keyword">import</span> java.io.FileOutputStream;</div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</div><div class="line"><span class="keyword">import</span> java.util.Calendar;</div><div class="line"><span class="keyword">import</span> java.util.Date;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.AMQP;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.BuiltinExchangeType;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Consumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.DefaultConsumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Envelope;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReceiveLogsDirectToDisk</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"direct_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">    factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);</div><div class="line">    String queueName = channel.queueDeclare().getQueue();</div><div class="line"></div><div class="line">	<span class="comment">/** error 级别的日志将直接写入磁盘 */</span></div><div class="line">    String[] severitys = <span class="keyword">new</span> String[]&#123;<span class="string">"error"</span>&#125;;</div><div class="line">    <span class="keyword">for</span>(String severity : severitys)&#123;</div><div class="line">      channel.queueBind(queueName, EXCHANGE_NAME, severity);</div><div class="line">    &#125;</div><div class="line">    System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">    Consumer consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">      <span class="meta">@Override</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope,</span></span></div><div class="line">                                 AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body) <span class="keyword">throws</span> IOException &#123;</div><div class="line">        String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line">        message = <span class="string">" [x] Received '"</span> + envelope.getRoutingKey() + <span class="string">"':'"</span> + message + <span class="string">"'"</span> + <span class="string">"\n"</span>;</div><div class="line">        FileOutputStream file = <span class="keyword">null</span>;</div><div class="line">        </div><div class="line">        <span class="keyword">try</span>&#123;</div><div class="line">        	file = <span class="keyword">new</span> FileOutputStream(<span class="string">"./direct.log"</span>,<span class="keyword">true</span>);</div><div class="line">        	file.write(message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">        &#125;<span class="keyword">catch</span>(FileNotFoundException e)&#123;</div><div class="line">        	e.printStackTrace();</div><div class="line">        &#125;<span class="keyword">finally</span>&#123;</div><div class="line">        	file.close();</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">      &#125;</div><div class="line">    &#125;;</div><div class="line">    channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># EmitLogDirect</div><div class="line"> [x] Sent &apos;info&apos;:&apos;Test error&apos;</div><div class="line"> [x] Sent &apos;error&apos;:&apos;Test error&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># ReceiveLogsDirect </div><div class="line"># see in console</div><div class="line"> [*] Waiting for messages. To exit press CTRL+C</div><div class="line"> [x] Received &apos;info&apos;:&apos;Test error&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># ReceiveLogsDirectToDisk</div><div class="line"># see in file &quot;./direct.log&quot;</div><div class="line"> [x] Received &apos;error&apos;:&apos;Test error&apos;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/25/RabbitQM/worker/" rel="next" title="RabbitMQ —— Work Queues">
+                <i class="fa fa-chevron-left"></i> RabbitMQ —— Work Queues
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/26/RabbitQM/publish-subscribe/" rel="prev" title="RabbitMQ —— publish/subscribe">
+                RabbitMQ —— publish/subscribe <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#绑定（Bindings）"><span class="nav-text">绑定（Bindings）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Direct-exchange"><span class="nav-text">Direct exchange</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个绑定（Multiple-bindings）"><span class="nav-text">多个绑定（Multiple bindings）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送日志（Emitting-logs）"><span class="nav-text">发送日志（Emitting logs）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅（Subscribing）"><span class="nav-text">订阅（Subscribing）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合并代码"><span class="nav-text">合并代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

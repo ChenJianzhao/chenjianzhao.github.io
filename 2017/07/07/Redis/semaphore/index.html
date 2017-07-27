@@ -1,0 +1,715 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="计数信号量是一种锁，它可以让用户限制一项资源最多能够同时被多少个进程访问，通常用于限定同时使用的资源数量。
+计数信号量和其他锁的区别在于，当客户端获取锁失败的时候，通常会选择等待；而当客户端获取计数信号量失败的时候，客户端通常会选择立即返回失败结果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 之 信号量">
+<meta property="og:url" content="http://yoursite.com/2017/07/07/Redis/semaphore/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="计数信号量是一种锁，它可以让用户限制一项资源最多能够同时被多少个进程访问，通常用于限定同时使用的资源数量。
+计数信号量和其他锁的区别在于，当客户端获取锁失败的时候，通常会选择等待；而当客户端获取计数信号量失败的时候，客户端通常会选择立即返回失败结果。">
+<meta property="og:updated_time" content="2017-07-27T02:16:28.008Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 之 信号量">
+<meta name="twitter:description" content="计数信号量是一种锁，它可以让用户限制一项资源最多能够同时被多少个进程访问，通常用于限定同时使用的资源数量。
+计数信号量和其他锁的区别在于，当客户端获取锁失败的时候，通常会选择等待；而当客户端获取计数信号量失败的时候，客户端通常会选择立即返回失败结果。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/07/Redis/semaphore/"/>
+
+
+
+
+
+  <title> Redis 之 信号量 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/07/Redis/semaphore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Redis 之 信号量
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-07T12:00:00+08:00">
+                2017-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>计数信号量是一种锁，它可以让用户限制一项资源最多能够同时被多少个进程访问，通常用于限定同时使用的资源数量。</p>
+<p>计数信号量和其他锁的区别在于，当客户端获取锁失败的时候，通常会选择等待；而当客户端获取计数信号量失败的时候，客户端通常会选择立即返回失败结果。</p>
+<a id="more"></a>
+<p>多进程情况下，一般都需要保证信号量的公平和数量的准确，所以以下直接给出带锁的公平信号量</p>
+<h1 id="1-公平信号量"><a href="#1-公平信号量" class="headerlink" title="1 公平信号量"></a>1 公平信号量</h1><ul>
+<li>为了尽可能地减少系统时间不一致带来的问题，我们需要给信号量实现添加一个计数器以及一个有序集合。其中，计数器创建出一种类似于计时器（Timer）的机制，确保最先对计数器执行自增操作的客户端能够获得信号量。</li>
+</ul>
+<ul>
+<li>另外，为了满足这一要求，程序会将计数器生成的值用作分值，存储到一个”信号量拥有者“的有序集合里面，然后通过检查客户端生成的标识符在有序集合中的排名来判断客户端是否取得了信号量。</li>
+<li>通过从“系统时间”有序集合里面移除过期元素的方式来清理过期信号量。</li>
+<li>另外，公平信号量实现还会通过 <code>ZINTERSTORE</code> 命令以及该命令的 <code>WEIGHTS</code> （权重）参数，将信号量的超时时间传递给新的信号量拥有者有序集合。</li>
+</ul>
+<h2 id="1-1-获取信号量"><a href="#1-1-获取信号量" class="headerlink" title="1.1 获取信号量"></a>1.1 获取信号量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取公平信号量</div><div class="line"> * <span class="doctag">@param</span> conn</div><div class="line"> * <span class="doctag">@param</span> semname</div><div class="line"> * <span class="doctag">@param</span> limit</div><div class="line"> * <span class="doctag">@param</span> timeout</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">acquireFairSemaphore</span><span class="params">(Jedis conn, String semname, Integer limit, Integer timeout)</span> </span>&#123;</div><div class="line">	</div><div class="line">	<span class="keyword">if</span>( timeout == <span class="keyword">null</span> ) </div><div class="line">		timeout = <span class="number">10</span>;</div><div class="line">	<span class="keyword">if</span>(limit==<span class="keyword">null</span>)</div><div class="line">		limit = <span class="number">5</span>;</div><div class="line">		</div><div class="line">	String identifier = UUID.randomUUID().toString();</div><div class="line">	String czset = semname + <span class="string">":owner"</span>;</div><div class="line">	String ctr = semname + <span class="string">":counter"</span>;</div><div class="line">	</div><div class="line">	<span class="keyword">long</span> now = System.currentTimeMillis();</div><div class="line">	Pipeline pipe = conn.pipelined();</div><div class="line">	pipe.multi();</div><div class="line">	</div><div class="line">	<span class="comment">// 移除过期信号量</span></div><div class="line">	Calendar cal = Calendar.getInstance();</div><div class="line">	cal.add(Calendar.SECOND, -timeout);</div><div class="line">	pipe.zremrangeByScore(semname, <span class="number">0</span>, (<span class="keyword">double</span>)cal.getTimeInMillis());</div><div class="line">	ZParams param = <span class="keyword">new</span> ZParams();</div><div class="line">	param.weightsByDouble(<span class="number">1</span>,<span class="number">0</span>); 	<span class="comment">// 信号量拥有者 权重1，过期集合 0</span></div><div class="line">	pipe.zinterstore(czset,param,czset,semname); <span class="comment">// 同步更新信号量拥有者 </span></div><div class="line">	</div><div class="line">	<span class="comment">// 计数器自增</span></div><div class="line">	pipe.incr(ctr);</div><div class="line">	</div><div class="line">	pipe.exec();</div><div class="line">	List&lt;Object&gt; counterResult = pipe.syncAndReturnAll();</div><div class="line">	<span class="keyword">long</span> counter = (Long)((List)counterResult.get(<span class="number">4</span>)).get(<span class="number">2</span>);</div><div class="line"></div><div class="line">	pipe.multi();</div><div class="line">	<span class="comment">// 尝试获取信号量</span></div><div class="line">	pipe.zadd(semname, System.currentTimeMillis(), identifier);</div><div class="line">	pipe.zadd(czset, counter, identifier);</div><div class="line">	</div><div class="line">	<span class="comment">// 检查排名来判断客户端是否取得信号量</span></div><div class="line">	pipe.zrank(czset, identifier);</div><div class="line">	pipe.exec();</div><div class="line">	</div><div class="line">	List&lt;Object&gt; result = pipe.syncAndReturnAll();</div><div class="line">	<span class="keyword">long</span> rank = (Long)((List)result.get(<span class="number">4</span>)).get(<span class="number">2</span>);</div><div class="line">	</div><div class="line">	<span class="keyword">if</span>(rank&lt;limit)&#123;</div><div class="line">		<span class="keyword">return</span> identifier;</div><div class="line">	&#125;<span class="keyword">else</span>&#123;</div><div class="line">		pipe.multi();</div><div class="line">		pipe.zrem(semname, identifier);</div><div class="line">		pipe.zrem(czset, identifier);</div><div class="line">		pipe.exec();</div><div class="line">		pipe.sync();</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 带锁的信号量请求</div><div class="line"> * <span class="doctag">@param</span> conn</div><div class="line"> * <span class="doctag">@param</span> semname</div><div class="line"> * <span class="doctag">@param</span> limit</div><div class="line"> * <span class="doctag">@param</span> timeout</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">acquireFairSemaphoreWithLock</span><span class="params">(Jedis conn, String semname, Integer limit, Integer timeout)</span> </span>&#123;</div><div class="line">	</div><div class="line">	String identifier = LockUtil.acquireLock(conn, semname, <span class="number">3</span>, <span class="number">5</span>);</div><div class="line">	<span class="keyword">if</span>( identifier!=<span class="keyword">null</span> ) &#123;</div><div class="line">		<span class="keyword">try</span>&#123;</div><div class="line">			<span class="keyword">return</span> acquireFairSemaphore(conn, semname, limit, timeout);</div><div class="line">		&#125;<span class="keyword">finally</span> &#123;</div><div class="line">			LockUtil.releaseLock(conn, semname, identifier);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="1-2-释放信号量"><a href="#1-2-释放信号量" class="headerlink" title="1.2 释放信号量"></a>1.2 释放信号量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 释放信号量</div><div class="line"> * <span class="doctag">@param</span> conn</div><div class="line"> * <span class="doctag">@param</span> semname</div><div class="line"> * <span class="doctag">@param</span> identifier</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">releaseFairSemaphore</span><span class="params">(Jedis conn, String semname, String identifier)</span> </span>&#123;</div><div class="line">	Pipeline pipe = conn.pipelined();</div><div class="line">	pipe.multi();</div><div class="line">	pipe.zrem(semname, identifier);</div><div class="line">	pipe.zrem(semname + <span class="string">":owner"</span>, identifier);</div><div class="line">	pipe.exec();</div><div class="line">	List&lt;Object&gt; result = pipe.syncAndReturnAll();</div><div class="line">	<span class="keyword">if</span>(result.get(<span class="number">3</span>)!=<span class="keyword">null</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="1-3-刷新信号量"><a href="#1-3-刷新信号量" class="headerlink" title="1.3 刷新信号量"></a>1.3 刷新信号量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 刷新信号量</div><div class="line"> * <span class="doctag">@param</span> conn</div><div class="line"> * <span class="doctag">@param</span> semname</div><div class="line"> * <span class="doctag">@param</span> identifier</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">refreshFairSemaphore</span><span class="params">(Jedis conn, String semname, String identifier)</span> </span>&#123;</div><div class="line">	<span class="comment">// 添加成功，客户端已失去信号量</span></div><div class="line">	<span class="keyword">if</span>( conn.zadd(semname, (<span class="keyword">double</span>)System.currentTimeMillis(), identifier) == <span class="number">1</span>) &#123;</div><div class="line">		releaseFairSemaphore(conn, semname, identifier);</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;<span class="keyword">else</span>&#123;</div><div class="line">		<span class="comment">// 添加失败，更新了 键的分值</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/06/Redis/lock/" rel="next" title="Redis 之 分布式锁（未完成）">
+                <i class="fa fa-chevron-left"></i> Redis 之 分布式锁（未完成）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/09/Redis/watch/" rel="prev" title="Redis 之 Watch">
+                Redis 之 Watch <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-公平信号量"><span class="nav-text">1 公平信号量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-获取信号量"><span class="nav-text">1.1 获取信号量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-释放信号量"><span class="nav-text">1.2 释放信号量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-刷新信号量"><span class="nav-text">1.3 刷新信号量</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

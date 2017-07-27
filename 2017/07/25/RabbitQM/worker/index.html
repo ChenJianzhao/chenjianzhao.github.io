@@ -1,0 +1,747 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="准备工作工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ —— Work Queues">
+<meta property="og:url" content="http://yoursite.com/2017/07/25/RabbitQM/worker/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="准备工作工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。">
+<meta property="og:image" content="http://yoursite.com/2017/07/25/RabbitQM/worker/python-two.png">
+<meta property="og:updated_time" content="2017-07-27T02:18:28.910Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ —— Work Queues">
+<meta name="twitter:description" content="准备工作工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。">
+<meta name="twitter:image" content="http://yoursite.com/2017/07/25/RabbitQM/worker/python-two.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/25/RabbitQM/worker/"/>
+
+
+
+
+
+  <title> RabbitMQ —— Work Queues | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/25/RabbitQM/worker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RabbitMQ —— Work Queues
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-25T20:00:00+08:00">
+                2017-07-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。</p>
+<a id="more"></a>
+<p><img src="/2017/07/25/RabbitQM/worker/python-two.png" alt="python-two"></p>
+<p>发布任务的进程代码，NewTask.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.workerQueues;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.MessageProperties;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewTask</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TASK_QUEUE_NAME = <span class="string">"task_queue"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">        factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">        Connection connection = factory.newConnection();</div><div class="line">        Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">        channel.queueDeclare(TASK_QUEUE_NAME, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> msgCount = <span class="number">0</span>;</div><div class="line">        String message = <span class="string">"["</span> + msgCount + <span class="string">"] Hello World."</span>;</div><div class="line">        System.out.println(<span class="string">"Sent '"</span> + message + <span class="string">"'"</span>);</div><div class="line"></div><div class="line">        channel.basicPublish(<span class="string">""</span>, TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line"><span class="comment">//        System.out.println(" [x] Sent '" + message + "'");</span></div><div class="line"></div><div class="line">        channel.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行任务的进程代码，Worker.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.workerQueues;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.TimeoutException;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.AMQP;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Consumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.DefaultConsumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Envelope;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Worker</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TASK_QUEUE_NAME = <span class="string">"task_queue"</span>;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">		factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">		Connection connection = <span class="keyword">null</span>;</div><div class="line">		Channel channel = <span class="keyword">null</span>;</div><div class="line">		Consumer consumer = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			connection = factory.newConnection();</div><div class="line">			channel= connection.createChannel();</div><div class="line"></div><div class="line">			channel.queueDeclare(TASK_QUEUE_NAME, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</div><div class="line">			System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">			consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">				<span class="meta">@Override</span></div><div class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">					String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">					System.out.println(<span class="string">"Received '"</span> + message + <span class="string">"'"</span>);</div><div class="line">					<span class="keyword">try</span> &#123;</div><div class="line">						doWork(message);</div><div class="line">					&#125; <span class="keyword">catch</span>(InterruptedException e)&#123;</div><div class="line">						e.printStackTrace();</div><div class="line">					&#125;<span class="keyword">finally</span> &#123;</div><div class="line"><span class="comment">//						System.out.println(" [x] Done");</span></div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;;</div><div class="line"></div><div class="line">			<span class="comment">/**</span></div><div class="line">			 *  autoAck 是否自动发送确认消息</div><div class="line">			 *  消费者没有确认的情况下，RabbitMQ Server不会删除该消息，也不会再向该消费者再次推送同一消息</div><div class="line">			 */</div><div class="line">			<span class="keyword">boolean</span> autoAck = <span class="keyword">true</span>;</div><div class="line">			channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);</div><div class="line"></div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e1) &#123;</div><div class="line">			e1.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doWork</span><span class="params">(String task)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">	    <span class="keyword">for</span> (<span class="keyword">char</span> ch: task.toCharArray()) &#123;</div><div class="line">	        <span class="keyword">if</span> (ch == <span class="string">'.'</span>) Thread.sleep(<span class="number">1000</span>);</div><div class="line">	    &#125;</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="轮询分派（Round-robin-dispatching）"><a href="#轮询分派（Round-robin-dispatching）" class="headerlink" title="轮询分派（Round-robin dispatching）"></a>轮询分派（Round-robin dispatching）</h2><p>使用“任务队列”的一个优点是，它有轻松的让任务并行执行。如果我们建立的阻塞的任务，只需要增加多几个Worker就能轻松实现均衡。</p>
+<p>首先，我们先运行2个Worker实例，他们都将从队列获取任务信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># Run Worker1</div><div class="line">[*] Waiting for messages. To exit press CTRL+C</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># Run Worker2</div><div class="line">[*] Waiting for messages. To exit press CTRL+C</div></pre></td></tr></table></figure>
+<p>然后，通过 NewTask 发布4条消息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># Run NewTask 4 Times</div><div class="line"></div><div class="line">Sent &apos;[0] Hello World.&apos;</div><div class="line">Sent &apos;[1] Hello World.&apos;</div><div class="line">Sent &apos;[2] Hello World.&apos;</div><div class="line">Sent &apos;[3] Hello World.&apos;</div></pre></td></tr></table></figure>
+<p>可以看到2个 Worker 控制台的输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> # Run Worker1</div><div class="line"> [*] Waiting for messages. To exit press CTRL+C</div><div class="line">Received &apos;[0] Hello World.&apos;</div><div class="line">Received &apos;[2] Hello World.&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> # Run Worker2</div><div class="line"> [*] Waiting for messages. To exit press CTRL+C</div><div class="line">Received &apos;[1] Hello World.&apos;</div><div class="line">Received &apos;[3] Hello World.&apos;</div></pre></td></tr></table></figure>
+<p>默认情况下，RabbitMQ 会按顺序依次将每条消息发送给下一个消费者，每个消费者将平均地收到相同数量的消息。这种方式叫做<code>轮询</code>。</p>
+<h2 id="消息确认（Message-acknowledgment）"><a href="#消息确认（Message-acknowledgment）" class="headerlink" title="消息确认（Message acknowledgment）"></a>消息确认（Message acknowledgment）</h2><p>假设一旦 RabbitMQ 向消费者提交了一个消息，这条消息将立刻被从内存中删除。这样的情况下，如果Worker进程被杀死，我们将丢失worker正在处理的消息，我们也将丢失分配到这个特定的worker但未被处理的所有消息。</p>
+<p>未了不让任务丢失，我们需要在worker死掉之后，能够将任务分配给另外的worker。</p>
+<p>为了保证信息不丢失，RabbitMQ 支持 消息<code>确认</code> （<em>acknowledgments</em>），消费者将向回复一个 ack 告诉 RabbitMQ 某个特定的消息已经被接受，可以删除。</p>
+<p>如果一个消费者死了（channel 关闭，connection关闭或者TCP连接丢失）而没有发送 ack，RabbitMQ 将认为消息没有被处理完全并会将其重新加入队列，如果同时存在其他在线的消费者，消息将被快速地分配给另外的消费者。这样就能在worker偶尔宕机的情况下确保消息不丢失。</p>
+<p>消息 <code>acknowledgments</code> 默认是打开的。我们可以显示地通过  <code>autoAck=false</code> 关闭自动确认，在worker中适当的位置手动发送确认。</p>
+<p>修改 worker 的代码，在 finally 中加入发送 ack 的代码，并关闭消费者的自动 ack 确认</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">channel.basicQos(<span class="number">1</span>); <span class="comment">// accept only one unack-ed message at a time (see below)</span></div><div class="line"></div><div class="line"><span class="keyword">final</span> Consumer consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">    String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">    System.out.println(<span class="string">" [x] Received '"</span> + message + <span class="string">"'"</span>);</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      doWork(message);</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">      System.out.println(<span class="string">" [x] Done"</span>);</div><div class="line">      channel.basicAck(envelope.getDeliveryTag(), <span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">boolean</span> autoAck = <span class="keyword">false</span>;</div><div class="line">channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);</div></pre></td></tr></table></figure>
+<h2 id="消息持久化-（Message-durability）"><a href="#消息持久化-（Message-durability）" class="headerlink" title="消息持久化 （Message durability）"></a>消息持久化 （Message durability）</h2><p>当 RabbitMQ 退出或崩溃，它将丢弃所有的队列和信息。你需要两个条件来保证消息不会丢失：<strong>将队列和消息都标识为持久的（durable）</strong>。</p>
+<ul>
+<li>声明队列持久化（durable）</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">boolean</span> durable = <span class="keyword">true</span>;</div><div class="line">channel.queueDeclare(<span class="string">"task_queue"</span>, durable, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注：</strong>若对已经存在的被声明为“非持久化” 的队列，再次声明为持久化，RabbitMQ 是不允许修改已存在的队列的参数的，并且会返回错误。</p>
+</blockquote>
+<ul>
+<li>声明消息持久化</li>
+</ul>
+<p>设置消息属性 <code>MessageProperties</code> (which implements BasicProperties) 的值为 <code>PERSISTENT_TEXT_PLAIN</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> com.rabbitmq.client.MessageProperties;</div><div class="line"></div><div class="line">channel.basicPublish(<span class="string">""</span>, <span class="string">"task_queue"</span>, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());</div></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>注：</strong> 标识消息持久化不完全保证消息不会丢失，在 RabbitMQ 接受到消息但还未持久化之间任然存在很短的时间间隔。同时，RabbitMQ 不会进行对每个信息做 二级同步——消息可能只保存在缓存中而没有被写到硬盘中。这个持久化保证并不强健。</p>
+<p>如果需要强持久化保证，可以使用  <a href="https://www.rabbitmq.com/confirms.html" target="_blank" rel="external">publisher confirms</a>.</p>
+</blockquote>
+<h2 id="公平调度-（Fair-dispatch）"><a href="#公平调度-（Fair-dispatch）" class="headerlink" title="公平调度 （Fair dispatch）"></a>公平调度 （Fair dispatch）</h2><p>RabbitMQ 默认会平均地分配任务给每个消费者，但这样可能导致有些消费者一直空闲而另外一些却处于一直繁忙的状态。</p>
+<p>这种现象的原因是，RabbitMQ 在消息进入队列的时候就派发消息，而没有查看没有回复消息确认 ack 的消费者，它只是简单的将第 n 个消息派发给第 n 个消费者。</p>
+<p>为了防止这种现象，我们可以为 <code>basicQos</code> 方法设置  <code>prefetchCount = 1</code>。这将告诉 RabbitMQ  在同一时间不为worker 派发超过一个消息，换言之就是，在 worker 处理完任务并回复消息确认上一个消息之前，之前不再派发新的消息，它将派发给下一个不繁忙的 workter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> prefetchCount = <span class="number">1</span>;</div><div class="line">channel.basicQos(prefetchCount);</div></pre></td></tr></table></figure>
+<h2 id="合并代码"><a href="#合并代码" class="headerlink" title="合并代码"></a>合并代码</h2><p><strong>NewTask.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.workerQueues;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.MessageProperties;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewTask</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TASK_QUEUE_NAME = <span class="string">"task_queue"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">        factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">        Connection connection = factory.newConnection();</div><div class="line">        Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">        channel.queueDeclare(TASK_QUEUE_NAME, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">        <span class="keyword">int</span> msgCount = <span class="number">0</span>;</div><div class="line">        String message = <span class="string">"["</span> + msgCount + <span class="string">"] Hello World."</span>;</div><div class="line">        System.out.println(<span class="string">" ["</span>+ msgCount +<span class="string">"] Sent '"</span> + message + <span class="string">"'"</span>);</div><div class="line"></div><div class="line">        channel.basicPublish(<span class="string">""</span>, TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">        System.out.println(<span class="string">" [x] Sent '"</span> + message + <span class="string">"'"</span>);</div><div class="line"></div><div class="line">        channel.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>Worker.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.workerQueues;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.TimeoutException;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.AMQP;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Consumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.DefaultConsumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Envelope;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Worker</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TASK_QUEUE_NAME = <span class="string">"task_queue"</span>;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">		ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">		factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">		Connection connection = <span class="keyword">null</span>;</div><div class="line">		Channel channel = <span class="keyword">null</span>;</div><div class="line">		Consumer consumer = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			connection = factory.newConnection();</div><div class="line">			channel= connection.createChannel();</div><div class="line"></div><div class="line">         	 <span class="comment">/** </span></div><div class="line">		     * 限制每个消费者同一时间只能消费一个消息 </div><div class="line">		     * （即没有发送确认ack，不会向该消费者推送其他消息）</div><div class="line">		     */	</div><div class="line">			<span class="keyword">int</span> prefetchCount = <span class="number">1</span>;</div><div class="line">			channel.basicQos(prefetchCount);</div><div class="line"></div><div class="line">			channel.queueDeclare(TASK_QUEUE_NAME, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</div><div class="line">			System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">			consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">				<span class="meta">@Override</span></div><div class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">					String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">					System.out.println(<span class="string">"Received '"</span> + message + <span class="string">"'"</span>);</div><div class="line">					<span class="keyword">try</span> &#123;</div><div class="line">						doWork(message);</div><div class="line">					&#125; <span class="keyword">catch</span>(InterruptedException e)&#123;</div><div class="line">						e.printStackTrace();</div><div class="line">					&#125;<span class="keyword">finally</span> &#123;</div><div class="line">						System.out.println(<span class="string">" [x] Done"</span>);</div><div class="line">						<span class="comment">/**</span></div><div class="line">						 * 向服务器发送确认消息</div><div class="line">						 */</div><div class="line">						channel.basicAck(envelope.getDeliveryTag(), <span class="keyword">false</span>);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;;</div><div class="line"></div><div class="line">			<span class="comment">/**</span></div><div class="line">			 *  autoAck 是否自动发送确认消息</div><div class="line">			 *  消费者没有确认的情况下，RabbitMQ Server不会删除该消息，也不会再向该消费者再次推送同一消息</div><div class="line">			 */</div><div class="line">			<span class="keyword">boolean</span> autoAck = <span class="keyword">false</span>;</div><div class="line">			channel.basicConsume(TASK_QUEUE_NAME, autoAck, consumer);</div><div class="line"></div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e1) &#123;</div><div class="line">			e1.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doWork</span><span class="params">(String task)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">	    <span class="keyword">for</span> (<span class="keyword">char</span> ch: task.toCharArray()) &#123;</div><div class="line">	        <span class="keyword">if</span> (ch == <span class="string">'.'</span>) Thread.sleep(<span class="number">1000</span>);</div><div class="line">	    &#125;</div><div class="line">	&#125;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/18/Redis/sentinel2/" rel="next" title="Redis 之 Sentinel实操">
+                <i class="fa fa-chevron-left"></i> Redis 之 Sentinel实操
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/26/RabbitQM/routing/" rel="prev" title="RabbitMQ —— Rounting">
+                RabbitMQ —— Rounting <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#轮询分派（Round-robin-dispatching）"><span class="nav-text">轮询分派（Round-robin dispatching）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息确认（Message-acknowledgment）"><span class="nav-text">消息确认（Message acknowledgment）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息持久化-（Message-durability）"><span class="nav-text">消息持久化 （Message durability）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#公平调度-（Fair-dispatch）"><span class="nav-text">公平调度 （Fair dispatch）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合并代码"><span class="nav-text">合并代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

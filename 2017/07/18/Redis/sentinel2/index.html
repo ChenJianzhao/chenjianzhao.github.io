@@ -1,0 +1,735 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="启动Redis集群启动1个master，2个slavemaster 日志
+123456789101112131415161718192021222324252627282930313233343536373839[3368] 18 Jul 09:49:34.648 # Server started, Redis version 2.6.12[3368] 18 Jul 09:49:34.938 *">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 之 Sentinel实操">
+<meta property="og:url" content="http://yoursite.com/2017/07/18/Redis/sentinel2/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="启动Redis集群启动1个master，2个slavemaster 日志
+123456789101112131415161718192021222324252627282930313233343536373839[3368] 18 Jul 09:49:34.648 # Server started, Redis version 2.6.12[3368] 18 Jul 09:49:34.938 *">
+<meta property="og:updated_time" content="2017-07-27T02:17:25.851Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 之 Sentinel实操">
+<meta name="twitter:description" content="启动Redis集群启动1个master，2个slavemaster 日志
+123456789101112131415161718192021222324252627282930313233343536373839[3368] 18 Jul 09:49:34.648 # Server started, Redis version 2.6.12[3368] 18 Jul 09:49:34.938 *">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/18/Redis/sentinel2/"/>
+
+
+
+
+
+  <title> Redis 之 Sentinel实操 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/18/Redis/sentinel2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Redis 之 Sentinel实操
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-18T20:10:00+08:00">
+                2017-07-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <a id="more"></a>
+<h1 id="启动Redis集群"><a href="#启动Redis集群" class="headerlink" title="启动Redis集群"></a>启动Redis集群</h1><h2 id="启动1个master，2个slave"><a href="#启动1个master，2个slave" class="headerlink" title="启动1个master，2个slave"></a>启动1个master，2个slave</h2><p><strong>master 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">[3368] 18 Jul 09:49:34.648 # Server started, Redis version 2.6.12</div><div class="line">[3368] 18 Jul 09:49:34.938 * DB loaded from disk: 0.290 seconds</div><div class="line">[3368] 18 Jul 09:49:34.938 * The server is now ready to accept connections on port 6379</div><div class="line">[7316] 18 Jul 09:54:25.569 # Warning: 32 bit instance detected but no memory limit set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._                                                  </div><div class="line">           _.-``__ &apos;&apos;-._                                             </div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   </div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in stand alone mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6379</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 7316</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |                                  </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;                                       </div><div class="line">          `-._        _.-&apos;                                           </div><div class="line">              `-.__.-&apos;                                               </div><div class="line">              </div><div class="line">[7316] 18 Jul 09:54:25.569 # Server started, Redis version 2.6.12</div><div class="line">[7316] 18 Jul 09:54:25.839 * DB loaded from disk: 0.270 seconds</div><div class="line">[7316] 18 Jul 09:54:25.839 * The server is now ready to accept connections on port 6379</div><div class="line">[7316] 18 Jul 09:56:31.730 * Slave ask for synchronization</div><div class="line">[7316] 18 Jul 09:56:31.730 * Starting BGSAVE for SYNC</div><div class="line">[7316] 18 Jul 09:56:31.730 * cowBkgdSaveReset deleting 0 SDS and 0 obj items</div><div class="line">[7316] 18 Jul 09:56:31.980 * DB saved on disk</div><div class="line">[7316] 18 Jul 09:56:32.030 * Background saving terminated with success</div><div class="line">[7316] 18 Jul 09:56:32.030 * cowBkgdSaveReset deleting 0 SDS and 1 obj items</div><div class="line">[7316] 18 Jul 09:56:32.070 * Synchronization with slave succeeded</div><div class="line">[7316] 18 Jul 10:01:18.638 * Slave ask for synchronization</div><div class="line">[7316] 18 Jul 10:01:18.638 * Starting BGSAVE for SYNC</div><div class="line">[7316] 18 Jul 10:01:18.638 * cowBkgdSaveReset deleting 0 SDS and 0 obj items</div><div class="line">[7316] 18 Jul 10:01:18.868 * DB saved on disk</div><div class="line">[7316] 18 Jul 10:01:18.888 * Background saving terminated with success</div><div class="line">[7316] 18 Jul 10:01:18.888 * cowBkgdSaveReset deleting 0 SDS and 1 obj items</div><div class="line">[7316] 18 Jul 10:01:18.938 * Synchronization with slave succeeded</div></pre></td></tr></table></figure>
+<p><strong>slave1 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">[2040] 18 Jul 09:56:30.705 # Warning: 32 bit instance detected but no memory limit set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._                                                  </div><div class="line">           _.-``__ &apos;&apos;-._                                             </div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   </div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in stand alone mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6380</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 2040</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |                                  </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;                                       </div><div class="line">          `-._        _.-&apos;                                           </div><div class="line">              `-.__.-&apos;                                               </div><div class="line"></div><div class="line">[2040] 18 Jul 09:56:30.705 # Server started, Redis version 2.6.12</div><div class="line">[2040] 18 Jul 09:56:30.981 * DB loaded from disk: 0.276 seconds</div><div class="line">[2040] 18 Jul 09:56:30.981 * The server is now ready to accept connections on port 6380</div><div class="line">[2040] 18 Jul 09:56:31.710 * Connecting to MASTER...</div><div class="line">[2040] 18 Jul 09:56:31.730 * MASTER &lt;-&gt; SLAVE sync started</div><div class="line">[2040] 18 Jul 09:56:31.730 * Non blocking connect for SYNC fired the event.</div><div class="line">[2040] 18 Jul 09:56:31.730 * Master replied to PING, replication can continue...</div><div class="line">[2040] 18 Jul 09:56:32.030 * MASTER &lt;-&gt; SLAVE sync: receiving 1472727 bytes from master</div><div class="line">[2040] 18 Jul 09:56:32.070 * MASTER &lt;-&gt; SLAVE sync: Loading DB in memory</div><div class="line">[2040] 18 Jul 09:56:32.480 * MASTER &lt;-&gt; SLAVE sync: Finished with success</div></pre></td></tr></table></figure>
+<p><strong>slave2 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">[976] 18 Jul 10:01:17.627 # Warning: 32 bit instance detected but no memory limit set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._                                                  </div><div class="line">           _.-``__ &apos;&apos;-._                                             </div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   </div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in stand alone mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6381</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 976</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  </div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |                                  </div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   </div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;                                       </div><div class="line">          `-._        _.-&apos;                                           </div><div class="line">              `-.__.-&apos;                                               </div><div class="line"></div><div class="line">[976] 18 Jul 10:01:17.627 # Server started, Redis version 2.6.12</div><div class="line">[976] 18 Jul 10:01:17.897 * DB loaded from disk: 0.270 seconds</div><div class="line">[976] 18 Jul 10:01:17.897 * The server is now ready to accept connections on port 6381</div><div class="line">[976] 18 Jul 10:01:18.628 * Connecting to MASTER...</div><div class="line">[976] 18 Jul 10:01:18.628 * MASTER &lt;-&gt; SLAVE sync started</div><div class="line">[976] 18 Jul 10:01:18.628 * Non blocking connect for SYNC fired the event.</div><div class="line">[976] 18 Jul 10:01:18.628 * Master replied to PING, replication can continue...</div><div class="line">[976] 18 Jul 10:01:18.888 * MASTER &lt;-&gt; SLAVE sync: receiving 1472736 bytes from master</div><div class="line">[976] 18 Jul 10:01:18.938 * MASTER &lt;-&gt; SLAVE sync: Loading DB in memory</div><div class="line">[976] 18 Jul 10:01:19.338 * MASTER &lt;-&gt; SLAVE sync: Finished with success</div></pre></td></tr></table></figure>
+<p>可以看到2个slave启动后向master请求同步。</p>
+<h2 id="分别启动3个sentinel"><a href="#分别启动3个sentinel" class="headerlink" title="分别启动3个sentinel"></a>分别启动3个sentinel</h2><p><strong>sentinel1 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[6876] 18 Jul 10:22:26.690 # Warning: 32 bit instance detected but no memory lim</div><div class="line">it set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._</div><div class="line">           _.-``__ &apos;&apos;-._</div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._</div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in sentinel mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 26379</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 6876</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;</div><div class="line">          `-._        _.-&apos;</div><div class="line">              `-.__.-&apos;</div><div class="line"></div><div class="line">[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6876] 18 Jul 10:22:27.700 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6876] 18 Jul 10:23:48.375 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380@ mymaster 127.0.0.1 6379</div><div class="line">[6876] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381@ mymaster 127.0.0.1 6379</div></pre></td></tr></table></figure>
+<p><strong>sentinel2 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[4620] 18 Jul 10:23:43.361 # Warning: 32 bit instance detected but no memory lim</div><div class="line">it set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._</div><div class="line">           _.-``__ &apos;&apos;-._</div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._</div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in sentinel mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 26380</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 4620</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;</div><div class="line">          `-._        _.-&apos;</div><div class="line">              `-.__.-&apos;</div><div class="line"></div><div class="line">[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 10:23:44.368 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 10:23:47.515 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 10:29:14.747 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6379</div></pre></td></tr></table></figure>
+<p><strong>sentinel3 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[6612] 18 Jul 10:29:09.713 # Warning: 32 bit instance detected but no memory lim</div><div class="line">it set. Setting 3 GB maxmemory limit with &apos;noeviction&apos; policy now.</div><div class="line">                _._</div><div class="line">           _.-``__ &apos;&apos;-._</div><div class="line">      _.-``    `.  `_.  &apos;&apos;-._           Redis 2.6.12 (00000000/0) 32 bit</div><div class="line">  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._</div><div class="line"> (    &apos;      ,       .-`  | `,    )     Running in sentinel mode</div><div class="line"> |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 26381</div><div class="line"> |    `-._   `._    /     _.-&apos;    |     PID: 6612</div><div class="line">  `-._    `-._  `-./  _.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line"> |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|</div><div class="line"> |    `-._`-._        _.-&apos;_.-&apos;    |</div><div class="line">  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;</div><div class="line">      `-._    `-.__.-&apos;    _.-&apos;</div><div class="line">          `-._        _.-&apos;</div><div class="line">              `-.__.-&apos;</div><div class="line"></div><div class="line">[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 10:29:09.723 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 10:29:10.595 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 10:29:10.997 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6379</div></pre></td></tr></table></figure>
+<h2 id="通过-sentinel-API-查看-master-的信息"><a href="#通过-sentinel-API-查看-master-的信息" class="headerlink" title="通过 sentinel API 查看 master 的信息"></a>通过 sentinel API 查看 master 的信息</h2><ul>
+<li><strong>SENTINEL masters</strong>  查看所有监控的master的信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">redis 127.0.0.1:26379&gt; SENTINEL masters</div><div class="line">1)  1) &quot;name&quot;</div><div class="line">    2) &quot;mymaster&quot;</div><div class="line">    3) &quot;ip&quot;</div><div class="line">    4) &quot;127.0.0.1&quot;</div><div class="line">    5) &quot;port&quot;</div><div class="line">    6) &quot;6379&quot;</div><div class="line">    7) &quot;runid&quot;</div><div class="line">    8) &quot;01c0a31c597c4530dae32773f5fd85949dd0291e&quot;</div><div class="line">    9) &quot;flags&quot;</div><div class="line">   10) &quot;master&quot;</div><div class="line">   11) &quot;pending-commands&quot;</div><div class="line">   12) &quot;0&quot;</div><div class="line">   13) &quot;last-ok-ping-reply&quot;</div><div class="line">   14) &quot;250&quot;</div><div class="line">   15) &quot;last-ping-reply&quot;</div><div class="line">   16) &quot;250&quot;</div><div class="line">   17) &quot;info-refresh&quot;</div><div class="line">   18) &quot;5169&quot;</div><div class="line">   19) &quot;num-slaves&quot;</div><div class="line">   20) &quot;2&quot;</div><div class="line">   21) &quot;num-other-sentinels&quot;</div><div class="line">   22) &quot;2&quot;</div><div class="line">   23) &quot;quorum&quot;</div><div class="line">   24) &quot;2&quot;</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>SENTINEL slaves mymaster</strong> 查看指定master的所有slave 的信息</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">redis 127.0.0.1:26379&gt; SENTINEL slaves mymaster</div><div class="line">1)  1) &quot;name&quot;</div><div class="line">    2) &quot;127.0.0.1:6381&quot;</div><div class="line">    3) &quot;ip&quot;</div><div class="line">    4) &quot;127.0.0.1&quot;</div><div class="line">    5) &quot;port&quot;</div><div class="line">    6) &quot;6381&quot;</div><div class="line">    7) &quot;runid&quot;</div><div class="line">    8) &quot;ecc7cd52da8edf83d9f647edebae6aec6a3e5ff7&quot;</div><div class="line">    9) &quot;flags&quot;</div><div class="line">   10) &quot;slave&quot;</div><div class="line">   11) &quot;pending-commands&quot;</div><div class="line">   12) &quot;0&quot;</div><div class="line">   13) &quot;last-ok-ping-reply&quot;</div><div class="line">   14) &quot;563&quot;</div><div class="line">   15) &quot;last-ping-reply&quot;</div><div class="line">   16) &quot;563&quot;</div><div class="line">   17) &quot;info-refresh&quot;</div><div class="line">   18) &quot;2566&quot;</div><div class="line">   19) &quot;master-link-down-time&quot;</div><div class="line">   20) &quot;0&quot;</div><div class="line">   21) &quot;master-link-status&quot;</div><div class="line">   22) &quot;ok&quot;</div><div class="line">   23) &quot;master-host&quot;</div><div class="line">   24) &quot;localhost&quot;</div><div class="line">   25) &quot;master-port&quot;</div><div class="line">   26) &quot;6379&quot;</div><div class="line">   27) &quot;slave-priority&quot;</div><div class="line">   28) &quot;100&quot;</div><div class="line">2)  1) &quot;name&quot;</div><div class="line">    2) &quot;127.0.0.1:6380&quot;</div><div class="line">    3) &quot;ip&quot;</div><div class="line">    4) &quot;127.0.0.1&quot;</div><div class="line">    5) &quot;port&quot;</div><div class="line">    6) &quot;6380&quot;</div><div class="line">    7) &quot;runid&quot;</div><div class="line">    8) &quot;41ee511e94c83b5111dc135c4eafe9ffb52f3d18&quot;</div><div class="line">    9) &quot;flags&quot;</div><div class="line">   10) &quot;slave&quot;</div><div class="line">   11) &quot;pending-commands&quot;</div><div class="line">   12) &quot;0&quot;</div><div class="line">   13) &quot;last-ok-ping-reply&quot;</div><div class="line">   14) &quot;340&quot;</div><div class="line">   15) &quot;last-ping-reply&quot;</div><div class="line">   16) &quot;340&quot;</div><div class="line">   17) &quot;info-refresh&quot;</div><div class="line">   18) &quot;2566&quot;</div><div class="line">   19) &quot;master-link-down-time&quot;</div><div class="line">   20) &quot;0&quot;</div><div class="line">   21) &quot;master-link-status&quot;</div><div class="line">   22) &quot;ok&quot;</div><div class="line">   23) &quot;master-host&quot;</div><div class="line">   24) &quot;localhost&quot;</div><div class="line">   25) &quot;master-port&quot;</div><div class="line">   26) &quot;6379&quot;</div><div class="line">   27) &quot;slave-priority&quot;</div><div class="line">   28) &quot;100&quot;</div></pre></td></tr></table></figure>
+<ul>
+<li><strong>SENTINEL get-master-addr-by-name mymaster</strong> 查看指定 master-name 的地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">redis 127.0.0.1:26379&gt; SENTINEL get-master-addr-by-name mymaster</div><div class="line">1) &quot;127.0.0.1&quot;</div><div class="line">2) &quot;6379&quot;</div></pre></td></tr></table></figure>
+<p>断开的 sentinel 重新监控 master，其他 sentinel 收到事件信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[6612] 18 Jul 16:32:53.512 * -dup-sentinel master mymaster 127.0.0.1 6379 #duplicate of 127.0.0.1:26379 or 6561ededb876035afd35f34bee089d06746327f1</div><div class="line">[6612] 18 Jul 16:32:53.512 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6379</div></pre></td></tr></table></figure>
+<h2 id="断开-master，触发-failover"><a href="#断开-master，触发-failover" class="headerlink" title="断开 master，触发 failover"></a>断开 master，触发 failover</h2><p><strong>sentinel1 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">[6060] 18 Jul 16:33:50.440 # +sdown master mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:33:51.707 # +odown master mymaster 127.0.0.1 6379 #quorum 2/2</div><div class="line">[6060] 18 Jul 16:33:51.707 # +failover-triggered master mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:33:51.707 # +failover-state-wait-start master mymaster 127.0.0.1 6379 #starting in 11992 milliseconds</div><div class="line">[6060] 18 Jul 16:34:03.781 # +failover-state-select-slave master mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:03.881 # +selected-slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:03.883 * +failover-state-send-slaveof-noone slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:03.984 * +failover-state-wait-promotion slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:03.986 # +promoted-slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:03.987 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:04.085 * +slave-reconf-sent slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:05.091 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:06.165 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:06.285 # +failover-end master mymaster 127.0.0.1 6379</div><div class="line">[6060] 18 Jul 16:34:06.285 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380</div><div class="line">[6060] 18 Jul 16:34:06.387 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380</div><div class="line">[6060] 18 Jul 16:34:06.577 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6380</div><div class="line">[6060] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6380</div></pre></td></tr></table></figure>
+<p><strong>sentinel2 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">[4620] 18 Jul 16:33:50.610 # +sdown master mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 16:33:50.810 # +odown master mymaster 127.0.0.1 6379 #quorum 2/2</div><div class="line">[4620] 18 Jul 16:34:04.647 # +failover-detected master mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 16:34:05.200 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 16:34:06.245 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 16:34:06.347 # +failover-end master mymaster 127.0.0.1 6379</div><div class="line">[4620] 18 Jul 16:34:06.350 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380</div><div class="line">[4620] 18 Jul 16:34:06.477 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380</div><div class="line">[4620] 18 Jul 16:34:06.507 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6380</div><div class="line">[4620] 18 Jul 16:34:11.602 * +sentinel sentinel 127.0.0.1:26381 127.0.0.1 26381 @ mymaster 127.0.0.1 6380</div></pre></td></tr></table></figure>
+<p><strong>sentinel3 日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[6612] 18 Jul 16:34:09.927 # +sdown master mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 16:34:11.202 # +failover-detected master mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 16:34:11.302 * +slave-reconf-inprog slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 16:34:11.302 * +slave-reconf-done slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 16:34:11.402 # +failover-end master mymaster 127.0.0.1 6379</div><div class="line">[6612] 18 Jul 16:34:11.402 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6380</div><div class="line">[6612] 18 Jul 16:34:11.502 * +slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6380</div><div class="line">[6612] 18 Jul 16:34:11.622 * +sentinel sentinel 127.0.0.1:26379 127.0.0.1 26379 @ mymaster 127.0.0.1 6380</div><div class="line">[6612] 18 Jul 16:34:11.702 * +sentinel sentinel 127.0.0.1:26380 127.0.0.1 26380 @ mymaster 127.0.0.1 6380</div></pre></td></tr></table></figure>
+<p><strong>注</strong>：老版本的 redis 需要在 sentinel 的配置文件中设置 <code>sentinel can-failover mymaster yes</code>，sentinel 才有资格被选举为 leader 进行 failover。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/18/Redis/sentinel/" rel="next" title="Redis 之 Sentinel">
+                <i class="fa fa-chevron-left"></i> Redis 之 Sentinel
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/25/RabbitQM/worker/" rel="prev" title="RabbitMQ —— Work Queues">
+                RabbitMQ —— Work Queues <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#启动Redis集群"><span class="nav-text">启动Redis集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动1个master，2个slave"><span class="nav-text">启动1个master，2个slave</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分别启动3个sentinel"><span class="nav-text">分别启动3个sentinel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-sentinel-API-查看-master-的信息"><span class="nav-text">通过 sentinel API 查看 master 的信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#断开-master，触发-failover"><span class="nav-text">断开 master，触发 failover</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
