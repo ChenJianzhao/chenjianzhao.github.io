@@ -14,7 +14,7 @@ title: RabbitMQ —— publish/subscribe
 
 本质上，发布日志消息将广播给所有的接受者。
 
-
+<!-- more -->
 
 ## 交换(机)（Exchanges）
 

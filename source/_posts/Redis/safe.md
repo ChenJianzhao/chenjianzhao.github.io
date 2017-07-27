@@ -1,8 +1,8 @@
 ---
-
+categories: Redis
+date: 2017-07-17 10:00
+title: Redis 之 持久化与复制
 ---
-
-
 
 Redis 提供了两种不同的持久化方法来将数据存储到硬盘里面。`快照（snapshotting）`和 `只追加文件（append-only file, AOF）`，它会在执行写命令时，将被执行的写命令复制到硬盘里面。
 

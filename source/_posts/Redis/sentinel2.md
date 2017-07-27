@@ -4,7 +4,7 @@ date: 2017-07-18 20:10
 title: Redis 之 Sentinel实操
 ---
 
-
+<!-- more -->
 
 # 启动Redis集群
 
