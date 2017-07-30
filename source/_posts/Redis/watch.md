@@ -1,16 +1,49 @@
 ---
 categories: Redis
 date: 2017-07-09 20:00
-title: Redis 之 Watch
+title: Redis 之 分布式锁(一)
 ---
 
-Redis 自带乐观锁 Watch 的使用和高负载情况下的性能分析。
+
+
+一般来说，在对数据进行“加锁”时，程序首先需要通过获取（acquire）锁来得到对数据进行排他性访问的能力，然后才能对数据执行一系列操作，最后还要将锁释放（release）给其他程序。对于能够被多个线程访问的 **共享内存数据结构（shared-memory data structure）** 来说，这种“先获取锁，然后执行操作，最后释放锁”的动作非常常见。
+
+Redis 使用 `WATCH` 命令来代替对数据进行加锁，因为 WATCH 只会在数据被其他客户端抢先修改了的情况下通知执行了这个命令的客户端，而不会阻止其他客户端对数据进行修改，所以这个命令被称为 **乐观锁（optimistic locking）**。
+
+**分布式锁**也有类似上面描述的动作，但这种锁既不是给同一个进程中的多个线程使用，也不是给同一台机器上的多个进程使用，而是由不同机器上的不同 Redis 客户端进行获取和释放的。
+
+何时使用以及是否使用 WATCH 或者锁取决于 给定的应用程序。
+
+下面会说明“为什么使用 WATCH 命令来监视被频繁访问的键可能引起性能问题”，还会展示构建一个锁的详细步骤，并最终在某些情况下使用锁去代替 WATCH 命令。
 
 <!-- more -->
 
-市场在重负载的情况下运行30秒的性能
+
+
+**Redis 自带乐观锁 Watch 的使用和高负载情况下的性能分析。（市场在重负载的情况下运行30秒的性能）**
+
+为了展示锁对于性能拓展的必要性，我们会模拟市场在3种不同负载情况下的性能表现，这3种情况分别是：
+
+- 1个玩家出售商品，另1个玩家购买商品
+- 5个玩家出售商品，另1个玩家购买商品
+- 5个玩家出售商品，另外5个玩家购买商品
+
+
+
+程序分别使用散列（Hash）、集合（Set）和有序集合（ZSet）来表示用户信息（users）和用户包裹（inventory）的结构：
+
+- 用户信息存储在一个散列里面，散列的各个键值对分别记录用户的姓名、用户拥有的钱数等属性。
+
+
+- 用户包裹使用一个集合来表示，它记录了包裹里面每件商品的唯一编号。
+
+- 为了将被销售的商品的全部信息都存储在市场里面，我们将商品的ID和卖家的ID拼接起来，并将拼接的结果用作成员存储到市场有序集合（ZSET）里面，而商品的售价则用作成员的分值。
+
+  ​
 
 ## 1. 1个卖家，1个买家
+
+
 
 ### 1.1 数据结构和初始数据
 
@@ -22,7 +55,7 @@ del inventory:47
 del users:37
 del users:47
 
-hmset users:37 name Seller funds 2000000
+hmset users:37 name Seller funds 200000
 hmset users:47 name Buyer funds 200000
 ```
 
@@ -112,97 +145,105 @@ public class SimpleMarketDemo {
 ### **1.3 卖家内部类**
 
 ```java
-	/**
-	 * 卖家
-	 * @author pc
-	 *
+/**
+ * 卖家
+ * @author pc
+ *
+ */
+static class Seller implements Runnable {
+
+  protected int retryCounter = 0;
+  int buyCount = 2000000;
+  String  sellerid = "";
+
+  SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
+
+  public Seller(String sellerid) {
+    this.sellerid = sellerid;
+  }
+
+  public void run() {
+
+    Jedis conn = new Jedis("localhost");
+
+    try{
+      Date sellStart = new Date(System.currentTimeMillis());
+      System.out.println("seller:" + sellerid + " sell start: \t" + format.format(sellStart));
+
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.SECOND, 30);
+
+      // 测试30秒内卖出的次数
+      for(int itemid = 0; itemid<buyCount; itemid++) {
+        listItem(conn,itemid+"",sellerid,1);
+        if( System.currentTimeMillis() >= cal.getTimeInMillis() )
+          break;
+      }
+
+      Date sellEnd = new Date(System.currentTimeMillis());
+      synchronized (Seller.class) {
+        System.out.println("seller:" + sellerid + " sell end: \t" + format.format(sellEnd));
+        System.out.println("seller:" + sellerid + " sell cost: \t" + (sellEnd.getTime()-sellStart.getTime()) + "ms");
+        long count = conn.scard("inventory:" + sellerid);
+        System.out.println("seller:" + sellerid + " sell Count: \t" +  count);
+        System.out.println("seller:" + sellerid + " avg sell cost: \t" + (sellEnd.getTime()-sellStart.getTime())/count + "ms");
+        System.out.println("seller:" + sellerid + " sell retryCounter: \t" +  retryCounter);
+        System.out.println("");
+      }
+    }finally{
+      conn.disconnect();
+    }
+
+  }
+
+  /**
+	 * 卖家上架商品
+	 * @param conn
+	 * @param itemid
+	 * @param sellerid
+	 * @param price
+	 * @return
 	 */
-	static class Seller implements Runnable {
-		
-		protected int retryCounter = 0;
-		int buyCount = 2000000;
-		String  sellerid = "";
+  public  boolean  listItem(Jedis conn, String itemid, String sellerid, int price) {
+    String inventory ="inventory:" + sellerid;
+    String item = itemid + "." + sellerid;
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
+    // 设置重试超时时间为5s
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.SECOND, 5);
+    Date timeout = cal.getTime();
 
-		public Seller(String sellerid) {
-			this.sellerid = sellerid;
-		}
-		
-		public void run() {
-			
-			Jedis conn = new Jedis("localhost");
-			
-			try{
-				Date sellStart = new Date(System.currentTimeMillis());
-				System.out.println("seller:" + sellerid + " sell start: \t" + format.format(sellStart));
-				
-				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.SECOND, 30);
-				
-				// 测试30秒内卖出的次数
-				for(int itemid = 0; itemid<buyCount; itemid++) {
-					listItem(conn,itemid+"",sellerid,1);
-					if( System.currentTimeMillis() >= cal.getTimeInMillis() )
-						break;
-				}
-				
-				Date sellEnd = new Date(System.currentTimeMillis());
-				synchronized (Seller.class) {
-					System.out.println("seller:" + sellerid + " sell end: \t" + format.format(sellEnd));
-					System.out.println("seller:" + sellerid + " sell cost: \t" + (sellEnd.getTime()-sellStart.getTime()) + "ms");
-					long count = conn.scard("inventory:" + sellerid);
-					System.out.println("seller:" + sellerid + " sell Count: \t" +  count);
-					System.out.println("seller:" + sellerid + " avg sell cost: \t" + (sellEnd.getTime()-sellStart.getTime())/count + "ms");
-					System.out.println("seller:" + sellerid + " sell retryCounter: \t" +  retryCounter);
-					System.out.println("");
-				}
-			}finally{
-				conn.disconnect();
-			}
-			
-		}
-		
-		public  boolean  listItem(Jedis conn, String itemid, String sellerid, int price) {
-			String inventory ="inventory:" + sellerid;
-			String item = itemid + "." + sellerid;
-			
-			// 设置重试超时时间为5s
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.SECOND, 5);
-			Date timeout = cal.getTime();
-			
-			Pipeline pipe = conn.pipelined();
-			
-			while(System.currentTimeMillis() < timeout.getTime()){
-				
-				try{
-					pipe.watch(inventory);
-					pipe.sismember(inventory, itemid);
-					List<Object> result = pipe.syncAndReturnAll();
-					if(!(Boolean)result.get(1)) {
-						retryCounter++;
-						continue;
-					}else {
-						pipe.multi();
-						pipe.zadd("market:", price, item);
-						pipe.srem(inventory, itemid);
-						pipe.exec();
-						pipe.syncAndReturnAll();
-						return true;
-					}
-					
-				}catch(Exception e) {
-					// retry
-//					retryCounter++;
-					continue;
-				}finally{
-				}
-			}
-			
-			return false;
-		}
-	}
+    Pipeline pipe = conn.pipelined();
+
+    while(System.currentTimeMillis() < timeout.getTime()){
+
+      try{
+        pipe.watch(inventory);
+        pipe.sismember(inventory, itemid);
+        List<Object> result = pipe.syncAndReturnAll();
+        if(!(Boolean)result.get(1)) {
+          retryCounter++;	// 记录重试次数
+          continue;
+        }else {
+          pipe.multi();
+          pipe.zadd("market:", price, item);
+          pipe.srem(inventory, itemid);
+          pipe.exec();
+          pipe.syncAndReturnAll();
+          return true;
+        }
+
+      }catch(Exception e) {
+        // retry
+        // retryCounter++;
+        continue;
+      }finally{
+      }
+    }
+
+    return false;
+  }
+}
 ```
 
 
@@ -210,115 +251,124 @@ public class SimpleMarketDemo {
 ### 1.4 买家内部类
 
 ```java
-	/**
-	 * 买家
-	 * @author pc
-	 *
+/**
+ * 买家
+ * @author pc
+ *
+ */
+static class Buyer implements Runnable {
+
+  protected int retryCounter = 0;
+  int buyCount = 2000000;
+  String buyerid = "";
+  String sellerid = "";
+
+  SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
+
+  public  Buyer(String buyerid , String sellerid) {
+    this.buyerid = buyerid;
+    this.sellerid = sellerid;
+  }
+
+  public void run() {
+    Jedis conn = new Jedis("localhost");
+
+    try{
+      Date buyStart = new Date(System.currentTimeMillis());
+      System.out.println("buyer:" + buyerid + " buy start: \t" + format.format(buyStart));
+
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.SECOND, 30);
+
+      // 测试30秒内购买的次数
+      for(int itemid = 0;itemid<buyCount; itemid++) {
+        purchaseItem(conn,buyerid,itemid+"",sellerid,1);
+        if( System.currentTimeMillis() >= cal.getTimeInMillis() )
+          break;
+      }
+
+      synchronized (Buyer.class) {
+        Date buyEnd = new Date(System.currentTimeMillis());
+        System.out.println("buyer:" + buyerid + " buy end: \t" + format.format(buyEnd));
+        System.out.println("buyer:" + buyerid + " buy cost: \t" + (buyEnd.getTime()-buyStart.getTime()) + "ms");
+        long count  = conn.scard("inventory:" + buyerid);
+        System.out.println("buyer:" + buyerid + " buy Count: \t" +  count);
+        System.out.println("buyer:" + buyerid + " avg buy cost: \t" + (buyEnd.getTime()-buyStart.getTime())/count + "ms");
+        System.out.println("buyer:" + buyerid + " buy retryCounter: \t" +  retryCounter);
+        System.out.println("");
+      }
+    }finally{
+      conn.disconnect();
+    }
+  }
+
+
+  /**
+	 * 买家购买商品
+	 * @param conn
+	 * @param buyerid
+	 * @param itemid
+	 * @param sellerid
+	 * @param lprice
+	 * @return
 	 */
-	static class Buyer implements Runnable {
+  public boolean purchaseItem(Jedis conn, String buyerid, String itemid, String sellerid, int lprice) {
+    String inventory ="inventory:" + buyerid;
+    String market = "market:";
+    String item = itemid + "." + sellerid;
+    String buyer = "users:" + buyerid;
+    String seller = "users:" + sellerid;
 
-		protected int retryCounter = 0;
-		int buyCount = 2000000;
-		String buyerid = "";
-		String sellerid = "";
-		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd-hh:mm:ss");
-		
-		public  Buyer(String buyerid , String sellerid) {
-			this.buyerid = buyerid;
-			this.sellerid = sellerid;
-		}
-		
-		public void run() {
-			Jedis conn = new Jedis("localhost");
-			
-			try{
-				Date buyStart = new Date(System.currentTimeMillis());
-				System.out.println("buyer:" + buyerid + " buy start: \t" + format.format(buyStart));
+    // 设置重试超时时间为5s
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.SECOND, 5);
+    Date timeout = cal.getTime();
 
-				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.SECOND, 30);
-				
-				// 测试30秒内购买的次数
-				for(int itemid = 0;itemid<buyCount; itemid++) {
-					purchaseItem(conn,buyerid,itemid+"",sellerid,1);
-					if( System.currentTimeMillis() >= cal.getTimeInMillis() )
-						break;
-				}
-				
-				synchronized (Buyer.class) {
-					Date buyEnd = new Date(System.currentTimeMillis());
-					System.out.println("buyer:" + buyerid + " buy end: \t" + format.format(buyEnd));
-					System.out.println("buyer:" + buyerid + " buy cost: \t" + (buyEnd.getTime()-buyStart.getTime()) + "ms");
-					long count  = conn.scard("inventory:" + buyerid);
-					System.out.println("buyer:" + buyerid + " buy Count: \t" +  count);
-					System.out.println("buyer:" + buyerid + " avg buy cost: \t" + (buyEnd.getTime()-buyStart.getTime())/count + "ms");
-					System.out.println("buyer:" + buyerid + " buy retryCounter: \t" +  retryCounter);
-					System.out.println("");
-				}
-			}finally{
-				conn.disconnect();
-			}
-		}
-		
-		
-		public boolean purchaseItem(Jedis conn, String buyerid, String itemid, String sellerid, int lprice) {
-			String inventory ="inventory:" + buyerid;
-			String market = "market:";
-			String item = itemid + "." + sellerid;
-			String buyer = "users:" + buyerid;
-			String seller = "users:" + sellerid;
-			
-			// 设置重试超时时间为5s
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.SECOND, 5);
-			Date timeout = cal.getTime();
-			
-			Pipeline pipe = conn.pipelined();
-			
-			while(System.currentTimeMillis() < timeout.getTime()){
-				
-				try{
-					pipe.watch(market, inventory, seller, buyer);
-					pipe.zscore(market, item);
-					pipe.hget(buyer,"funds");
-					List<Object> check = pipe.syncAndReturnAll();
-					Double price = (Double)check.get(1);
-					int funds = Integer.parseInt((String)check.get(2));
-					
-					// 商品还未放入市场
-					if( price == null || 
-							price != null && (lprice!=price || price>funds)) {
-						continue;
-					}else {
-						pipe.multi();
-						pipe.hincrBy(seller, "funds", price.longValue());
-						pipe.hincrBy(buyer, "funds", -price.longValue());
-						pipe.sadd(inventory,itemid);
-						pipe.zrem(market,item);
-						pipe.exec();
+    Pipeline pipe = conn.pipelined();
 
-						List<Object> result= pipe.syncAndReturnAll();
-						// Watch 的键发生变化，同步返回值为null
-						if(result.get(5)==null) {
-							retryCounter++;
-							continue;
-						}
-						else {
-							return true;
-						}
-					}
-					
-				}catch(Exception e) {
-					// retry
-					retryCounter++;
-				}finally{
-				}
-			}
-			
-			return false;
-		}
-	}
+    while(System.currentTimeMillis() < timeout.getTime()){
+
+      try{
+        pipe.watch(market, inventory, seller, buyer);
+        pipe.zscore(market, item);
+        pipe.hget(buyer,"funds");
+        List<Object> check = pipe.syncAndReturnAll();
+        Double price = (Double)check.get(1);
+        int funds = Integer.parseInt((String)check.get(2));
+
+        // 商品还未放入市场
+        if( price == null || 
+           price != null && (lprice!=price || price>funds)) {
+          continue;
+        }else {
+          pipe.multi();
+          pipe.hincrBy(seller, "funds", price.longValue());
+          pipe.hincrBy(buyer, "funds", -price.longValue());
+          pipe.sadd(inventory,itemid);
+          pipe.zrem(market,item);
+          pipe.exec();
+
+          List<Object> result= pipe.syncAndReturnAll();
+          // Watch 的键发生变化，同步返回值为null
+          if(result.get(5)==null) {
+            retryCounter++;
+            continue;
+          }
+          else {
+            return true;
+          }
+        }
+
+      }catch(Exception e) {
+        // retry
+        retryCounter++;
+      }finally{
+      }
+    }
+
+    return false;
+  }
+}
 ```
 
 
@@ -640,7 +690,6 @@ seller:36 sell Count: 	30518
 seller:36 avg sell cost: 	0ms
 seller:36 sell retryCounter: 	0
 
-
 buyer:47 buy end: 	2017:07:06-10:10:36
 buyer:47 buy cost: 	30001ms
 buyer:47 buy Count: 	0
@@ -667,12 +716,13 @@ buyer:48 buy end: 	2017:07:06-10:10:36
 buyer:48 buy cost: 	30000ms
 buyer:48 buy Count: 	0
 buyer:48 buy retryCounter: 	7
-
 ```
 
 
 
 ## 4. 结果对比分析
+
+
 
 | 30秒性能对比   | 上架商品数量 | 买入商品数量 | 购买重试次数 | 每次购买的平均等待时间 |
 | :-------- | ------ | ------ | ------ | ----------- |
@@ -680,6 +730,8 @@ buyer:48 buy retryCounter: 	7
 | 5个卖家，1个买家 | 99064  | 2012   | 30461  | 14ms        |
 | 5个卖家，5个买家 | 156291 | 352    | 17784  | 85ms        |
 
+根据上表模拟的结果显示，WATCH、MULTI 和 EXEC 组成的事务并不具有可拓展性，因为程序在尝试完成一个事务的时候，可能会因为事务执行失败而反复地进行重试。
 
+保证数据的正确是一件非常重要的事情，但使用 WATCH 命令的做法并不完美。我们将用锁来解决这个问题。
 
-注：数据和 《Redis实战》中给出的测试数据有出入
+**注：数据和 《Redis实战》中给出的测试数据有出入**
