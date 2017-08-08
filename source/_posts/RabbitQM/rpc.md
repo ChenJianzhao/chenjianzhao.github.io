@@ -1,3 +1,9 @@
+---
+categories: RabbitMQ
+date: 2017-07-31 17:00
+title: RabbitMQ —— RPC
+---
+
 在第二小节，我们学习了如何使用 Work Queues 将耗时的任务分发到多个 worker 处理。
 
 但是，当我们需要在远程机计算机上运行一个函数，之前的例子就无法满足了。这种模式一般被称为 **远程方法调用**（*Remote Procedure Call* or *RPC*）。
@@ -5,6 +11,8 @@
 在这一节，我们将使用 RabbitMQ 来构建一个 RPC 系统：一个客户端和一个可伸缩的 RPC 服务器。因为我们没有耗时的任务需要分布式计算，所以我们将创建一个虚构的 RPC Server 来返回 斐波那契数据列。
 
 
+
+<!-- more -->
 
 ## 客户端接口（Client interface）
 
