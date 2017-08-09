@@ -1,4 +1,12 @@
+---
+categories: zookeeper
+date: 2017-08-09 22:00
+title: Zookeeper 服务端启动
+---
 
+
+
+<!-- more -->
 
 zkStartAll.sh
 
