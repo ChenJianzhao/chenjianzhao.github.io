@@ -1,7 +1,7 @@
 ---
 categories: zookeeper
 date: 2017-08-10 18:00
-title: Zookeeper 之 Leader 选举
+title: Zookeeper 的 Leader 选举
 ---
 
 
@@ -29,7 +29,7 @@ Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集�
 
 2. **接受来自各个服务器的投票**。集群的每个服务器收到投票后，首先判断该投票的有效性，如：检查是否是本轮投票、是否来自LOOKING状态的服务器。
 
-3.  **处理投票**。针对每一个投票，服务器都需要将别人的投票和自己的投票进行PK，PK规则如下
+3. **处理投票**。针对每一个投票，服务器都需要将别人的投票和自己的投票进行PK，PK规则如下
 
    - 优先检查ZXID。ZXID比较大的服务器优先作为Leader。
    - 如果ZXID相同，那么就比较myid。myid较大的服务器作为Leader服务器。
@@ -198,5 +198,12 @@ Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集�
 10. **更新服务器状态**。若已经确定可以终止投票，那么就开始更新服务器状态，服务器首选判断当前被过半服务器认可的投票所对应的Leader服务器是否是自己，若是自己，则将自己的服务器状态更新为LEADING，若不是，则根据具体情况来确定自己是FOLLOWING或是OBSERVING。
 
 
-
 **以上10个步骤就是FastLeaderElection的核心，其中步骤4-9会经过几轮循环，直到有Leader选举产生。**
+
+
+
+参考文章：
+
+[【分布式】Zookeeper的Leader选举](http://www.cnblogs.com/leesf456/p/6107600.html)
+
+《从Paxos到Zookeeper分布式一致性原理与实践》
