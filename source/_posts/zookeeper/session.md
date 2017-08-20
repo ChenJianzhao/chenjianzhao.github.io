@@ -1,3 +1,11 @@
+---
+categories: zookeeper
+date: 2017-08-15 19:30
+title: Zookeeper 会话
+---
+
+
+
 客户端与服务端之间任何交互操作都与会话息息相关，如临时节点的生命周期、客户端请求的顺序执行、Watcher通知机制等。Zookeeper的连接与会话就是**客户端通过实例化Zookeeper对象**来实现客户端与服务端创建并保持TCP连接的过程。
 
 <!-- more -->
