@@ -1,5 +1,5 @@
 ---
-categories: zookeeper
+categories: kafka
 date: 2017-08-18 20:30
 title: kafka QuickStart
 ---

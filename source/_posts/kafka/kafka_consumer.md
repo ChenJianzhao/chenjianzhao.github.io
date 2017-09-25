@@ -1,5 +1,5 @@
 ---
-categories: zookeeper
+categories: kafka
 date: 2017-08-19 20:00
 title: kafka消费者客户端（0.10.0.1API）
 ---
