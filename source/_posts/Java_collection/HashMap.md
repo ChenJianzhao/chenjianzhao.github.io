@@ -11,14 +11,14 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 [java集合类深入分析之HashSet, HashMap篇](http://sauzny.iteye.com/blog/2020275)
 
 ## 一、HashMap概述：
-1. HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
+1. HashMap是基于哈希表的Map接口的非同步实现。允许使用**null值和null键**。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
 
 2. 最常见的两种操作方法是``get``, ``put``方法。get方法用于根据Key来取得所需要的Value值，而put方法用于根据特定的Key来放置对应的Value。除了这两个方法以外还有判断Key,Value是否存在的containsKey, containsValue方法。
 
 3. Map类型的数据结构有一个比较好的地方就是在存取元素的时候都能够有比较高的效率。 因为每次存取元素的时候都是通过计算Key的hash值再通过一定的映射规则来实现，在理想的情况下可以达到一个常量值。
 
    <!-- more -->
-**下面这部分是Map里面主要方法的列表：**
+   **下面这部分是Map里面主要方法的列表：**
 
 | 方法名           | 方法详细定义                               | 说明         |
 | :------------ | :----------------------------------- | :--------- |
@@ -30,19 +30,24 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 | values        | Collection<V> values();              | 所有value的集合 |
 | entrySet      | Set<Map.Entry<K, V>> entrySet();     | 键值对集合      |
 
-***
+
+
 ## 二、HashMap的数据结构：
 **HashMap 实际上是一个链表数组。**
-![](./HashMap/hashmap.jpg)
+![HashMap](./HashMap/hashmap.jpg)
 
 **内部结构**
-　　我们根据这种链表数组的类型，可以推断它内部肯定是有一个链表的结构。在HashMap内部，有一个``transient`` Entry[] table;这样的结构数组，它保存所有Entry的一个列表。而Entry的定义是一个典型的链表结构，不过由于既要有Key也要有Value，所以包含了Key, Value两个值。他们的定义如下：（为何使用 transient 下文补充）
+
+- 我们根据这种**链表数组**的类型，可以推断它内部肯定是有一个链表的结构。在HashMap内部，有一个``transient`` （不参与序列化，序列化后根据平台Hash算法重新生成映射）Entry[] table。
+- 这样的结构数组，它保存所有Entry的一个列表。而Entry的定义是一个典型的链表结构，不过由于既要有Key也要有Value，所以包含了Key, Value两个值。他们的定义如下：（为何使用 transient 下文补充）
+
 ​    
+
 ```java
  static class Entry<K,V> implements Map.Entry<K,V> {  
     final K key;  
     V value;  
-    Entry<K,V> next;  
+    Entry<K,V> next;  // 下一个节点
     final int hash;  
 
     /** 
@@ -57,15 +62,15 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 //...  
 }  
 ```
-　　这里省略了其他部分，主要把他们这个链表结构部分突出来。这部分就相当于链表里一个个的Node节点。ok，这样我们至少已经清楚了它里面是怎么组成的了。
+这里省略了其他部分，主要把他们这个链表结构部分突出来。这部分就相当于链表里一个个的Node节点。ok，这样我们至少已经清楚了它里面是怎么组成的了。
 
-***
+
 
 ## 三、数组增长调整（Rehashing）
 
-　　现在再来看一个地方，我们实际中设计HashMap的时候，这里面数组的长度该多少合适呢？是否需要进行动态调整呢？如果是固定死的话，如果我们需要放置的元素少了，岂不是浪费空间？如果我们要放的元素太多了，这样也会导致更大程度的hash碰撞，会带来性能方面的损失。
-1. 在HashMap里面保存元素的table是可以动态增长的，它有一个默认的长度16，还有一个最大长度 2^30。
-2. 在HashMap里面什么时候进行动态增长呢，它有一个负载因数，默认为0.75，即元素个数达到数组长度的 75% 时自动翻倍。
+现在再来看一个地方，我们实际中设计HashMap的时候，这里面**数组的长度**该多少合适呢？是否需要进行动态调整呢？如果是固定死的话，如果我们需要放置的元素少了，岂不是浪费空间？如果我们要放的元素太多了，这样也会导致更大程度的hash碰撞，会带来性能方面的损失。
+1. 在HashMap里面保存元素的table是可以**动态增长**的，它有一个**默认的长度16**，还有一个**最大长度 2^30**。
+2. 在HashMap里面什么时候进行动态增长呢，它有一个**负载因数，默认为0.75**，即元素个数达到数组长度的 75% 时**自动翻倍**。
 
 ```java
     /**
@@ -86,10 +91,17 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 ```
 
-　　在HashMap的构造函数中，可以指定初始数组的长度。通过这个初始长度值，构造一个长度为2的若干次方的数组：
+
+
+在HashMap的构造函数中，可以指定**初始数组的长度**。通过这个初始长度值，构造一个**长度为2的若干次方**的数组：
 
 ```java
-   public HashMap(int initialCapacity, float loadFactor) {
+   /**
+   	 * Constructor
+   	 * @Param initialCapacity 初始化大小(会被替换为大于这个数的最小2的若干次方)
+   	 * @Param loadFactor 负载因数
+   	 */
+	public HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
                                                initialCapacity);
@@ -111,12 +123,18 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
     }   
 ```
 
-　　在我们需要调整数组长度的时候，它的过程和前面讨论过的List, Queue有些类似，但是又有不同的地方。相同的地方在于，它每次也是将原来的数组长度翻倍，同时将元素拷贝过去。**但是由于HashMap本身的独特性质，它需要重新做一次映射。**实现这个过程的方法如下：
+
+
+在我们需要调整数组长度的时候，它的过程和前面讨论过的List, Queue有些类似，但是又有不同的地方。相同的地方在于，它每次也是**将原来的数组长度翻倍**，同时将元素拷贝过去。**但是由于HashMap本身的独特性质，它需要重新做一次映射。**实现这个过程的方法如下：
 
 ```java
 void resize(int newCapacity) {  
     Entry[] oldTable = table;  
     int oldCapacity = oldTable.length;  
+  
+    /*
+     * 当达到最大长度，将 threshold 设为 Integer.MAX_VALUE 并返回，不再增长
+     */
     if (oldCapacity == MAXIMUM_CAPACITY) {  
         threshold = Integer.MAX_VALUE;  
         return;  
@@ -137,27 +155,32 @@ void transfer(Entry[] newTable) {
     for (int j = 0; j < src.length; j++) { //遍历原来的数组table  
         Entry<K,V> e = src[j];  
         if (e != null) {  
-            src[j] = null;  
-            do { 
-                //对该链表元素里面所有链接的<key, value>对做重新的映射  
+            src[j] = null;  // 清除原来的引用，剩下引用 e
+            //对该链表元素里面所有链接的<key, value>对做重新的映射  
+          	do { 
+                // 记录元素e的 next 引用
                 Entry<K,V> next = e.next;  
+              	// 计算新的下标
                 int i = indexFor(e.hash, newCapacity); 
-                //这个过程是一个链表头插入的过程
-                e.next = newTable[i];  
-                newTable[i] = e;  
-                e = next;  
+                /* 
+                 * 这个过程是一个链表头插入的过程，newTabel[i]为原链表头
+                 */
+                e.next = newTable[i];   // e的next指向表头元素
+                newTable[i] = e;  		// e放入表头
+                e = next;  				// e移动到链表的下一个元素
             } while (e != null);  
         }  
     }  
 }  
 ```
 
-　　前面这部分的代码看起来比较长，实际上就是将旧的数组的元素挪到新的数组中来。因为新数组的长度不一样了，再映射的时候要**对链表里面所有的元素根据新的长度进行重新映射来对应到不同的位置**。
-　　那么，我们可以看出来，元素存放的位置是和数组长度相关的。而这其中具体映射的过程和怎么放置元素的呢？我们在这里就可以找到一个入口点了。就是indexFor方法。
+- 上面的操作实际上就是将旧的数组的元素挪到新的数组中来。因为新数组的长度不一样了，再映射的时候要**对链表里面所有的元素根据新的长度进行重新映射来对应到不同的位置**。
+- 那么，我们可以看出来，元素存放的位置是和数组长度相关的。而这其中具体映射的过程和怎么放置元素的呢？我们在这里就可以找到一个入口点了。就是 **indexFor** 方法。
 
-***
+
+
 ## 四、详细映射过程
-　　我们要把一个<K, V>Entry放到table中间的某个位置，首先是通过计算key的hashCode值，我们都知道。在java里每个对象都有一个hashCode的方法，返回它对应的hash值。HashMap这边通过这个hash值再进行一次hash()方法的计算，得到一个int的结果。再通过indexFor将它映射到数组的某个索引。
+我们要把一个 < K, V >Entry 放到table中间的某个位置，首先是通过计算key的hashCode值，我们都知道。在java里每个对象都有一个hashCode的方法，返回它对应的hash值。HashMap这边通过这个hash值再进行一次hash()方法的计算，得到一个int的结果。再通过indexFor将它映射到数组的某个索引。
 ```java
 static int indexFor(int h, int length) {  
     return h & (length-1);  
@@ -171,10 +194,14 @@ static int hash(int h) {
     return h ^ (h >>> 7) ^ (h >>> 4);  
 }  
 ```
-　　　hash方法就是对传进来的key的hashCode()值再进行一次运算。indexFor方法则是具体映射的方法。因为最后得到的这个值将走为存储Entry的索引。这里采用h & (length - 1)的手法比较有意思。因为我们定义的数组长度为2的若干次方，这意味着如果我们取长度减一的值时，它的二进制数字是最高位以下的所有位为1.经过与运算之后它的结果肯定在0~2**x之间。就算前面hash方法计算出来的结果比数组长度大也没关系，因为这么一与运算，前面长出来的部分都变成0了。它这一步运算的效果相当于h % length;
+
+
+hash方法就是对传进来的key的hashCode()值再进行一次运算。indexFor方法则是具体映射的方法。因为最后得到的这个值将走为存储Entry的索引。这里采用h & (length - 1)的手法比较有意思。因为我们定义的数组长度为2的若干次方，这意味着如果我们取长度减一的值时，它的二进制数字是最高位以下的所有位为1.经过与运算之后它的结果肯定在0~2**x之间。就算前面hash方法计算出来的结果比数组长度大也没关系，因为这么一与运算，前面长出来的部分都变成0了。它这一步运算的效果相当于h % length;
+
 　　有了这部分对数组长度调整和映射关系的理解，我们再来看具体的get, put方法就很容易了。
 
-***
+
+
 ## 五、HashMap 常用方法的实现
 
 1) ``get``的实现
