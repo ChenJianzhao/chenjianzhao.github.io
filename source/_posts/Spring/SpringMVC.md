@@ -6,7 +6,6 @@ title: 'Spring MVC'
 ---
 
 ## 一、配置web.xml文件
-***
 **1、在`web.xml`文件配置 spring 容器启动监听器并指定容器的配置文件的位置，启动“业务层”的 spring 容器**
 ```xml
 <!-- 通过指定的spring配置文件和启动监听器，启动“业务层”的spring容器 -->
@@ -26,7 +25,10 @@ title: 'Spring MVC'
 <web-app>
 ```
 
+
+
 **2、配置 SpringMVC 的 Servlet，默认查找`<servlet-Name>-servlet.xml `的 SpringMVC 配置文件，来启动web层的spring容器**
+
 ```xml
     <servlet>
         <servlet-name>springmvc</servlet-name>
@@ -41,8 +43,9 @@ title: 'Spring MVC'
 ```
 
 
+
 ## 二、配置 SpringMVC 的配置文件 springmvc-servlet.xml 
-***
+
 **1、打开注解打开注解**
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -66,36 +69,54 @@ title: 'Spring MVC'
     <!-- 将静态文件指定到某个特殊的文件夹中统一处理  -->
     <!--  一个*表文件夹中内容，第二个星指子文件夹中的内容 -->
     <mvc:resources location="/resource/" mapping="/resources/**" />
+  
+  ...
+</beans>
 ```
+
+
 **2、配置JSP视图解析器 ``InternalResourceViewResolver``**
+
 ```xml
-    <!-- 配置 JSP 视图解析器(ViewResolver) 一般JSP使用 InternalResourceViewResolver -->
+<beans>
+...
+	<!-- 配置 JSP 视图解析器(ViewResolver) 一般JSP使用 InternalResourceViewResolver -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/" />
         <property name="suffix" value=".jsp" />
     </bean>
-</bean>
+...
+</beans>
 ```
 
 
+
 ## 三、Web项目整合 Tomcat 的 Intellij 设置
-***
+
 **1、Modules 增加 web 模块**
 ![](./SpringMVC/23-41-41.jpg)
+
+
 
 **2、增加 Tomcat 依赖库**
 ![](./SpringMVC/17-22-10.jpg)
 
+
+
 **3、设置 Artifacts**
 ![](./SpringMVC/00-30-35.jpg)
 
+
+
 ## 三、编写控制器类
-***
+
 **1、注解控制器**
 ``@Controller``
 　　负责注册一个bean 到spring 上下文中
 ``@RequestMapping``
 　　注解为控制器指定可以处理哪些 URL 请求，支持 Ant 风格（即?、\*和的\**的字符）和带{xxx}占位符的URL
+
+
 
 **2、处理入参**
 ``@PathVariable``
@@ -110,7 +131,10 @@ title: 'Spring MVC'
 **使用 ServletAPI 对象作为入参**
 　　SpringMVC 自动将 web 层对应的 Servlet 对象传递给处理方法的入参，如果自行使用 HttpServletResponse 返回响应，则处理方法的返回参数设置为 void 即可
 
+
+
 **3、处理模型数据**
+
 - **ModelAndView**
   方法体通过该对象添加模型数据，既包含视图信息，也包含模型数据
 - **``@ModelAttribute``**
@@ -163,17 +187,19 @@ public class LoginController {
 }
 ```
 
+
+
 ## 四、返回 JSON 数据
-***
+
 　　待补充
 ​    
 ## 五、 国际化
-***
 　　略
 
 
+
 ## 六、文件上传
-***
+
 **1、springmvc-servlet.xml 增加文件上传视图解析器``CommonsMultipartResolver``**
 ```xml
 <!--配置文件上传 MultipartResolver  -->
@@ -184,7 +210,10 @@ public class LoginController {
 </bean>
 ```
 
+
+
 **2、添加依赖**
+
 ```xml
 <dependency>
     <groupId>commons-fileupload</groupId>
@@ -199,7 +228,10 @@ public class LoginController {
 </dependency>
 ```
 
+
+
 **3、编写文件上传控制器类**
+
 ```java
 //UserController
 @Controller
@@ -223,8 +255,11 @@ public class UserController {
 }
 ```
 
+
+
 **4、编写上传页面**
-```jsp
+
+```html
 <html>
 <head>
     <title>上传用户头像</title>
