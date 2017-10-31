@@ -8,7 +8,7 @@ title: Redis 之 Sentinel
 
 ## 概述
 
-Redis-Sentinel是Redis官方推荐的高可用性(HA)解决方案，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自懂切换。
+Redis-Sentinel是Redis官方推荐的**高可用性(HA)解决方案**，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自懂切换。
 
 它的主要功能有以下几点
 
@@ -80,7 +80,10 @@ sentinel parallel-syncs resque 5
 
 - 需要注意的是，**配置文件在sentinel运行期间是会被动态修改的**，例如当发生主备切换时候，配置文件中的master会被修改为另外一个slave。这样，之后sentinel如果重启时，就可以根据这个配置来恢复其之前所监控的redis集群的状态。
 
-  （Question：需要配置什么才能自动保存修改？实践中并不会保存到磁盘）
+  > Question：需要配置什么才能自动保存修改？实践中并不会保存到磁盘
+  >
+  > 补充：实践中，新版本在 Linux 是可以动态修改并写回配置文件的，Windows 下不生效。
+
 
 
 
@@ -95,6 +98,7 @@ sentinel monitor mymaster 127.0.0.1 6379 2
 - 行尾最后的一个**2**代表什么意思呢？我们知道，网络是不可靠的，有时候一个sentinel会因为网络堵塞而误以为一个master redis已经死掉了，当sentinel集群式，解决这个问题的方法就变得很简单，只需要多个sentinel互相沟通来确认某个master是否真的死了，**这个2代表，当集群中有2个sentinel认为master死了时，才能真正认为该master已经不可用了**。
 
   **（sentinel集群中各个sentinel也有互相通信，通过gossip协议）**
+
 
 
 
@@ -119,7 +123,7 @@ sentinel <option_name> <master_name> <option_value>
   ​
 
 其他配置项在sentinel.conf中都有很详细的解释。
-所有的配置都可以在运行时用命令`SENTINEL SET command`动态修改。
+所有的配置都可以在运行时用命令`SENTINEL SET command`**动态修改。**
 
 
 
