@@ -38,11 +38,9 @@ channel.queueBind(queueName, EXCHANGE_NAME, "black");
 
 接下来我们将使用 `direct exchange` 来代替，direct exchange 背后的路由算法其实很简单—— **消息将进入 binding key 和 消息的 routing key 完全匹配的 queue 中**。
 
-![direct-exchange](./routing/direct-exchange.png)
+![direct-exchange](routing/direct-exchange.png)
 
-n this setup, we can see the direct exchange X with two queues bound to it. The first queue is bound with binding key orange, and the second has two bindings, one with binding key black and the other one with green.
 
-In such a setup a message published to the exchange with a routing key orange will be routed to queue Q1. Messages with a routing key of black or green will go to Q2. All other messages will be discarded.
 
 上面的例子中，我们看到 direct 类型的 exchange X 和两个队列绑定了，第一个队列使用 **orange** 的 banding key 和它绑定，第二个使用 **black** 和 **green** 两个 binding key 绑定。
 
@@ -52,7 +50,7 @@ In such a setup a message published to the exchange with a routing key orange wi
 
 ## 多个绑定（Multiple bindings）
 
-![direct-exchange-multiple](./routing/direct-exchange-multiple.png)
+![direct-exchange-multiple](routing/direct-exchange-multiple.png)
 
 多个队列使用相同的 binding key 绑定到 exchange 和完全合法的，上图的例子中，**direct** 类型的 exchange 将表现的和 **fanout** 类型一样，向所有匹配的的队列广播。使用 **black** routing key 的消息将被同时分派到 Q1 和 Q2。
 
@@ -94,7 +92,7 @@ for(String severity : argv){
 
 ## 合并代码
 
-![python-four](./routing/python-four.png)
+![python-four](routing/python-four.png)
 
 
 
