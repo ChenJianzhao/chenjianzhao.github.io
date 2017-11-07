@@ -15,6 +15,8 @@ $ tar -xzf kafka_2.11-0.10.0.0.tgz
 $ cd kafka_2.11-0.10.0.0
 ```
 
+
+
 #### Step 2: 启动服务
 
 运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。
@@ -34,6 +36,8 @@ $ ./bin/kafka-server-start.sh config/server.properties
 ...
 ```
 
+
+
 #### Step 3: 创建一个主题(topic)
 
 创建一个名为“test”的Topic，只有一个分区和一个备份：
@@ -51,6 +55,8 @@ test
 
 或者，除了手工创建topic外，你也可以配置你的broker，当发布一个不存在的topic时自动创建topic。
 
+
+
 #### Step 4: 发送消息
 
 Kafka提供了一个命令行的工具，可以从输入文件或者命令行中读取消息并发送给Kafka集群。每一行是一条消息。
@@ -61,6 +67,8 @@ $ ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
 This is a message
 This is another message
 ```
+
+
 
 #### Step 5: 消费消息
 
@@ -108,7 +116,7 @@ $ cp -R server1/ server3/
     log.dir=/Users/cjz/Documents/devtool/kafka_2.11-0.11.0.0/server/server2/log/kafka-log
     
 # server3/config/server.properties: 
-	broker.id=2 
+	broker.id=3 
     listeners=PLAINTEXT://:9094 
     log.dir=/Users/cjz/Documents/devtool/kafka_2.11-0.11.0.0/server/server3/log/kafka-log
 ```
@@ -171,177 +179,6 @@ my test message 2
 
 
 
-kafka的背景知识已经讲了很多了，让我们现在开始实践吧，假设你现在没有`Kafka`和`ZooKeeper`环境。
-
-#### Step 1: 下载代码
-
-下载0.10.0.0版本并且解压它。
-
-```
-> tar -xzf kafka_2.11-0.10.0.0.tgz 
-> cd kafka_2.11-0.10.0.0
-
-```
-
-#### Step 2: 启动服务
-
-运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。
-
-```
-> bin/zookeeper-server-start.sh config/zookeeper.properties
-[2013-04-22 15:01:37,495] INFO Reading configuration from: config/zookeeper.properties (org.apache.zookeeper.server.quorum.QuorumPeerConfig)
-...
-
-```
-
-现在启动kafka服务
-
-```
-> bin/kafka-server-start.sh config/server.properties &
-[2013-04-22 15:01:47,028] INFO Verifying properties (kafka.utils.VerifiableProperties)
-[2013-04-22 15:01:47,051] INFO Property socket.send.buffer.bytes is overridden to 1048576 (kafka.utils.VerifiableProperties)
-...
-
-```
-
-#### Step 3: 创建一个主题(topic)
-
-创建一个名为“test”的Topic，只有一个分区和一个备份：
-
-```
-> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
-
-```
-
-创建好之后，可以通过运行以下命令，查看已创建的topic信息：
-
-```
-> bin/kafka-topics.sh --list --zookeeper localhost:2181
-test
-
-```
-
-或者，除了手工创建topic外，你也可以配置你的broker，当发布一个不存在的topic时自动创建topic。
-
-#### Step 4: 发送消息
-
-Kafka提供了一个命令行的工具，可以从输入文件或者命令行中读取消息并发送给Kafka集群。每一行是一条消息。
-运行producer（生产者）,然后在控制台输入几条消息到服务器。
-
-```
-> bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test 
-This is a message
-This is another message
-
-```
-
-#### Step 5: 消费消息
-
-Kafka也提供了一个消费消息的命令行工具，将存储的信息输出出来。 
-
-```
-> bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
-This is a message
-This is another message
-
-```
-
-如果你有2台不同的终端上运行上述命令，那么当你在运行生产者时，消费者就能消费到生产者发送的消息。
-所有的命令行工具有很多的选项，你可以查看文档来了解更多的功能。
-
-#### Step 6: 设置多个broker集群
-
-到目前，我们只是单一的运行一个broker,，没什么意思。对于Kafka,一个broker仅仅只是一个集群的大小, 所有让我们多设几个broker.
-首先为每个broker创建一个配置文件: 
-
-```
-> cp config/server.properties config/server-1.properties 
-> cp config/server.properties config/server-2.properties
-
-```
-
-现在编辑这些新建的文件，设置以下属性：
-
-```
-config/server-1.properties: 
-    broker.id=1 
-    listeners=PLAINTEXT://:9093 
-    log.dir=/tmp/kafka-logs-1
-
-config/server-2.properties: 
-    broker.id=2 
-    listeners=PLAINTEXT://:9094 
-    log.dir=/tmp/kafka-logs-2
-
-```
-
-`broker.id`是集群中每个节点的唯一且永久的名称，我们修改端口和日志分区是因为我们现在在同一台机器上运行，我们要防止broker在同一端口上注册和覆盖对方的数据。
-
-我们已经运行了zookeeper和刚才的一个kafka节点，所有我们只需要在启动2个新的kafka节点。
-
-```
-> bin/kafka-server-start.sh config/server-1.properties &
-... 
-> bin/kafka-server-start.sh config/server-2.properties &
-...
-
-```
-
-现在，我们创建一个新topic，把备份设置为：3
-
-```
-> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic
-
-```
-
-好了，现在我们已经有了一个集群了，我们怎么知道每个集群在做什么呢？运行命令“describe topics”
-
-```
-> bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
-Topic:my-replicated-topic    PartitionCount:1    ReplicationFactor:3    Configs:
-Topic: my-replicated-topic    Partition: 0    Leader: 1    Replicas: 1,2,0    Isr: 1,2,0
-
-```
-
-这是一个解释输出，第一行是所有分区的摘要，每一个线提供一个分区信息，因为我们只有一个分区，所有只有一条线。
-
-- "leader"：该节点负责所有指定分区的读和写，每个节点的领导都是随机选择的。
-- "replicas":备份的节点，无论该节点是否是leader或者目前是否还活着，只是显示。
-- "isr"：备份节点的集合，也就是活着的节点集合。
-
-我们运行这个命令，看看一开始我们创建的那个节点：
-
-```
-> bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic test
-Topic:test    PartitionCount:1    ReplicationFactor:1    Configs:
-Topic: test    Partition: 0    Leader: 0    Replicas: 0    Isr: 0
-
-```
-
-没有惊喜，刚才创建的topic（主题）没有Replicas，所以是0。
-
-让我们来发布一些信息在新的topic上：
-
-```
-> bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic
- ...
-my test message 1
-my test message 2
-^C
-
-```
-
-现在，消费这些消息。
-
-```
-> bin/kafka-console-consumer.sh --zookeeper localhost:2181 --from-beginning --topic my-replicated-topic
- ...
-my test message 1
-my test message 2
-^C
-
-```
-
 我们要测试集群的容错，kill掉leader，Broker1作为当前的leader，也就是kill掉Broker1。
 
 ```
@@ -379,61 +216,27 @@ my test message 2
 
 ```
 echo -e "foo\nbar" > test.txt
-
 ```
 
 接下来，我们开始2个连接器运行在独立的模式，这意味着它们运行在一个单一的，本地的，专用的进程。我们提供3个配置文件作为参数。第一个始终是kafka Connect进程，如kafka broker连接和数据库序列化格式，剩下的配置文件每个指定的连接器来创建，这些文件包括一个独特的连接器名称，连接器类来实例化和任何其他配置要求的。
 
 ```
 > bin/connect-standalone.sh config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties
-
 ```
 
-这是示例的配置文件，使用默认的本地集群配置并创建了2个连接器：第一个是导入连接器，从导入文件中读取并发布到Kafka主题，第二个是导出连接器，从kafka主题读取消息输出到外部文件，在启动过程中，你会看到一些日志消息，包括一些连接器实例化的说明。一旦kafka Connect进程已经开始，导入连接器应该读取从
+这是示例的配置文件，使用默认的本地集群配置并创建了2个连接器：第一个是**导入连接器**，从导入文件中读取并发布到Kafka主题，第二个是**导出连接器**，从kafka主题读取消息输出到外部文件，在启动过程中，你会看到一些日志消息，包括一些连接器实例化的说明。
 
-```
-test.txt
+一旦kafka Connect进程已经开始，**导入连接器**应该从 `test.txt` 读取消息，写入到 topic `connect-test`， **导出连接器**从主题 `connect-test` 写入到文件 `test.sink.txt`。
 
-```
-
-和写入到topic
-
-```
-connect-test
-
-```
-
-,导出连接器从主题
-
-```
-connect-test
-
-```
-
-读取消息写入到文件
-
-```
-test.sink.txt
-
-```
-
-. 我们可以通过验证输出文件的内容来验证数据数据已经全部导出：
+ 我们可以通过验证输出文件的内容来验证数据数据已经全部导出：
 
 ```
 cat test.sink.txt
  foo
  bar
-
 ```
 
-注意，导入的数据也已经在Kafka主题
-
-```
-connect-test
-
-```
-
-里,所以我们可以使用该命令查看这个主题：
+注意，导入的数据也已经在Kafka主题 `connect-test`里,所以我们可以使用该命令查看这个主题：
 
 ```
 $ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic connect-test --from-beginning
@@ -446,7 +249,6 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 
 ```
 echo "Another line" >> test.txt
-
 ```
 
 你应该会看到出现在消费者控台输出一行信息并导出到文件。
