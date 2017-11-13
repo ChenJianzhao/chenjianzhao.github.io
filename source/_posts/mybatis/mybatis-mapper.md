@@ -155,6 +155,24 @@ title: 'MyBatis Mapper'
 
 # 参数（Parameters）
 
+## 参数为原生类型或简单数据
+
+前面的所有语句中你所见到的都是简单参数的例子，实际上参数是 MyBatis 非常强大的元素，对于简单的做法，大概 90% 的情况参数都很少，比如：
+
+```xml
+<select id="selectUsers" resultType="User">
+  select id, username, password
+  from users
+  where id = #{id}
+</select>
+```
+
+
+
+## 参数为复杂对象
+
+- 上面的这个示例说明了一个非常简单的命名参数映射。参数类型被设置为 `int`，这样这个参数就可以被设置成任何内容。原生的类型或简单数据类型（比如整型和字符串）因为没有相关属性，它会完全用参数值来替代。然而，如果传入一个复杂的对象，行为就会有一点不同了。比如：
+
 ```xml
 <insert id="insertUser" parameterType="User">
   insert into users (id, username, password)
@@ -162,11 +180,44 @@ title: 'MyBatis Mapper'
 </insert>
 ```
 
-像 MyBatis 的剩余部分一样，javaType 通常可以从参数对象中来去确定，前提是只要对象不是一个 HashMap。那么 `javaType` 应该被确定来保证使用正确类型处理器。
+- 如果 User 类型的参数对象传递到了语句中，id、username 和 password 属性将会被查找，然后将它们的值传入预处理语句的参数中。这点对于向语句中传参是比较好的而且又简单，不过参数映射的功能远不止于此。
+- 首先，像 MyBatis 的其他部分一样，参数也可以指定一个特殊的数据类型。
 
-`NOTE` 如果 null 被当作值来传递，对于所有可能为空的列，`JDBC Type` 是需要的。你可以自己通过阅读预处理语句的 setNull() 方法的 JavaDocs 文档来研究这种情况。
+```properties
+#{property,javaType=int,jdbcType=NUMERIC}
+```
 
-```xml
+- 像 MyBatis 的剩余部分一样，**javaType 通常可以从参数对象中来去确定，前提是只要对象不是一个 HashMap。**那么 `javaType` 应该被确定来保证使用正确类型处理器。
+
+>  `NOTE` 如果 null 被当作值来传递，对于所有可能为空的列，`JDBC Type` 是需要的。你可以自己通过阅读预处理语句的 setNull() 方法的 JavaDocs 文档来研究这种情况。
+
+- 为了以后定制类型处理方式，你也可以指定一个特殊的类型处理器类（或别名），比如：（尽管看起来配置变得越来越繁琐，但实际上是很少去设置它们。）
+
+```properties
+#{age,javaType=int,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
+```
+
+- 对于数值类型，还有一个小数保留位数的设置，来确定小数点后保留的位数。
+
+```properties
+#{height,javaType=double,jdbcType=NUMERIC,numericScale=2}
+```
+
+- 最后，mode 属性允许你指定 IN，OUT 或 INOUT 参数。如果参数为 OUT 或 INOUT，参数对象属性的真实值将会被改变，就像你在获取输出参数时所期望的那样。如果 mode 为 OUT（或 INOUT），而且 jdbcType 为 CURSOR(也就是 Oracle 的 REFCURSOR)，你必须指定一个 resultMap 来映射结果集到参数类型。要注意这里的 javaType 属性是可选的，如果左边的空白是 jdbcType 的 CURSOR 类型，它会自动地被设置为结果集。
+
+```properties
+#{department, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=departmentResultMap}
+```
+
+MyBatis 也支持很多高级的数据类型，比如结构体，但是当注册 out 参数时你必须告诉它语句类型名称。比如（再次提示，在实际中要像这样不能换行）：
+
+```properties
+#{middleInitial, mode=OUT, jdbcType=STRUCT, jdbcTypeName=MY_TYPE, resultMap=departmentResultMap}
+```
+
+- 尽管所有这些强大的选项很多时候你只简单指定属性名，其他的事情 MyBatis 会自己去推断，最多你需要为可能为空的列名指定 `jdbcType`。
+
+```properties
 #{firstName}
 #{middleInitial,jdbcType=VARCHAR}
 #{lastName}
@@ -181,6 +232,10 @@ title: 'MyBatis Mapper'
 ```xml
 ORDER BY ${columnName}
 ```
+
+这里 MyBatis 不会修改或转义字符串。
+
+`NOTE` 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。
 
 
 
@@ -216,7 +271,13 @@ public class User {
   private int id;
   private String username;
   private String hashedPassword;
-
+  
+  public int getId() {
+    return id;
+  }
+  public void setId(int id) {
+    this.id = id;
+  }
   //setter and getter
   ...
 }
@@ -310,7 +371,8 @@ resultMap 元素有很多子元素和一个值得讨论的结构。 下面是 re
 - `result` – 注入到字段或 JavaBean 属性的普通结果
 - `association` – 一个复杂类型的**关联**属性。（嵌入resultMap  – 映射自身的**关联**属性，或者引用一个外部resultMap ）
 - `collection` – 复杂类型的**集合**属性。（嵌入resultMap   – 映射自身的**集合**属性,或者引用一个外部resultMap）
-- `discriminator` – 使用结果值来决定使用哪个结果映射`case` – 基于某些值的结果映射嵌入结果映射 – 这种情形结果也映射它本身,因此可以包含很多相 同的元素,或者它可以参照一个外部的结果映射。
+- `discriminator` – 使用结果值来决定使用哪个结果映射
+  - `case` – 基于某些值的结果映射嵌入结果映射 – 这种情形结果也映射它本身,因此可以包含很多相 同的元素,或者它可以参照一个外部的结果映射。
 
 
 
@@ -322,9 +384,8 @@ resultMap 元素有很多子元素和一个值得讨论的结构。 下面是 re
 <result property="subject" column="post_subject"/>
 ```
 
-这些是结果映射最基本内容。id 和 result 都映射一个单独列的值到**简单数据类型**(字符 串,整型,双精度浮点数,日期等)的单独属性或字段。
-
-这两者之间的唯一不同是 **id 表示的结果将是当比较对象实例时用到的标识属性**。这帮助来**改进整体表现**,特别是缓存和嵌入结果映射(也就是联合映射) 。
+- 这些是结果映射最基本内容。id 和 result 都映射一个单独列的值到**简单数据类型**(字符串,整型,双精度浮点数,日期等)的单独属性或字段。
+- 这两者之间的唯一不同是 **id 表示的结果将是当比较对象实例时用到的标识属性**。这帮助来**改进整体表现**,特别是缓存和嵌入结果映射(也就是联合映射) 。
 
 每个都有一些属性:
 
@@ -340,22 +401,22 @@ resultMap 元素有很多子元素和一个值得讨论的结构。 下面是 re
 
 
 
-**支持的 JDBC 类型**
+- **支持的 JDBC 类型**
 
-为了未来的参考,MyBatis 通过包含的 jdbcType 枚举型,支持下面的 JDBC 类型。
+  为了未来的参考,MyBatis 通过包含的 jdbcType 枚举型,支持下面的 JDBC 类型。
 
-| `BIT`      | `FLOAT`   | `CHAR`        | `TIMESTAMP`     | `OTHER`   | `UNDEFINED` |
-| ---------- | --------- | ------------- | --------------- | --------- | ----------- |
-| `TINYINT`  | `REAL`    | `VARCHAR`     | `BINARY`        | `BLOB`    | `NVARCHAR`  |
-| `SMALLINT` | `DOUBLE`  | `LONGVARCHAR` | `VARBINARY`     | `CLOB`    | `NCHAR`     |
-| `INTEGER`  | `NUMERIC` | `DATE`        | `LONGVARBINARY` | `BOOLEAN` | `NCLOB`     |
-| `BIGINT`   | `DECIMAL` | `TIME`        | `NULL`          | `CURSOR`  | `ARRAY`     |
+| `BIT`          | `FLOAT`       | `CHAR`            | `TIMESTAMP`         | `OTHER`       | `UNDEFINED`    |
+| -------------- | ------------- | ----------------- | ------------------- | ------------- | -------------- |
+| **`TINYINT`**  | **`REAL`**    | **`VARCHAR`**     | **`BINARY`**        | **`BLOB`**    | **`NVARCHAR`** |
+| **`SMALLINT`** | **`DOUBLE`**  | **`LONGVARCHAR`** | **`VARBINARY`**     | **`CLOB`**    | **`NCHAR`**    |
+| **`INTEGER`**  | **`NUMERIC`** | **`DATE`**        | **`LONGVARBINARY`** | **`BOOLEAN`** | **`NCLOB`**    |
+| **`BIGINT`**   | **`DECIMAL`** | **`TIME`**        | **`NULL`**          | **`CURSOR`**  | **`ARRAY`**    |
 
 
 
 #### constructor（构造方法）
 
-构造方法注入允许你在初始化时为类设置属性的值,而不用暴露出公有方法。MyBatis 也支持私有属性和私有 JavaBeans 属 性来达到这个目的,还有一些人更青睐构造方法注入。构造方法元素支持这个。
+构造方法注入允许你在初始化时为类设置属性的值,而不用暴露出公有方法。MyBatis 也支持私有属性和私有 JavaBeans 属性来达到这个目的,还有一些人更青睐构造方法注入。构造方法元素支持这个。
 
 ```java
 public class User {
@@ -365,7 +426,7 @@ public class User {
 }
 ```
 
-为了把查询结果注入到构造器方法中，MyBatis需要通过特定的方法确定使用哪个构造方法，下例中，MyBatis 查找按顺序定义了这三个参数的构造方法：`java.lang.Integer`, `java.lang.String` 和 `int` 
+为了把查询结果注入到构造器方法中，MyBatis需要通过特定的方法确定使用哪个构造方法，下例中，MyBatis 查找**按顺序**定义了这三个参数的构造方法：`java.lang.Integer`, `java.lang.String` 和 `int` 
 
 ``` xml
 <constructor>
@@ -376,7 +437,7 @@ public class User {
 ```
 
 
-从 3.4.3 版本之后，通过指定 每个构造方法参数的`name` 属性，你可以按任意顺序书写参数元素。
+从 `3.4.3 版本`之后，通过指定 每个构造方法参数的`name` 属性，你可以按任意顺序书写参数元素。
 
 你也可以通过为参数添加 `@Param` 注解并启用 `useActualParamName` (默认启用)，来引用构造方法的参数。
 
@@ -403,8 +464,8 @@ public class User {
 
 关联中不同的是你需要告诉 MyBatis 如何加载关联。MyBatis 在这方面会有两种不同的方式:
 
-- 嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。
-- 嵌套结果:使用嵌套 resultMap 来处理重复的联合结果的子集。
+- **嵌套查询**:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。
+- **嵌套结果**:使用嵌套 resultMap 来处理重复的联合结果的子集。
 
 
 
@@ -436,16 +497,12 @@ public class User {
 </select>
 ```
 
-我们有两个查询语句:一个来加载博客,另外一个来加载作者,而且博客的结果映射描 述了“selectAuthor”语句应该被用来加载它的 author 属性。
-
-其他所有的属性将会被自动加载,假设它们的列和属性名相匹配。
-
-这种方式很简单, 但是对于大型数据集合和列表将不会表现很好。 问题就是我们熟知的 “N+1 查询问题”。
-
-概括地讲,N+1 查询问题可以是这样引起的:
-
-- 你执行了一个单独的 SQL 语句来获取结果列表(就是“+1”)。
-- 对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是“N”)。
+- 我们有两个查询语句:一个来加载博客,另外一个来加载作者,而且博客的结果映射描 述了“selectAuthor”语句应该被用来加载它的 author 属性。
+- 其他所有的属性将会被自动加载,假设它们的列和属性名相匹配。
+- 这种方式很简单, 但是对于大型数据集合和列表将不会表现很好。 问题就是我们熟知的 “N+1 查询问题”。
+- 概括地讲,N+1 查询问题可以是这样引起的:
+  - 你执行了一个单独的 SQL 语句来获取结果列表(就是“+1”)。
+  - 对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是“N”)。
 
 这个问题会导致成百上千的 SQL 语句被执行。这通常不是期望的。
 
@@ -512,7 +569,7 @@ public class User {
 
 
 
-**重用 resultMap**
+##### **重用 resultMap**
 
 假如已经存在 Author的resultMap 定义如下：
 
@@ -532,11 +589,8 @@ public class User {
 <resultMap id="blogResult" type="Blog">
   <id property="id" column="blog_id" />
   <result property="title" column="blog_title"/>
-  <association property="author"
-    resultMap="authorResult" />
-  <association property="coAuthor"
-    resultMap="authorResult"
-    columnPrefix="co_" />
+  <association property="author" resultMap="authorResult" />
+  <association property="coAuthor" resultMap="authorResult" columnPrefix="co_" />
 </resultMap>
 ```
 
