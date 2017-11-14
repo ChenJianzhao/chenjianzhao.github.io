@@ -1,10 +1,14 @@
-
+---
+categories: 开发工具
+date: 2017-05-7
+title: 
+---
 
 原文：
 
 [自己用 VPS 搭建 SS 服务](https://hacpai.com/article/1491382329320)
 
-[[教你如何自己搭建vps](http://www.oneplusbbs.com/thread-3068029-1-1.html)
+[教你如何自己搭建vps](http://www.oneplusbbs.com/thread-3068029-1-1.html)
 
 ## Shadowsocks 和 VPN 的区别
 
@@ -23,6 +27,8 @@
 - 有明显特征
 
 
+</br>
+
 
 ## VPS 的选择
 
@@ -36,7 +42,9 @@
 
 我购买的时候，Tokyo 和 LA  $2.5/mo 的产品已经缺货，所以只能购买 New York（NJ），ping 的平均延迟大概 125ms 左右，可接受。
 
+![vps](vps_ss/vps.png)
 
+</br>
 
 ## 搭建 shadowsocks 服务
 
@@ -60,7 +68,7 @@
  root@00.00.00.00's password:
 ```
 
-
+</br>
 
 ### 安装 shadowsocks 服务
 
@@ -148,7 +156,7 @@ ESC
 $ :wq //写入并退出
 ```
 
-
+</br>
 
 ### 防火墙
 
@@ -161,7 +169,7 @@ $ firewall-cmd --reload
 success
 ```
 
-
+</br>
 
 ### 启动 SS 服务
 
@@ -183,16 +191,25 @@ root     10121  0.0  0.1 112648   960 pts/1    R+   07:55   0:00 grep --color=au
 $ kill 10085
 ```
 
-
+</br>
 
 ## 接连 SS
 
 [shadowsocks 官网 下载](https://shadowsocks.org/en/download/clients.html) （官网经常打不开）
 
-[GitHub 下载](https://github.com/shadowsocks?utf8=%E2%9C%93&q=sh&type=&language=)
+[shadowsocks GitHub 下载](https://github.com/shadowsocks?utf8=%E2%9C%93&q=sh&type=&language=)
 
-[Windows 版本](https://github.com/shadowsocks/shadowsocks-windows/releases/)
+- [Windows 版本](https://github.com/shadowsocks/shadowsocks-windows/releases/)
+- [Mac 版本](https://github.com/shadowsocks/ShadowsocksX-NG/releases)
+- **IOS** 中国 App Store 能下载到 OpenWingy (免费)
 
-[Mac 版本](https://github.com/shadowsocks/ShadowsocksX-NG/releases)
 
-**IOS** 中国 App Store 能下载到 OpenWingy (免费)
+
+## 写在最后
+
+Vultr VPS 使用起来还是挺稳定的，实例配置也很便捷，界面友好，最便宜的 $2.5/month。
+
+如果觉得文章对你有帮助，可以使用我的推荐链接注册，[Vultr 官网](https://www.vultr.com/?ref=7262235) ，我似乎可以得到推广费哈哈哈。
+
+<a href="https://www.vultr.com/?ref=7262235"><img src="https://www.vultr.com/media/banner_1.png" width="728" height="90"></a>
+
