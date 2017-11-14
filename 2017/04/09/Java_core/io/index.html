@@ -172,7 +172,7 @@ Java流类图结构：
 <meta property="og:image" content="http://yoursite.com/2017/04/09/Java_core/io/io.jpg">
 <meta property="og:image" content="http://yoursite.com/2017/04/09/Java_core/io/stream.png">
 <meta property="og:image" content="http://yoursite.com/2017/04/09/Java_core/io/reader.png">
-<meta property="og:updated_time" content="2017-05-31T05:25:14.527Z">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.237Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java IO">
 <meta name="twitter:description" content="原文：Java IO流学习总结-Oubo的博客 
@@ -460,6 +460,17 @@ Java流类图结构：
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/09/Java_core/io/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/09/Java_core/io/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -527,27 +538,31 @@ Java流类图结构：
 <li>根据处理数据类型的不同分为：字符流和字节流</li>
 <li>根据数据流向不同分为：输入流和输出流</li>
 </ul>
-<h3 id="2-1-字符流和字节流"><a href="#2-1-字符流和字节流" class="headerlink" title="2.1 字符流和字节流"></a>2.1 字符流和字节流</h3><p>字符流的由来： 因为数据编码的不同，而有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。 字节流和字符流的区别：</p>
+<h3 id="2-1-字符流和字节流"><a href="#2-1-字符流和字节流" class="headerlink" title="2.1 字符流和字节流"></a>2.1 字符流和字节流</h3><p><strong>字符流的由来</strong>： 因为数据编码的不同，而有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。 </p>
+<p><strong>字节流和字符流的区别：</strong></p>
 <ul>
-<li>读写单位不同：字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
-<li>处理对象不同：字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型的数据。</li>
+<li><strong>读写单位不同：</strong>字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
+<li><strong>处理对象不同：</strong>字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型的数据。</li>
 </ul>
+<blockquote>
 <p><strong>结论：只要是处理纯文本数据，就优先考虑使用字符流。 除此之外都使用字节流。</strong></p>
+</blockquote>
 <h3 id="2-2-输入流和输出流"><a href="#2-2-输入流和输出流" class="headerlink" title="2.2 输入流和输出流"></a>2.2 输入流和输出流</h3><p>对输入流只能进行读操作，对输出流只能进行写操作，程序中需要根据待传输数据的不同特性而使用不同的流。</p>
 <h2 id="3-Java-IO流对象"><a href="#3-Java-IO流对象" class="headerlink" title="3. Java IO流对象"></a>3. Java IO流对象</h2><h3 id="3-1-输入字节流InputStream"><a href="#3-1-输入字节流InputStream" class="headerlink" title="3.1 输入字节流InputStream"></a>3.1 输入字节流InputStream</h3><p>IO 中输入字节流的继承图可见上图，可以看出：</p>
 <ol>
-<li><code>InputStream</code> 是所有的输入字节流的父类，它是一个抽象类。</li>
-<li><code>ByteArrayInputStream</code>、<code>StringBufferInputStream</code>、<code>FileInputStream</code> 是三种基本的介质流，它们分别从Byte 数组、StringBuffer、和本地文件中读取数据。<code>PipedInputStream</code> 是从与其它线程共用的管道中读取数据，与Piped 相关的知识后续单独介绍。</li>
-<li><code>ObjectInputStream</code> 和所有<code>FilterInputStream</code> 的子类都是装饰流（装饰器模式的主角）。</li>
+<li><code>InputStream</code> 是所有的输入字节流的父类，它是一个<strong>抽象类</strong>。</li>
+<li><code>ByteArrayInputStream</code>、<code>StringBufferInputStream</code>、<code>FileInputStream</code> 是三种基本的<strong>介质流</strong>，它们分别从Byte 数组、StringBuffer、和本地文件中读取数据。<code>PipedInputStream</code> 是从与其它线程共用的管道中读取数据，与Piped 相关的知识后续单独介绍。</li>
+<li><code>ObjectInputStream</code> 和所有<code>FilterInputStream</code> 的子类都是<strong>装饰流</strong>（装饰器模式的主角）。</li>
 </ol>
 <h3 id="3-2-输出字节流OutputStream"><a href="#3-2-输出字节流OutputStream" class="headerlink" title="3.2 输出字节流OutputStream"></a>3.2 输出字节流OutputStream</h3><p>IO 中输出字节流的继承图可见上图，可以看出：</p>
 <ol>
-<li><code>OutputStream</code> 是所有的输出字节流的父类，它是一个抽象类。</li>
+<li><code>OutputStream</code> 是所有的输出字节流的父类，它是一个<strong>抽象类</strong>。</li>
 <li><code>ByteArrayOutputStream</code>、<code>FileOutputStream</code> 是两种基本的介质流，它们分别向Byte 数组、和本地文件中写入数据。<code>PipedOutputStream</code> 是向与其它线程共用的管道中写入数据，</li>
-<li>ObjectOutputStream 和所有FilterOutputStream 的子类都是装饰流。</li>
+<li><code>ObjectOutputStream</code> 和所有<code>FilterOutputStream</code> 的子类都是<strong>装饰流</strong>。</li>
 </ol>
 <h3 id="3-3-字节流的输入与输出的对应"><a href="#3-3-字节流的输入与输出的对应" class="headerlink" title="3.3 字节流的输入与输出的对应"></a>3.3 字节流的输入与输出的对应</h3><p><img src="/2017/04/09/Java_core/io/stream.png" alt="stream"></p>
-<p><strong>图中蓝色的为主要的对应部分，红色的部分就是不对应部分</strong>。<strong>紫色的虚线部分代表这些流一般要搭配使用</strong>。上面的图中可以看出Java IO 中的字节流是极其对称的。“存在及合理”我们看看这些字节流中不太对称的几个类吧！</p>
+<p><strong>图中蓝色的为主要的对应部分，红色的部分就是不对应部分</strong>。<strong>紫色的虚线部分代表这些流一般要搭配使用</strong>。</p>
+<p>上面的图中可以看出Java IO 中的字节流是极其对称的。“存在及合理”我们看看这些字节流中<strong>不太对称的几个类</strong>吧！</p>
 <ol>
 <li><code>LineNumberInputStream</code> 主要完成从流中读取数据时，会得到相应的行号，至于什么时候分行、在哪里分行是由改类主动确定的，并不是在原始中有这样一个行号。在输出部分没有对应的部分，我们完全可以自己建立一个<code>LineNumberOutputStream</code>，在最初写入时会有一个基准的行号，以后每次遇到换行时会在下一行添加一个行号，看起来也是可以的。好像更不入流了。</li>
 <li><code>PushbackInputStream</code> 的功能是查看最后一个字节，不满意就放入缓冲区。主要用在编译器的语法、词法分析部分。输出部分的<code>BufferedOutputStream</code> 几乎实现相近的功能。</li>
@@ -608,10 +623,11 @@ Java流类图结构：
 <li><code>OutputStreamWriter</code>: 字符到字节的桥梁</li>
 </ol>
 <p>这两个流对象是字符体系中的成员，它们有转换作用，本身又是字符流，所以在构造的时候需要传入字节流对象进来。</p>
-<h3 id="3-8-File类"><a href="#3-8-File类" class="headerlink" title="3.8 File类"></a>3.8 File类</h3><p>File类是对文件系统中文件以及文件夹进行封装的对象，可以通过对象的思想来操作文件和文件夹。 File类保存文件或目录的各种元数据信息，包括文件名、文件长度、最后修改时间、是否可读、获取当前文件的路径名，判断指定文件是否存在、获得当前目录中的文件列表，创建、删除文件和目录等方法。  </p>
-<h3 id="3-9-RandomAccessFile类"><a href="#3-9-RandomAccessFile类" class="headerlink" title="3.9 RandomAccessFile类"></a>3.9 RandomAccessFile类</h3><p>该对象并不是流体系中的一员，其封装了字节流，同时还封装了一个缓冲区（字符数组），通过内部的指针来操作字符数组中的数据。 该对象特点：</p>
+<h3 id="3-8-File类"><a href="#3-8-File类" class="headerlink" title="3.8 File类"></a>3.8 File类</h3><p>File类是对文件系统中文件以及文件夹进行封装的对象，可以通过对象的思想来<strong>操作文件和文件夹</strong>。 </p>
+<p>File类保存文件或目录的各种元数据信息，包括文件名、文件长度、最后修改时间、是否可读、获取当前文件的路径名，判断指定文件是否存在、获得当前目录中的文件列表，创建、删除文件和目录等方法。  </p>
+<h3 id="3-9-RandomAccessFile类"><a href="#3-9-RandomAccessFile类" class="headerlink" title="3.9 RandomAccessFile类"></a>3.9 RandomAccessFile类</h3><p>该对象并不是流体系中的一员，其封装了<strong>字节流</strong>，同时还封装了一个缓冲区（字符数组），通过内部的指针来<strong>操作字符数组</strong>中的数据。 该对象特点：</p>
 <ol>
-<li>该对象只能操作文件，所以构造函数接收两种类型的参数：a.字符串文件路径；b.File对象。</li>
+<li>该对象<strong>只能操作文件</strong>，所以构造函数接收两种类型的参数：a.字符串文件路径；b.File对象。</li>
 <li>该对象既可以对文件进行读操作，也能进行写操作，在进行对象实例化时可指定操作模式(r,rw)</li>
 </ol>
 <p><strong>注意：该对象在实例化时，如果要操作的文件不存在，会自动创建；如果文件存在，写数据未指定位置，会从头开始写，即覆盖原有的内容。</strong> 可以用于多线程下载或多个线程同时写数据到文件。</p>
@@ -637,8 +653,9 @@ Java流类图结构：
 <h3 id="4-使用字符流读写数据"><a href="#4-使用字符流读写数据" class="headerlink" title="4. 使用字符流读写数据"></a>4. 使用字符流读写数据</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.FileInputStream;</div><div class="line"><span class="keyword">import</span> java.io.FileOutputStream;</div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.io.InputStreamReader;</div><div class="line"><span class="keyword">import</span> java.io.OutputStreamWriter;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RWByCharStream</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">            FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"java.txt"</span>);</div><div class="line">            FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"java_new.txt"</span>);</div><div class="line">            InputStreamReader reader = <span class="keyword">new</span> InputStreamReader(fis, <span class="string">"UTF-8"</span>); <span class="comment">// 字符流的使用要传入字节流作为参数</span></div><div class="line">            OutputStreamWriter writer = <span class="keyword">new</span> OutputStreamWriter(fos, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">            <span class="keyword">char</span> input[] = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>]; <span class="comment">// 每次读取的数据大小</span></div><div class="line">            <span class="keyword">int</span> l = <span class="number">0</span>;</div><div class="line">            <span class="keyword">while</span> ((l = reader.read(input)) != -<span class="number">1</span>) &#123;</div><div class="line">                <span class="comment">// void write(char cbuf[], int off, int len)</span></div><div class="line">                <span class="comment">// 文件末尾的长度不一定是100，所以需要设置写入数据长度</span></div><div class="line">                writer.write(input, <span class="number">0</span>, l);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            reader.close(); <span class="comment">// 先关闭字符流</span></div><div class="line">            fis.close(); <span class="comment">// 再关闭字节流</span></div><div class="line">            writer.close();</div><div class="line">            fos.close();</div><div class="line"></div><div class="line">            System.out.println(<span class="string">"done"</span>);</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h3 id="5-使用带缓冲的字符流读写数据"><a href="#5-使用带缓冲的字符流读写数据" class="headerlink" title="5. 使用带缓冲的字符流读写数据"></a>5. 使用带缓冲的字符流读写数据</h3><p>使用字符流读取数据时不能按行读取，这时候就需要使用带有缓冲区的字符流。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.BufferedReader;</div><div class="line"><span class="keyword">import</span> java.io.FileInputStream;</div><div class="line"><span class="keyword">import</span> java.io.FileOutputStream;</div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.io.InputStreamReader;</div><div class="line"><span class="keyword">import</span> java.io.OutputStreamWriter;</div><div class="line"><span class="keyword">import</span> java.io.PrintWriter;</div><div class="line"><span class="keyword">import</span> java.io.Writer;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RWByBufferedCharStream</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">            FileInputStream fis = <span class="keyword">new</span> FileInputStream(<span class="string">"java.txt"</span>);</div><div class="line">            FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(<span class="string">"java_new_buff.txt"</span>);</div><div class="line"></div><div class="line">            InputStreamReader reader = <span class="keyword">new</span> InputStreamReader(fis, <span class="string">"UTF-8"</span>);</div><div class="line">            OutputStreamWriter writer = <span class="keyword">new</span> OutputStreamWriter(fos, <span class="string">"UTF-8"</span>);</div><div class="line"></div><div class="line">            BufferedReader br = <span class="keyword">new</span> BufferedReader(reader);</div><div class="line">            <span class="comment">// BufferedWriter bw = new BufferedWriter(writer);</span></div><div class="line">            <span class="comment">// PrintWriter和BufferedWriter用法类似</span></div><div class="line">            <span class="comment">// PrintWriter可以输出换行符</span></div><div class="line">            <span class="comment">// 构造方法PrintWriter(Writer out,boolean autoFlush) 里可以设置缓冲区自动输出，这样就不需要手动调用flush方法了。</span></div><div class="line">            PrintWriter pw = <span class="keyword">new</span> PrintWriter(writer, <span class="keyword">true</span>);</div><div class="line"></div><div class="line">            String input;</div><div class="line">            <span class="keyword">while</span> ((input = br.readLine()) != <span class="keyword">null</span>) &#123; <span class="comment">// BufferedReader可以按行读取</span></div><div class="line">                <span class="comment">// bw.write(input); //</span></div><div class="line">                <span class="comment">// BufferedWriter的writer方法是带有缓冲区的，此时打印的文本是不带换行符的</span></div><div class="line">                pw.println(input);<span class="comment">// PrintWriter的println方法支持不同平台的换行符输出</span></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// bw.flush(); // 强制输出缓冲区内容。如果不加上flush，最后的缓冲区未读满将不输出内容</span></div><div class="line"></div><div class="line">            <span class="comment">// bw.close();</span></div><div class="line">            pw.close();<span class="comment">// 按顺序关闭流</span></div><div class="line">            writer.close();</div><div class="line">            fos.close();</div><div class="line"></div><div class="line">            br.close();</div><div class="line">            reader.close();</div><div class="line">            fis.close();</div><div class="line"></div><div class="line">            System.out.println(<span class="string">"done"</span>);</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="6-FileReader-和FileWriter"><a href="#6-FileReader-和FileWriter" class="headerlink" title="6. FileReader 和FileWriter"></a>6. FileReader 和FileWriter</h3><p>FileReader 和FileWriter 专门用于操作文本文件. 用法与FileInputStream 类似.</p>
+<h3 id="6-FileReader-和FileWriter"><a href="#6-FileReader-和FileWriter" class="headerlink" title="6. FileReader 和FileWriter"></a>6. FileReader 和FileWriter</h3><p><strong>FileReader</strong> 和<strong>FileWriter</strong> 专门用于操作文本文件. 用法与 <strong>FileInputStream</strong> 类似.</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.BufferedReader;</div><div class="line"><span class="keyword">import</span> java.io.BufferedWriter;</div><div class="line"><span class="keyword">import</span> java.io.FileReader;</div><div class="line"><span class="keyword">import</span> java.io.FileWriter;</div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileRW</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        FileReader fr = <span class="keyword">null</span>;</div><div class="line">        BufferedReader br = <span class="keyword">null</span>;</div><div class="line">        FileWriter fw = <span class="keyword">null</span>;</div><div class="line">        BufferedWriter bw = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            fr = <span class="keyword">new</span> FileReader(<span class="string">"java.txt"</span>);</div><div class="line">            br = <span class="keyword">new</span> BufferedReader(fr);</div><div class="line">            fw = <span class="keyword">new</span> FileWriter(<span class="string">"java_new.txt"</span>);</div><div class="line">            bw = <span class="keyword">new</span> BufferedWriter(fw);</div><div class="line"></div><div class="line">            String line;</div><div class="line">            <span class="keyword">while</span> ((line = br.readLine()) != <span class="keyword">null</span>) &#123;</div><div class="line">                bw.write(line + <span class="string">"\n"</span>);</div><div class="line">            &#125;</div><div class="line">            bw.flush();</div><div class="line">            System.out.println(<span class="string">"done"</span>);</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                bw.close();</div><div class="line">                fw.close();</div><div class="line">                br.close();</div><div class="line">                fr.close();</div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -712,6 +729,13 @@ Java流类图结构：
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -758,7 +782,7 @@ Java流类图结构：
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -769,7 +793,7 @@ Java流类图结构：
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -933,6 +957,26 @@ Java流类图结构：
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/04/09/Java_core/io/';
+          this.page.identifier = '2017/04/09/Java_core/io/';
+          this.page.title = 'Java IO';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

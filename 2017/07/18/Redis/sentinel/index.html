@@ -95,7 +95,7 @@
 <meta property="og:site_name" content="Pandora">
 <meta property="og:description" content="原文：Redis Sentinel机制与用法（一）
 概述Redis-Sentinel是Redis官方推荐的高可用性(HA)解决方案，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能">
-<meta property="og:updated_time" content="2017-07-18T12:10:42.264Z">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.331Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis 之 Sentinel">
 <meta name="twitter:description" content="原文：Redis Sentinel机制与用法（一）
@@ -334,6 +334,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/18/Redis/sentinel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/18/Redis/sentinel/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -357,7 +368,7 @@
 
       
         <p>原文：<a href="https://segmentfault.com/a/1190000002680804" target="_blank" rel="external">Redis Sentinel机制与用法（一）</a></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Redis-Sentinel是Redis官方推荐的高可用性(HA)解决方案，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自懂切换。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Redis-Sentinel是Redis官方推荐的<strong>高可用性(HA)解决方案</strong>，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自懂切换。</p>
 <p>它的主要功能有以下几点</p>
 <ul>
 <li><p>不时地监控redis是否按照预期良好地运行;</p>
@@ -393,7 +404,10 @@
 <li><p>上面的配置项配置了两个名字分别为 “mymaster” 和 “resque” 的 master，配置文件只需要配置master的信息就好啦，不用配置slave的信息，因为 <strong>slave能够被自动检测到(master节点会有关于slave的消息)</strong>。</p>
 </li>
 <li><p>需要注意的是，<strong>配置文件在sentinel运行期间是会被动态修改的</strong>，例如当发生主备切换时候，配置文件中的master会被修改为另外一个slave。这样，之后sentinel如果重启时，就可以根据这个配置来恢复其之前所监控的redis集群的状态。</p>
-<p>（Question：需要配置什么才能自动保存修改？实践中并不会保存到磁盘）</p>
+<blockquote>
+<p>Question：需要配置什么才能自动保存修改？实践中并不会保存到磁盘</p>
+<p>补充：实践中，新版本在 Linux 是可以动态修改并写回配置文件的，Windows 下不生效。</p>
+</blockquote>
 </li>
 </ul>
 <p><strong>接下来我们将一行一行地解释上面的配置项</strong>：</p>
@@ -419,7 +433,7 @@
 <p>​</p>
 </li>
 </ul>
-<p>其他配置项在sentinel.conf中都有很详细的解释。<br>所有的配置都可以在运行时用命令<code>SENTINEL SET command</code>动态修改。</p>
+<p>其他配置项在sentinel.conf中都有很详细的解释。<br>所有的配置都可以在运行时用命令<code>SENTINEL SET command</code><strong>动态修改。</strong></p>
 <ul>
 <li><strong>failover-timeout</strong>  见以下小节</li>
 </ul>
@@ -654,6 +668,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -700,7 +721,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -711,7 +732,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -875,6 +896,26 @@
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/07/18/Redis/sentinel/';
+          this.page.identifier = '2017/07/18/Redis/sentinel/';
+          this.page.title = 'Redis 之 Sentinel';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

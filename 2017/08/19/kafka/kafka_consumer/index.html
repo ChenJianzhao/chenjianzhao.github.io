@@ -1,0 +1,878 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Kafka Consumer1public class KafkaConsumer&amp;lt;K,V&amp;gt; extends Object implements Consumer&amp;lt;K,V&amp;gt;
+Kafka客户端从集群中消费消息，并透明地处理kafka集群中的故障服务器，透明地调节适应集群中变化的数据分区。也和服务器交互，平衡消费者。
+消费者TCP长连接到broker来拉取消息。故障导致的消费者">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka消费者客户端（0.10.0.1API）">
+<meta property="og:url" content="http://yoursite.com/2017/08/19/kafka/kafka_consumer/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="Kafka Consumer1public class KafkaConsumer&amp;lt;K,V&amp;gt; extends Object implements Consumer&amp;lt;K,V&amp;gt;
+Kafka客户端从集群中消费消息，并透明地处理kafka集群中的故障服务器，透明地调节适应集群中变化的数据分区。也和服务器交互，平衡消费者。
+消费者TCP长连接到broker来拉取消息。故障导致的消费者">
+<meta property="og:updated_time" content="2017-09-26T00:54:07.879Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kafka消费者客户端（0.10.0.1API）">
+<meta name="twitter:description" content="Kafka Consumer1public class KafkaConsumer&amp;lt;K,V&amp;gt; extends Object implements Consumer&amp;lt;K,V&amp;gt;
+Kafka客户端从集群中消费消息，并透明地处理kafka集群中的故障服务器，透明地调节适应集群中变化的数据分区。也和服务器交互，平衡消费者。
+消费者TCP长连接到broker来拉取消息。故障导致的消费者">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/19/kafka/kafka_consumer/"/>
+
+
+
+
+
+  <title> kafka消费者客户端（0.10.0.1API） | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/19/kafka/kafka_consumer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                kafka消费者客户端（0.10.0.1API）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T20:00:00+08:00">
+                2017-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/19/kafka/kafka_consumer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/19/kafka/kafka_consumer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Kafka-Consumer"><a href="#Kafka-Consumer" class="headerlink" title="Kafka Consumer"></a>Kafka Consumer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumer</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Object</span> <span class="keyword">implements</span> <span class="title">Consumer</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>Kafka客户端从集群中消费消息，并透明地处理kafka集群中的故障服务器，透明地调节适应集群中变化的数据分区。也和服务器交互，平衡消费者。</p>
+<p>消费者TCP长连接到broker来拉取消息。故障导致的消费者关闭失败，将会泄露这些连接，<strong>消费者不是线程安全的</strong>，可以查看更多关于 <a href="http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded" target="_blank" rel="external">Multi-threaded（多线程）</a>处理的细节。</p>
+<h2 id="偏移量和消费者的位置"><a href="#偏移量和消费者的位置" class="headerlink" title="偏移量和消费者的位置"></a>偏移量和消费者的位置</h2><p>kafka为分区中的每条消息保存一个<code>偏移量（offset）</code>，这个<strong>偏移量</strong>是该分区中一条消息的唯一标示符。也表示消费者在分区的位置。例如，一个位置是5的消费者(说明已经消费了0到4的消息)，下一个接收消息的偏移量为5的消息。实际上有两个与消费者相关的“位置”概念：</p>
+<ul>
+<li>消费者的位置给出了<strong>下一条记录的偏移量</strong>。它比消费者在该分区中看到的最大偏移量要大一个。 它在每次消费者在调用poll(long)中接收消息时自动增长。</li>
+<li>“已提交”的位置是已安全保存的最后偏移量，如果进程失败或重新启动时，消费者将恢复到这个偏移量。消费者可以选择<strong>定期自动提交偏移量</strong>，也可以选择通过调用<strong>commit API来手动的控制</strong> (如：<strong>commitSync</strong> 和 <strong>commitAsync</strong>)。</li>
+</ul>
+<p>这个区别是消费者来控制一条消息什么时候才被认为是已被消费的，<strong>控制权在消费者</strong>，下面我们进一步更详细地讨论。</p>
+<h2 id="消费者组和主题订阅"><a href="#消费者组和主题订阅" class="headerlink" title="消费者组和主题订阅"></a>消费者组和主题订阅</h2><ul>
+<li>Kafka的<code>消费者组</code>概念，通过进程池瓜分消费和处理消息的工作。这些进程可以在同一台机器运行，也可分布到多台机器上，增加可扩展性和容错性，相同 <code>group.id</code> 的消费者将视为同一个<strong>消费者组</strong>。</li>
+<li>分组中的每个消费者通过<code>subscribe API</code>动态的订阅一个topic列表。kafka将已订阅的 topic 的消息发送到每个消费者组中。并通过<strong>平衡分区</strong>，是消息在消费者分组中所有成员之间来达到负载均衡。因此每个分区恰好地分配1个消费者（一个消费者组中）。所有如果一个topic有4个分区，并且一个消费者分组有2个消费者。那么每个消费者消费2个分区。</li>
+<li>消费者组的成员是动态维护的：如果一个<strong>消费者故障</strong>。分配给它的分区将重新分配给同一个分组中其他的消费者。同样的，如果一个<strong>新的消费者加入到分组</strong>，将从现有消费者中移一个给它。这被称为<code>重新平衡分组</code>，并在下面更详细地讨论。 当<strong>新分区添加到订阅的topic时</strong>，也将重新平衡。将通过定时刷新自动发现新的分区，并将其分配给分组的成员。</li>
+<li>从概念上讲，你可以将消费者分组看作是由多个进程组成的单一逻辑订阅者。作为一个多订阅系统，Kafka支持对于给定topic有任意数量的消费者组，而不重复。</li>
+<li>这是在消息系统中常见的功能的略微概括。所有进程都将是单个消费者分组的一部分（类似传统消息传递系统中的<strong>队列</strong>的语义），因此消息传递就像队列一样，在组中平衡。与传统的消息系统不同的是，虽然，你可以有多个这样的组。但每个进程都有自己的消费者组（类似于传统消息系统中<strong>pub-sub</strong>的语义），因此每个进程都会订阅到该主题的所有消息。</li>
+<li>此外，当<strong>分组重新分配</strong>自动发生时，可以通过<strong><code>ConsumerRebalanceListener</code></strong>通知消费者，这允许他们完成必要的应用程序级逻辑，例如状态清除，手动偏移提交等。有关更多详细信息，请参阅<a href="http://kafka.apache.org/0101/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#rebalancecallback" target="_blank" rel="external">Kafka存储的偏移</a>。</li>
+<li>它也允许消费者通过使用<code>assign(Collection)</code><strong>手动分配指定分区</strong>，如果使用手动指定分配分区，那么动态分区分配和协调消费者组将失效。</li>
+</ul>
+<h2 id="发现消费者故障"><a href="#发现消费者故障" class="headerlink" title="发现消费者故障"></a>发现消费者故障</h2><ul>
+<li>订阅一组topic后，当调用poll(long）时，消费者将自动加入到组中。只要持续的调用poll，消费者将一直保持可用，并继续从分配的分区中接收消息。此外，消费者向服务器定时发送心跳。 如果消费者崩溃或无法在<strong><code>session.timeout.ms</code></strong>，配置的时间内发送心跳，则消费者将被视为死亡，并且其分区将被重新分配。<ul>
+<li>还有一种可能，消费可能遇到<strong>“活锁”</strong>，它持续的发送心跳，但是没有处理消息。为了预防消费者在这种情况下一直持有分区，我们使用 <strong><code>max.poll.interval.ms</code></strong> ，活跃检测机制。 在此基础上，如果你调用的poll的频率大于最大间隔，则客户端将主动地离开组，以便其他消费者接管该分区。 发生这种情况时，你会看到offset提交失败（调用 <code>commitSync()</code> 引发的 <strong>CommitFailedException</strong>）。这是一种安全机制，<strong>保障只有活动成员能够提交offset</strong>。所以要留在组中，你必须持续调用poll。</li>
+</ul>
+</li>
+<li>消费者提供两个配置设置<strong>来控制poll循环：</strong><ol>
+<li><code>max.poll.interval.ms</code>：增大poll的间隔，可以为消费者提供更多的时间去处理返回的消息（调用poll(long)返回的消息，通常返回的消息都是一批）。缺点是此值越大将会延迟组重新平衡。</li>
+<li><code>max.poll.records</code>：此设置限制每次调用poll返回的消息数，这样可以更容易的预测每次poll间隔要处理的最大值。通过调整此值，可以减少poll间隔，减少重新平衡分组的次数。</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>对于<strong>消息处理时间不可预测</strong>的情况，这些选项是不够的。 处理这种情况的，<strong>推荐方法是将消息处理移到另一个线程中，让消费者继续调用poll</strong>。但是必须注意确保已提交的offset不超过实际位置。另外，你必须 <code>pause暂停</code> 分区，不会从poll接收到新消息，让线程处理完之前返回的消息（如果你的处理能力比拉取消息的慢，那创建新线程将导致你机器内存溢出）。</li>
+</ul>
+<h2 id="自动提交偏移量"><a href="#自动提交偏移量" class="headerlink" title="自动提交偏移量"></a>自动提交偏移量</h2><p>这是个【自动提交偏移量】的简单的kafka消费者API。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Properties props = <span class="keyword">new</span> Properties();</div><div class="line">props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</div><div class="line">props.put(<span class="string">"group.id"</span>, <span class="string">"test"</span>);</div><div class="line">props.put(<span class="string">"enable.auto.commit"</span>, <span class="string">"true"</span>);</div><div class="line">props.put(<span class="string">"auto.commit.interval.ms"</span>, <span class="string">"1000"</span>);</div><div class="line">props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</div><div class="line">props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</div><div class="line">KafkaConsumer&lt;String, String&gt; consumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</div><div class="line">consumer.subscribe(Arrays.asList(<span class="string">"my-topic"</span>));</div><div class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">  ConsumerRecords&lt;String, String&gt; records = consumer.poll(<span class="number">100</span>);</div><div class="line">  <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : records)</div><div class="line">    System.out.printf(<span class="string">"offset = %d, key = %s, value = %s%n"</span>, record.offset(), 		record.key(), record.value());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>设置<code>enable.auto.commit</code> 为 <strong>true</strong> ，偏移量由<code>auto.commit.interval.ms</code>控制自动提交的频率。</li>
+<li>集群是通过配置bootstrap.servers指定一个或多个broker。不用指定全部的broker，它将自动发现集群中的其余的borker（最好指定多个，万一有服务器故障）。</li>
+</ul>
+<p>在这个例子中，客户端订阅了主题 <code>&quot;my-topic&quot;</code>。消费者组叫<code>test</code>。</p>
+<ul>
+<li>broker通过心跳机器自动检测test组中失败的进程，消费者会自动<code>ping</code>集群，告诉进群它还活着。只要消费者能够做到这一点，它就被认为是活着的，并保留分配给它分区的权利，如果它停止心跳的时间超过<code>session.timeout.ms</code>,那么就会认为是故障的，它的分区将被分配到别的进程。</li>
+<li>这个<code>deserializer</code>设置如何把byte转成object类型，例子中，通过指定string解析器，我们告诉获取到的消息的key和value只是简单个string类型。</li>
+</ul>
+<h2 id="手动控制偏移量"><a href="#手动控制偏移量" class="headerlink" title="手动控制偏移量"></a>手动控制偏移量</h2><p>不需要定时的提交offset，可以自己控制offset，当消息认为已消费过了，这个时候再去提交它们的偏移量。这个很有用的，当消费的消息结合了一些处理逻辑，这个消息就不应该认为是已经消费的，直到它完成了整个处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">Properties props = <span class="keyword">new</span> Properties();</div><div class="line">props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</div><div class="line">props.put(<span class="string">"group.id"</span>, <span class="string">"test"</span>);</div><div class="line">props.put(<span class="string">"enable.auto.commit"</span>, <span class="string">"false"</span>);</div><div class="line">props.put(<span class="string">"auto.commit.interval.ms"</span>, <span class="string">"1000"</span>);</div><div class="line">props.put(<span class="string">"session.timeout.ms"</span>, <span class="string">"30000"</span>);</div><div class="line">props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</div><div class="line">props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</div><div class="line">KafkaConsumer&lt;String, String&gt; consumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</div><div class="line">consumer.subscribe(Arrays.asList(<span class="string">"my-topic"</span>));</div><div class="line"><span class="keyword">final</span> <span class="keyword">int</span> minBatchSize = <span class="number">3</span>;</div><div class="line">List&lt;ConsumerRecord&lt;String, String&gt;&gt; buffer = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">  ConsumerRecords&lt;String, String&gt; records = consumer.poll(<span class="number">100</span>);</div><div class="line">  <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : records) &#123;</div><div class="line">    buffer.add(record);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (buffer.size() &gt;= minBatchSize) &#123;</div><div class="line">    <span class="comment">//insertIntoDb(buffer);</span></div><div class="line">    <span class="comment">// 此处无论循环 poll 多少次，都需要等到 buffer.size() &gt;= minBatchSize 才会提交偏移量offset</span></div><div class="line">    System.out.println(<span class="string">"method insertIntoDb(buffer) done!"</span>);</div><div class="line">    consumer.commitSync();</div><div class="line">    buffer.clear();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>在这个例子中，我们将消费一批消息并将它们存储在内存中。当我们积累足够多的消息后，我们再将它们批量插入到数据库中。如果我们设置offset自动提交（之前说的例子），消费将被认为是已消费的。<strong>这样会出现问题，我们的进程可能在批处理记录之后，但在它们被插入到数据库之前失败了</strong>。</li>
+<li>为了避免这种情况，我们将在<strong>相应的记录插入数据库之后再手动提交偏移量</strong>。这样我们可以准确控制消息是成功消费的。提出一个相反的可能性：在插入数据库之后，但是在提交之前，这个过程可能会失败（即使这可能只是几毫秒，这是一种可能性）。在这种情况下，进程将获取到已提交的偏移量，并会重复插入的最后一批数据。这种方式就是所谓的<strong><code>“至少一次”保证</code></strong>，在故障情况下，可能会重复。</li>
+</ul>
+<ul>
+<li>如果您无法执行这些操作，可能会使已提交的偏移超过消耗的位置，从而导致缺少记录。 使用手动偏移控制的优点是，您可以直接控制记录<strong>何时被视为“已消耗”</strong>。</li>
+<li>注意：使用自动提交也可以“至少一次”。但是要求你必须下次调用poll（long）之前或关闭消费者之前，处理完所有返回的数据。如果操作失败，这将会导致已提交的offset超过消费的位置，从而导致丢失消息。使用手动控制offset的优点是，你可以直接控制消息何时提交。</li>
+<li>上面的例子使用<strong><code>commitSync</code></strong>表示所有收到的消息为”已提交”，在某些情况下，你可以希望<strong>更精细的控制</strong>，通过<strong>指定一个明确消息的偏移量</strong>为“已提交”。在下面，我们的例子中，我们处理完<strong>每个分区</strong>中的消息后，提交偏移量。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">  <span class="keyword">while</span>(running) &#123;</div><div class="line">    ConsumerRecords&lt;String, String&gt; records = consumer.poll(Long.MAX_VALUE);</div><div class="line">    <span class="keyword">for</span> (TopicPartition partition : records.partitions()) &#123;</div><div class="line">      List&lt;ConsumerRecord&lt;String, String&gt;&gt; partitionRecords = records.records(partition);</div><div class="line">      <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : partitionRecords) &#123;</div><div class="line">        System.out.println(record.offset() + <span class="string">": "</span> + record.value());</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">long</span> lastOffset = partitionRecords.get(partitionRecords.size() - <span class="number">1</span>).offset();</div><div class="line">      consumer.commitSync(Collections.singletonMap(partition, <span class="keyword">new</span> OffsetAndMetadata(lastOffset + <span class="number">1</span>)));</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125; <span class="keyword">finally</span> &#123;</div><div class="line">  consumer.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意：已提交的offset应始终是你的程序将读取的下一条消息的offset。因此，调用commitSync（offsets）时，你应该加1个到最后处理的消息的offset。</p>
+<h2 id="订阅指定的分区"><a href="#订阅指定的分区" class="headerlink" title="订阅指定的分区"></a>订阅指定的分区</h2><p>在前面的例子中，我们订阅我们感兴趣的topic，让kafka提供给我们平分后的topic分区。但是，在有些情况下，你可能需要自己来控制分配指定分区，例如：</p>
+<ul>
+<li>如果这个消费者进程与该分区保存了某种本地状态（如本地磁盘的键值存储），则它应该只能获取这个分区的消息。</li>
+<li>如果消费者进程本身具有高可用性，并且如果它失败，会自动重新启动（可能使用集群管理框架如YARN，Mesos，或者AWS设施，或作为一个流处理框架的一部分）。 在这种情况下，不需要Kafka检测故障，重新分配分区，因为消费者进程将在另一台机器上重新启动。</li>
+</ul>
+<p>要使用此模式，你只需调用<code>assign（Collection）</code>消费指定的分区即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">String topic = <span class="string">"foo"</span>;</div><div class="line">TopicPartition partition0 = <span class="keyword">new</span> TopicPartition(topic, <span class="number">0</span>);</div><div class="line">TopicPartition partition1 = <span class="keyword">new</span> TopicPartition(topic, <span class="number">1</span>);</div><div class="line">consumer.assign(Arrays.asList(partition0, partition1));</div></pre></td></tr></table></figure>
+<p>一旦手动分配分区，你可以在循环中调用poll（跟前面的例子一样）。消费者分组仍需要提交offset，只是现在分区的设置只能通过调用<code>assign</code>修改，因为手动分配不会进行分组协调，因此<strong>消费者故障不会引发分区重新平衡</strong>。每一个消费者是独立工作的（即使和其他的消费者共享GroupId）。为了避免offset提交冲突，通常你需要确认每一个consumer实例的gorupId都是唯一的。</p>
+<p><strong>注意，手动分配分区（即，assgin）和动态分区分配的订阅topic模式（即，subcribe）不能混合使用。</strong></p>
+<h2 id="offset存储在其他地方"><a href="#offset存储在其他地方" class="headerlink" title="offset存储在其他地方"></a>offset存储在其他地方</h2><p>消费者可以不使用kafka内置的offset仓库。可以选择自己来存储offset。要注意的是，将消费的offset和结果存储在同一个的系统中，<strong>用原子的方式存储结果和offset</strong>，但这不能保证原子，要想消费是完全原子的，并提供的“正好一次”的消费保证比kafka默认的“至少一次”的语义要更高。你需要使用kafka的offset提交功能。    </p>
+<p>这有结合的例子。</p>
+<ul>
+<li>如果消费的结果存储在<strong>关系数据库</strong>中，存储在数据库的offset，<strong>让提交结果和offset在单个事务中</strong>。这样，事物成功，则offset存储和更新。如果offset没有存储，那么偏移量也不会被更新。</li>
+<li>如果offset和消费结果存储在本地仓库。例如，可以通过订阅一个指定的分区并将offset和索引数据一起存储来构建一个搜索索引。如果这是以原子的方式做的，常见的可能是，即使崩溃引起未同步的数据丢失。索引程序从它确保没有更新丢失的地方恢复，而仅仅丢失最近更新的消息。</li>
+<li>每个消息都有自己的offset，所以要管理自己的偏移，你只需要做到以下几点：<ul>
+<li>配置 enable.auto.commit=false</li>
+<li>使用提供的 ConsumerRecord 来保存你的位置。</li>
+<li>在重启时用 seek(TopicPartition, long) 恢复消费者的位置。</li>
+</ul>
+</li>
+<li>当分区分配也是手动完成的（像上文搜索索引的情况），这种类型的使用是最简单的。 如果分区分配是自动完成的，需要特别小心处理分区分配变更的情况。可以通过调用<code>subscribe（Collection，ConsumerRebalanceListener）</code>和<code>subscribe（Pattern，ConsumerRebalanceListener）</code>中提供的<strong>ConsumerRebalanceListener</strong>实例来完成的。例如<ul>
+<li>当分区向消费者获取时，消费者将通过实现<code>ConsumerRebalanceListener.onPartitionsRevoked（Collection）</code>来给这些分区提交它们offset。</li>
+<li>当分区分配给消费者时，消费者通过<code>ConsumerRebalanceListener.onPartitionsAssigned(Collection)</code>为新的分区正确地将消费者初始化到该位置。</li>
+</ul>
+</li>
+</ul>
+<p><code>ConsumerRebalanceListener</code>的另一个常见用法是清除应用已移动到其他位置的分区的缓存。</p>
+<h2 id="控制消费的位置"><a href="#控制消费的位置" class="headerlink" title="控制消费的位置"></a>控制消费的位置</h2><ul>
+<li>大多数情况下，消费者只是简单的从头到尾的消费消息，<strong>周期性的提交位置</strong>（自动或手动）。kafka也支持消费者去手动的控制消费的位置，可以消费之前的消息也可以跳过最近的消息。</li>
+<li>有几种情况，手动控制消费者的位置可能是有用的。<ul>
+<li>一种场景是对于时间敏感的消费者处理程序，对足够落后的消费者，<strong>直接跳过，从最近的消费开始消费</strong>。</li>
+<li>另一个使用场景是本地状态存储系统（上一节说的）。在这样的系统中，消费者将要在启动时初始化它的位置（无论本地存储是否包含）。同样，如果本地状态已被破坏（假设因为磁盘丢失），则可以通过<strong>重新消费所有数据</strong>并重新创建状态（假设kafka保留了足够的历史）在新的机器上重新创建。</li>
+</ul>
+</li>
+</ul>
+<p>kafka使用<code>seek(TopicPartition, long)</code>指定新的消费位置。用于查找服务器保留的最早和最新的offset的特殊的方法也可用（<code>seekToBeginning(Collection)</code> 和 <code>seekToEnd(Collection)</code>）。</p>
+<h2 id="消费者流量控制"><a href="#消费者流量控制" class="headerlink" title="消费者流量控制"></a>消费者流量控制</h2><ul>
+<li>如果消费者分配了多个分区，并同时消费所有的分区，这些分区具有相同的优先级。在一些情况下，消费者需要首先消费一些指定的分区，当指定的分区有少量或者已经没有可消费的数据时，则开始消费其他分区。</li>
+<li>例如流处理，当处理器从2个topic获取消息并把这两个topic的消息合并，当其中一个topic长时间落后另一个，则<strong>暂停消费</strong>，以便落后的赶上来。</li>
+</ul>
+<ul>
+<li>kafka支持<strong>动态控制消费流量</strong>，分别在future的poll(long)中使用<code>pause(Collection)</code> 和 <code>resume(Collection)</code> 来暂停消费指定分配的分区，重新开始消费指定暂停的分区。</li>
+</ul>
+<h2 id="多线程处理"><a href="#多线程处理" class="headerlink" title="多线程处理"></a>多线程处理</h2><p><strong>Kafka消费者不是线程安全的</strong>。所有<code>网络I/O</code>都发生在进行调用应用程序的线程中。<strong>用户的责任是确保多线程访问正确同步的</strong>。非同步访问将导致 ConcurrentModificationException。</p>
+<p>此规则唯一的例外是<code>wakeup()</code>，它可以安全地从外部线程来中断活动操作。在这种情况下，将从操作的线程阻塞并抛出一个WakeupException。这可用于从其他线程来关闭消费者。 以下代码段显示了典型模式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerRunner</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">     <span class="keyword">private</span> <span class="keyword">final</span> AtomicBoolean closed = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</div><div class="line">     <span class="keyword">private</span> <span class="keyword">final</span> KafkaConsumer consumer;</div><div class="line"></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">         <span class="keyword">try</span> &#123;</div><div class="line">             consumer.subscribe(Arrays.asList(<span class="string">"topic"</span>));</div><div class="line">             <span class="keyword">while</span> (!closed.get()) &#123;</div><div class="line">                 ConsumerRecords records = consumer.poll(<span class="number">10000</span>);</div><div class="line">                 <span class="comment">// Handle new records</span></div><div class="line">             &#125;</div><div class="line">         &#125; <span class="keyword">catch</span> (WakeupException e) &#123;</div><div class="line">             <span class="comment">// Ignore exception if closing</span></div><div class="line">             <span class="keyword">if</span> (!closed.get()) <span class="keyword">throw</span> e;</div><div class="line">         &#125; <span class="keyword">finally</span> &#123;</div><div class="line">             consumer.close();</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     <span class="comment">// Shutdown hook which can be called from a separate thread</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</div><div class="line">         closed.set(<span class="keyword">true</span>);</div><div class="line">         consumer.wakeup();</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>在单独的线程中，可以通过设置关闭标志和唤醒消费者来关闭消费者。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">closed.set(true);</div><div class="line">consumer.wakeup();</div></pre></td></tr></table></figure>
+<p>我们没有多线程模型的例子。但留下几个操作可用来实现<em>多线程处理消息</em></p>
+<ul>
+<li><p><strong>每个线程一个消费者</strong></p>
+<p><strong>每个线程自己的消费者实例</strong>。这里是这种方法的优点和缺点：</p>
+</li>
+</ul>
+<p><strong>优点：</strong></p>
+<ol>
+<li>PRO: 这是最容易实现的</li>
+<li>PRO: 因为它不需要在线程之间协调，所以通常它是最快的。</li>
+<li>PRO: 它按顺序处理每个分区（每个线程只处理它接受的消息）。</li>
+</ol>
+<p><strong>缺点：</strong></p>
+<ol>
+<li>CON: 更多的消费者意味着更多的TCP连接到集群（每个线程一个）。一般kafka处理连接非常的快，所以这是一个小成本。</li>
+<li>CON: 更多的消费者意味着更多的请求被发送到服务器，但稍微较少的数据批次可能导致I/O吞吐量的一些下降。</li>
+<li>CON: 所有进程中的线程总数受到分区总数的限制。</li>
+</ol>
+<ul>
+<li><p><strong>解耦消费和处理</strong></p>
+<p>另一个替代方式是一个或多个消费者线程，它来<strong>消费所有数据</strong>，其消费所有数据并将ConsumerRecords实例切换到由实际处理记录处理的<strong>处理器线程池来消费</strong>的阻塞队列。这个选项同样有利弊：</p>
+</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>PRO: 可扩展消费者和处理进程的数量。这样单个消费者的数据可分给多个处理器线程来执行，避免对分区的任何限制。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>CON: 跨多个处理器的顺序保证需要特别注意，因为线程是独立的执行，后来的消息可能比遭到的消息先处理，这仅仅是因为线程执行的运气。如果对排序没有问题，这就不是个问题。</li>
+<li>CON: 手动提交变得更困难，因为它需要协调所有的线程以确保处理对该分区的处理完成。</li>
+</ul>
+<p>这种方法有多种玩法，例如，每个处理线程可以有自己的队列，消费者线程可以使用<code>TopicPartition</code>hash到这些队列中，以确保按顺序消费，并且提交也将简化。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/19/kafka/kafka_producer/" rel="next" title="kafka生产者客户端（0.10.1.1API）">
+                <i class="fa fa-chevron-left"></i> kafka生产者客户端（0.10.1.1API）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/09/kafka/kafka_stream/" rel="prev" title="kafka Stream">
+                kafka Stream <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-Consumer"><span class="nav-text">Kafka Consumer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#偏移量和消费者的位置"><span class="nav-text">偏移量和消费者的位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费者组和主题订阅"><span class="nav-text">消费者组和主题订阅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发现消费者故障"><span class="nav-text">发现消费者故障</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动提交偏移量"><span class="nav-text">自动提交偏移量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手动控制偏移量"><span class="nav-text">手动控制偏移量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#订阅指定的分区"><span class="nav-text">订阅指定的分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#offset存储在其他地方"><span class="nav-text">offset存储在其他地方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制消费的位置"><span class="nav-text">控制消费的位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费者流量控制"><span class="nav-text">消费者流量控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程处理"><span class="nav-text">多线程处理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/19/kafka/kafka_consumer/';
+          this.page.identifier = '2017/08/19/kafka/kafka_consumer/';
+          this.page.title = 'kafka消费者客户端（0.10.0.1API）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

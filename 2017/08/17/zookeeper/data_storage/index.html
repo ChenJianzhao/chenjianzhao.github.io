@@ -1,0 +1,851 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="内存数据Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。
+
+DataTree
+DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。
+
+
+
+DataNode
+DataNo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper 数据与存储">
+<meta property="og:url" content="http://yoursite.com/2017/08/17/zookeeper/data_storage/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="内存数据Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。
+
+DataTree
+DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。
+
+
+
+DataNode
+DataNo">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/data_storage/log.png">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/data_storage/init.png">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/data_storage/sync.png">
+<meta property="og:updated_time" content="2017-08-29T02:21:53.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper 数据与存储">
+<meta name="twitter:description" content="内存数据Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。
+
+DataTree
+DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。
+
+
+
+DataNode
+DataNo">
+<meta name="twitter:image" content="http://yoursite.com/2017/08/17/zookeeper/data_storage/log.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/17/zookeeper/data_storage/"/>
+
+
+
+
+
+  <title> Zookeeper 数据与存储 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/17/zookeeper/data_storage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper 数据与存储
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-17T21:00:00+08:00">
+                2017-08-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/17/zookeeper/data_storage/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/17/zookeeper/data_storage/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="内存数据"><a href="#内存数据" class="headerlink" title="内存数据"></a>内存数据</h2><p>Zookeeper的数据模型是<strong>树结构</strong>，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。</p>
+<ol>
+<li><p><strong>DataTree</strong></p>
+<p>DataTree是内存数据存储的核心，是一个树结构，<strong>代表了内存中一份完整的数据</strong>。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。</p>
+</li>
+</ol>
+<ol>
+<li><p><strong>DataNode</strong></p>
+<p><strong>DataNode是数据存储的最小单元</strong>，其内部除了保存了结点的数据内容、ACL列表、节点状态之外，还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。</p>
+</li>
+<li><p><strong>ZKDatabase</strong></p>
+<p>　　Zookeeper的内存数据库，管理Zookeeper的所有<strong>会话、DataTree存储和事务日志</strong>。ZKDatabase会定时向磁盘<strong>dump快照数据</strong>，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</p>
+<p>​</p>
+</li>
+</ol>
+<h2 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h2><h3 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h3><p>　　在配置Zookeeper集群时需要配置<strong><code>dataDir</code></strong>目录，其用来存储事务日志文件。也可以为事务日志单独分配一个文件存储目录:<strong><code>dataLogDir</code></strong>。若配置dataLogDir为/home/admin/zkData/zk_log，那么Zookeeper在运行过程中会在该目录下建立一个名字为<strong><code>version-2</code></strong>的子目录，该目录确定了当前Zookeeper使用的事务日志格式版本号，当下次某个Zookeeper版本对事务日志格式进行变更时，此目录也会变更，即在version-2子目录下会生成一系列<strong>文件大小一致(64MB)的文件</strong>。</p>
+<h3 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h3><p>　　在配置好日志文件目录，启动Zookeeper后，完成如下操作</p>
+<p>　　(1) 创建/test_log节点，初始值为v1。</p>
+<p>　　(2) 更新/test_log节点的数据为v2。</p>
+<p>　　(3) 创建/test_log/c节点，初始值为v1。</p>
+<p>　　(4) 删除/test_log/c节点。</p>
+<p>　　经过四步操作后，会在/log/version-2/目录下生成一个日志文件，笔者下是log.cec。</p>
+<p>　　将Zookeeper下的zookeeper-3.4.6.jar和slf4j-api-1.6.1.jar复制到/log/version-2目录下，使用如下命令打开log.cec文件。</p>
+<p>　　java -classpath ./zookeeper-3.4.6.jar:./slf4j-api-1.6.1.jar org.apache.zookeeper.server.LogFormatter log.cec</p>
+<p><img src="/2017/08/17/zookeeper/data_storage/log.png" alt="log"></p>
+<p>　ZooKeeper Transactional Log File with dbid 0 txnlog format version 2 。是文件头信息，主要是事务日志的DBID和日志格式版本号。　　</p>
+<p>　　…session 0x159…0xcec createSession 30000。表示客户端会话创建操作。</p>
+<p>　　…session 0x159…0xced create ‘/test_log,… 。表示创建/test_log节点，数据内容为#7631(v1)。</p>
+<p>　　…session 0x159…0xcee setData ‘/test_log,…。表示设置了/test_log节点数据，内容为#7632(v2)。</p>
+<p>　　…session 0x159…0xcef create ’/test_log/c,…。表示创建节点/test_log/c。</p>
+<p>　　…session 0x159…0xcf0 delete ‘/test_log/c。表示删除节点/test_log/c。</p>
+<h3 id="日志写入"><a href="#日志写入" class="headerlink" title="日志写入"></a>日志写入</h3><p><strong>FileTxnLog</strong>负责维护事务日志对外的接口，包括事务日志的写入和读取等。Zookeeper的事务日志写入过程大体可以分为如下6个步骤。</p>
+<p>　　(1) <strong>确定是否有事务日志可写</strong>。当Zookeeper服务器启动完成需要进行第一次事务日志的写入，或是上一次事务日志写满时，都会处于<strong>与事务日志文件断开</strong>的状态，即Zookeeper服务器没有和任意一个日志文件相关联。因此在进行事务日志写入前，Zookeeper首先会判断FileTxnLog组件是否已经关联上一个可写的事务日志文件。若没有，则会<strong>使用该事务操作关联的ZXID作为后缀创建一个事务日志文件</strong>，同时构建事务日志的文件头信息，并立即写入这个事务日志文件中去，同时将该文件的文件流放入<strong>streamToFlush</strong>集合，该集合用来记录当前需要<strong>强制进行数据落盘的文件流</strong>。</p>
+<p>　　(2) <strong>确定事务日志文件是否需要扩容(预分配)</strong>。Zookeeper会采用磁盘空间预分配策略。当检测到当前事务日志文件剩余空间不足4096字节时，就会开始进行文件空间扩容，即在现有文件大小上，将文件增加65536KB(64MB)，然后使用”0”填充被扩容的文件空间。</p>
+<p>　　(3) <strong>事务序列化</strong>。对事务头和事务体的序列化，其中事务体又可分为会话创建事务、节点创建事务、节点删除事务、节点数据更新事务等。</p>
+<p>　　(4) <strong>生成Checksum</strong>。为保证日志文件的完整性和数据的准确性，Zookeeper在将事务日志写入文件前，会计算生成Checksum。</p>
+<p>　　(5) <strong>写入事务日志文件流</strong>。将序列化后的事务头、事务体和Checksum写入文件流中，此时并为写入到磁盘上。</p>
+<p>　　(6) <strong>事务日志刷入磁盘</strong>。由于步骤5中的缓存原因，无法实时地写入磁盘文件中，因此需要将缓存数据强制刷入磁盘。</p>
+<h3 id="日志截断"><a href="#日志截断" class="headerlink" title="日志截断"></a>日志截断</h3><p>在Zookeeper运行过程中，可能出现非Leader记录的事务ID比Leader上大，这是非法运行状态。此时，需要保证所有机器必须与该Leader的数据保持同步，即Leader会发送TRUNC命令给该机器，要求进行<strong>日志截断</strong>，Learner收到该命令后，就会<strong>删除所有包含或大于该事务ID的事务日志文件</strong>。</p>
+<h2 id="snapshot-数据快照"><a href="#snapshot-数据快照" class="headerlink" title="snapshot-数据快照"></a>snapshot-数据快照</h2><p>数据快照是Zookeeper数据存储中非常核心的运行机制，数据快照用来记录Zookeeper服务器上某一时刻的<strong>全量内存数据内容</strong>，并将其写入指定的磁盘文件中。</p>
+<h3 id="文件存储-1"><a href="#文件存储-1" class="headerlink" title="文件存储"></a>文件存储</h3><p>　　与事务文件类似，Zookeeper快照文件也可以指定特定磁盘目录，通过<strong>dataDir</strong>属性来配置。若指定dataDir为/home/admin/zkData/zk_data，则在运行过程中会在该目录下创建<strong><code>version-2</code></strong>的目录，该目录确定了当前Zookeeper使用的快照数据格式版本号。在Zookeeper运行时，会生成一系列文件。</p>
+<h3 id="数据快照"><a href="#数据快照" class="headerlink" title="数据快照"></a>数据快照</h3><p><strong>FileSnap</strong>负责维护快照数据对外的接口，包括快照数据的写入和读取等，将内存数据库写入快照数据文件其实是一个<strong>序列化</strong>过程。针对客户端的每一次事务操作，Zookeeper都会将他们记录到事务日志中，同时也会将数据变更应用到内存数据库中，<strong>Zookeeper在进行若干次事务日志记录后，将内存数据库的全量数据Dump到本地文件中，这就是数据快照。</strong>其步骤如下</p>
+<ol>
+<li><strong>确定是否需要进行数据快照</strong>。每进行一次事务日志记录之后，Zookeeper都会检测当前是否需要进行数据快照，考虑到数据快照对于Zookeeper机器的影响，需要尽量避免Zookeeper集群中的所有机器在同一时刻进行数据快照。<strong>采用过半随机策略进行数据快照操作</strong>。</li>
+<li><strong>切换事务日志文件</strong>。表示当前的事务日志已经写满，需要重新创建一个新的事务日志。</li>
+<li><strong>创建数据快照异步线程</strong>。创建单独的异步线程来进行数据快照以避免影响Zookeeper主流程。</li>
+<li><strong>获取全量数据和会话信息</strong>。从ZKDatabase中获取到DataTree和会话信息。</li>
+<li><strong>生成快照数据文件名</strong>。Zookeeper根据当前已经提交的最大ZXID来生成数据快照文件名。</li>
+<li><strong>数据序列化</strong>。首先序列化文件头信息，然后再对会话信息和DataTree分别进行序列化，同时生成一个Checksum，一并写入快照数据文件中去。</li>
+</ol>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在Zookeeper服务器启动期间，首先会进行数据初始化工作，用于将存储在磁盘上的数据文件加载到Zookeeper服务器内存中。</p>
+<p><strong>初始化流程</strong></p>
+<p>Zookeeper的初始化过程如下图所示</p>
+<p><img src="/2017/08/17/zookeeper/data_storage/init.png" alt="init"></p>
+<p>　　</p>
+<p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了<strong>从快照文件中加载快照数据和根据实物日志进行数据修正两个过程</strong>。</p>
+<ol>
+<li><strong>初始化FileTxnSnapLog</strong>。FileTxnSnapLog是Zookeeper事务日志和快照数据访问层，用于<strong>衔接上层业务和底层数据存储</strong>，底层数据包含了<strong>事务日志</strong>和<strong>快照数据</strong>两部分。FileTxnSnapLog中对应FileTxnLog和FileSnap。</li>
+<li><strong>初始化ZKDatabase</strong>。首先构建DataTree，同时将<code>FileTxnSnapLog</code>交付ZKDatabase，以便内存数据库能够<strong>对事务日志和快照数据进行访问</strong>。在ZKDatabase初始化时，DataTree也会进行相应的初始化工作，如创建一些默认结点，如/、/zookeeper、/zookeeper/quota三个节点。</li>
+<li><strong>创建PlayBackListener</strong>。其主要用来接收事务应用过程中的回调，在Zookeeper数据恢复后期，会有<strong>事务修正过程</strong>，此过程会回调PlayBackListener来进行对应的数据修正。</li>
+<li><strong>处理快照文件</strong>。此时可以从磁盘中恢复数据了，首先从快照文件开始加载。</li>
+<li><strong>获取最新的100个快照文件</strong>。更新时间最晚的快照文件包含了最新的全量数据。</li>
+<li><strong>解析快照文件</strong>。逐个解析快照文件，此时需要进行反序列化，生成DataTree和sessionsWithTimeouts，同时还会校验Checksum及快照文件的正确性。对于100个快找文件，如果正确性校验通过时，<strong>通常只会解析最新的那个快照文件</strong>。只有最新快照文件不可用时，<strong>才会逐个进行解析</strong>，直至100个快照文件全部解析完。若将100个快照文件解析完后还是无法成功恢复一个完整的DataTree和sessionWithTimeouts，此时服务器启动失败。</li>
+<li><strong>获取最新的ZXID</strong>。此时根据<strong>快照文件的文件名</strong>即可解析出最新的ZXID：zxid_for_snap。该ZXID代表了Zookeeper开始进行数据快照的时刻。</li>
+<li><strong>处理事务日志</strong>。此时服务器内存中已经有了一份<strong>近似全量的数据</strong>，现在开始通过事务日志来更新<strong>增量数据</strong>。</li>
+<li><strong>获取所有zxid_for_snap之后提交的事务</strong>。此时，已经可以获取快照数据的最新ZXID。只需要从事务日志中获取所有ZXID比步骤7得到的ZXID大的事务操作。</li>
+<li><strong>事务应用</strong>。获取大于zxid_for_snap的事务后，将其逐个应用到之前基于快照数据文件恢复出来的<code>DataTree</code>和<code>sessionsWithTimeouts</code>。每当有一个事务被应用到内存数据库中后，Zookeeper同时会回调<code>PlayBackListener</code>，将这事务操作记录转换成Proposal，并保存到ZKDatabase的<code>committedLog</code>中，以便Follower进行快速同步。</li>
+<li><strong>获取最新的ZXID</strong>。待所有的事务都被完整地应用到内存数据库中后，也就基本上完成了数据的初始化过程，此时再次获取ZXID，用来标识上次服务器正常运行时提交的最大事务ID。</li>
+<li><strong>校验epoch</strong>。epoch标识了当前Leader周期，集群机器相互通信时，会带上这个epoch以确保彼此在同一个Leader周期中。完成数据加载后，Zookeeper会从步骤11中确定ZXID中解析出事务处理的Leader周期：epochOfZxid。同时也会从磁盘的currentEpoch和acceptedEpoch文件中读取上次记录的最新的epoch值，进行校验。</li>
+</ol>
+<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>　　整个集群完成Leader选举后，Learner会向Leader进行注册，当Learner向Leader完成注册后，就进入数据同步环节，同步过程就是Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner服务器，大体过程如下</p>
+<p><img src="/2017/08/17/zookeeper/data_storage/sync.png" alt="sync"></p>
+<ol>
+<li><strong>获取Learner状态</strong>。在注册Learner的最后阶段，Learner服务器会发送给Leader服务器一个ACKEPOCH数据包，Leader会从这个数据包中解析出该Learner的currentEpoch和lastZxid。</li>
+</ol>
+<ol>
+<li><strong>数据同步初始化</strong>。首先从Zookeeper内存数据库中提取出事务请求对应的提议缓存队列proposals，同时完成<strong>peerLastZxid</strong>(该Learner最后处理的ZXID)、<strong>minCommittedLog</strong>(Leader提议缓存队列commitedLog中最小的ZXID)、<strong>maxCommittedLog</strong>(Leader提议缓存队列commitedLog中的最大ZXID)三个ZXID值的初始化。</li>
+</ol>
+<p>对于集群数据同步而言，通常分为四类，<strong>直接差异化同步(DIFF同步)、先回滚再差异化同步(TRUNC+DIFF同步)、仅回滚同步(TRUNC同步)、全量同步(SNAP同步)</strong>，在初始化阶段，Leader会优先以全量同步方式来同步数据。同时，会根据Leader和Learner之间的数据差异情况来决定最终的数据同步方式。</p>
+<ul>
+<li><strong>直接差异化同步</strong>(DIFF同步，peerLastZxid介于minCommittedLog和maxCommittedLog之间)。Leader首先向这个Learner发送一个DIFF指令，用于通知Learner进入差异化数据同步阶段，Leader即将把一些Proposal同步给自己，针对每个Proposal，Leader都会通过发送PROPOSAL内容数据包和COMMIT指令数据包来完成，</li>
+<li><strong>先回滚再差异化同步</strong>(TRUNC+DIFF同步，Leader已经将事务记录到本地事务日志中，但是没有成功发起Proposal流程)。当Leader发现某个Learner包含了一条自己没有的事务记录，那么就需要该Learner进行事务回滚，回滚到Leader服务器上存在的，同时也是最接近于peerLastZxid的ZXID。- </li>
+<li><strong>仅回滚同步</strong>(TRUNC同步，peerLastZxid大于maxCommittedLog)。Leader要求Learner回滚到ZXID值为maxCommittedLog对应的事务操作。</li>
+<li><strong>全量同步</strong>(SNAP同步，peerLastZxid小于minCommittedLog或peerLastZxid不等于lastProcessedZxid)。Leader无法直接使用提议缓存队列和Learner进行同步，因此只能进行全量同步。Leader将本机的全量内存数据同步给Learner。Leader首先向Learner发送一个SNAP指令，通知Learner即将进行全量同步，随后，Leader会从内存数据库中获取到全量的数据节点和会话超时时间记录器，将他们序列化后传输给Learner。Learner接收到该全量数据后，会对其反序列化后载入到内存数据库中。</li>
+</ul>
+<p>参考文章：</p>
+<p><a href="http://www.cnblogs.com/leesf456/p/6179118.html" target="_blank" rel="external">【分布式】Zookeeper数据与存储</a> </p>
+<p>《从Paxos到Zookeeper分布式一致性原理与实践》</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/15/zookeeper/session/" rel="next" title="Zookeeper 会话">
+                <i class="fa fa-chevron-left"></i> Zookeeper 会话
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/17/zookeeper/server_role/" rel="prev" title="Zookeeper 的服务器角色">
+                Zookeeper 的服务器角色 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内存数据"><span class="nav-text">内存数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务日志"><span class="nav-text">事务日志</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件存储"><span class="nav-text">文件存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志格式"><span class="nav-text">日志格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志写入"><span class="nav-text">日志写入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志截断"><span class="nav-text">日志截断</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#snapshot-数据快照"><span class="nav-text">snapshot-数据快照</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件存储-1"><span class="nav-text">文件存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据快照"><span class="nav-text">数据快照</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据同步"><span class="nav-text">数据同步</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/17/zookeeper/data_storage/';
+          this.page.identifier = '2017/08/17/zookeeper/data_storage/';
+          this.page.title = 'Zookeeper 数据与存储';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

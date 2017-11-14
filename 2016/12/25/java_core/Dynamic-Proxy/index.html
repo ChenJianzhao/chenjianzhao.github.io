@@ -87,25 +87,22 @@
 
 
 
-<meta name="description" content="几个概念
-代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
+<meta name="description" content="几个概念代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
 静态代理：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。
-静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有">
+静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java动态代理">
 <meta property="og:url" content="http://yoursite.com/2016/12/25/Java_core/Dynamic-Proxy/index.html">
 <meta property="og:site_name" content="Pandora">
-<meta property="og:description" content="几个概念
-代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
+<meta property="og:description" content="几个概念代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
 静态代理：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。
-静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有">
-<meta property="og:updated_time" content="2017-05-07T01:49:27.812Z">
+静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.206Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java动态代理">
-<meta name="twitter:description" content="几个概念
-代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
+<meta name="twitter:description" content="几个概念代理：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。
 静态代理：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。
-静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有">
+静态代理的缺点：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代">
 
 
 
@@ -351,6 +348,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/25/Java_core/Dynamic-Proxy/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/12/25/Java_core/Dynamic-Proxy/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -373,35 +381,37 @@
       
 
       
-        <h2 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h2><hr>
-<p><strong>代理</strong>：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。</p>
+        <h2 id="几个概念"><a href="#几个概念" class="headerlink" title="几个概念"></a>几个概念</h2><p><strong>代理</strong>：当程序需要对原始类对象的某个方法进行增强，又不想改写原始类时，可使用代理类实现，避免对旧代码的修改。</p>
 <p><strong>静态代理</strong>：代理类和被代理类实现相同的接口，在代理类的同名方法中，进行增强处理，再调用被代理对象的同名方法。</p>
 <p><strong>静态代理的缺点</strong>：静态代理类和委托类实现了相同的接口，代理类通过委托类实现了相同的方法。这样就出现了大量的代码重复。如果接口增加一个方法，除了所有实现类需要实现这个方法外，所有代理类也需要实现此方法。增加了代码维护的复杂度。</p>
-<p>在java的动态代理机制中，有两个重要的类或接口，一个是 <code>InvocationHandler(Interface)</code>、另一个则是 <code>Proxy(Class)</code>，这一个类和接口是实现动态代理所必须用到的。</p>
-<p><strong>InvocationHandler 中的 invoke 方法：</strong></p>
-<blockquote>
-<p>Object invoke(Object proxy, Method method, Object[] args) throws Throwable</p>
+<h2 id="动态代理的重要接口和类"><a href="#动态代理的重要接口和类" class="headerlink" title="动态代理的重要接口和类"></a>动态代理的重要接口和类</h2><p>在java的<strong>动态代理</strong>机制中，有两个重要的类或接口</p>
+<ol>
+<li><code>InvocationHandler(Interface)</code></li>
+<li><code>Proxy(Class)</code></li>
+</ol>
+<p>这一个类和接口是实现动态代理所必须用到的。</p>
+<p><strong>InvocationHandler 中的 invoke 方法：</strong><br> Object invoke(Object proxy, Method method, Object[] args) throws Throwable</p>
 <ul>
-<li>roxy: 代理对象本身</li>
+<li>proxy: 代理对象本身</li>
 <li>method: 指代的是我们所要调用真实对象的某个方法的Method对象</li>
 <li>args: 指代的是调用真实对象某个方法时接受的参数</li>
 </ul>
-</blockquote>
-<p><strong>Proxy 中的 newProxyInstance 方法</strong></p>
-<blockquote>
-<p>public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</p>
+<p><strong>Proxy 中的 newProxyInstance 方法</strong><br> public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</p>
 <ul>
 <li>loader: 一个ClassLoader对象，定义了由哪个ClassLoader对象来对生成的代理对象进行加载</li>
 <li>interfaces: 一个Interface对象的数组，表示代理对象需要实现的接口，这样就能通过接口声明调用这组接口中的方法了</li>
 <li>h: 一个InvocationHandler对象，表示这个动态代理对象在调用方法的时候，会关联到哪一个InvocationHandler 动态代理处理对象上，在该对象中对源方法进行增强。</li>
 </ul>
-</blockquote>
-<h2 id="1-首先定义一个被代理类和动态代理类待实现的接口"><a href="#1-首先定义一个被代理类和动态代理类待实现的接口" class="headerlink" title="1.首先定义一个被代理类和动态代理类待实现的接口"></a>1.首先定义一个被代理类和动态代理类待实现的接口</h2><hr>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><p><strong>1.首先定义一个被代理类和动态代理类待实现的接口</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Source</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">getNumbner</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">getDrip</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="2-被代理的类实现该接口"><a href="#2-被代理的类实现该接口" class="headerlink" title="2.被代理的类实现该接口"></a>2.被代理的类实现该接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RealSource</span> <span class="keyword">implements</span> <span class="title">Source</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"do something here!"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getName here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getNumbner</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getNumbner here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDrip</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getDrip here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="3-定义动态代理处理类，实现-InvocationHandler-接口，对被代理类方法的调用将转发到此处理类的-invoke-方法中，处理后再调用被代理类真正的方法"><a href="#3-定义动态代理处理类，实现-InvocationHandler-接口，对被代理类方法的调用将转发到此处理类的-invoke-方法中，处理后再调用被代理类真正的方法" class="headerlink" title="3.定义动态代理处理类，实现 InvocationHandler 接口，对被代理类方法的调用将转发到此处理类的 invoke 方法中，处理后再调用被代理类真正的方法"></a>3.定义动态代理处理类，实现 InvocationHandler 接口，对被代理类方法的调用将转发到此处理类的 invoke 方法中，处理后再调用被代理类真正的方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.Method;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    Object realSubject = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    ProxyHandler(Object realSubject )&#123;</div><div class="line">        <span class="keyword">this</span>.realSubject = realSubject;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">//do something before invoke real subject 's method</span></div><div class="line">        System.out.println(<span class="string">"before method invoke : "</span> + method.getDeclaringClass() + <span class="string">"  :  "</span>+ method.getName() );</div><div class="line">        </div><div class="line">        Object result = method.invoke(realSubject, args);</div><div class="line"></div><div class="line">        <span class="comment">//do something after invoke real subject 's method</span></div><div class="line">        System.out.println(<span class="string">"after method invoke !"</span>);</div><div class="line">        System.out.println(<span class="string">""</span>);</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="4-测试类"><a href="#4-测试类" class="headerlink" title="4.测试类"></a>4.测试类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestProxy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line"></div><div class="line">        RealSource realSource = <span class="keyword">new</span> RealSource();</div><div class="line">        Source proxy = (Source)Proxy.newProxyInstance(RealSource.class.getClassLoader(), RealSource.class.getInterfaces(), <span class="keyword">new</span> ProxyHandler(realSource));</div><div class="line"></div><div class="line">        proxy.doSomething();</div><div class="line">        proxy.getNumbner();</div><div class="line">        proxy.getName();</div><div class="line">        proxy.getDrip();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="5-打印结果"><a href="#5-打印结果" class="headerlink" title="5.打印结果"></a>5.打印结果</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">before method invoke : interface Source  :  doSomething</div><div class="line">do something here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getNumbner</div><div class="line">getNumbner here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getName</div><div class="line">getName here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getDrip</div><div class="line">getDrip here!</div><div class="line">after method invoke !</div></pre></td></tr></table></figure>
+<p><strong>2.被代理的类实现该接口</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RealSource</span> <span class="keyword">implements</span> <span class="title">Source</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"do something here!"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getName here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getNumbner</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getNumbner here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDrip</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"getDrip here!"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>3.定义动态代理处理类，实现 InvocationHandler 接口，对被代理类方法的调用将转发到此处理类的 invoke 方法中，处理后再调用被代理类真正的方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.Method;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    Object realSubject = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    ProxyHandler(Object realSubject )&#123;</div><div class="line">        <span class="keyword">this</span>.realSubject = realSubject;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">//do something before invoke real subject 's method</span></div><div class="line">        System.out.println(<span class="string">"before method invoke : "</span> + method.getDeclaringClass() + <span class="string">"  :  "</span>+ method.getName() );</div><div class="line">        </div><div class="line">        Object result = method.invoke(realSubject, args);</div><div class="line"></div><div class="line">        <span class="comment">//do something after invoke real subject 's method</span></div><div class="line">        System.out.println(<span class="string">"after method invoke !"</span>);</div><div class="line">        System.out.println(<span class="string">""</span>);</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>4.测试类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2016/12/25 0025.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestProxy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line"></div><div class="line">        RealSource realSource = <span class="keyword">new</span> RealSource();</div><div class="line">        Source proxy = (Source)Proxy.newProxyInstance(RealSource.class.getClassLoader(), RealSource.class.getInterfaces(), <span class="keyword">new</span> ProxyHandler(realSource));</div><div class="line"></div><div class="line">        proxy.doSomething();</div><div class="line">        proxy.getNumbner();</div><div class="line">        proxy.getName();</div><div class="line">        proxy.getDrip();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>5.打印结果</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">before method invoke : interface Source  :  doSomething</div><div class="line">do something here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getNumbner</div><div class="line">getNumbner here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getName</div><div class="line">getName here!</div><div class="line">after method invoke !</div><div class="line"></div><div class="line">before method invoke : interface Source  :  getDrip</div><div class="line">getDrip here!</div><div class="line">after method invoke !</div></pre></td></tr></table></figure>
       
     </div>
 
@@ -475,6 +485,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -521,7 +538,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -532,7 +549,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -569,7 +586,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#几个概念"><span class="nav-text">几个概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-首先定义一个被代理类和动态代理类待实现的接口"><span class="nav-text">1.首先定义一个被代理类和动态代理类待实现的接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-被代理的类实现该接口"><span class="nav-text">2.被代理的类实现该接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-定义动态代理处理类，实现-InvocationHandler-接口，对被代理类方法的调用将转发到此处理类的-invoke-方法中，处理后再调用被代理类真正的方法"><span class="nav-text">3.定义动态代理处理类，实现 InvocationHandler 接口，对被代理类方法的调用将转发到此处理类的 invoke 方法中，处理后再调用被代理类真正的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-测试类"><span class="nav-text">4.测试类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-打印结果"><span class="nav-text">5.打印结果</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#几个概念"><span class="nav-text">几个概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态代理的重要接口和类"><span class="nav-text">动态代理的重要接口和类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-text">示例代码</span></a></li></ol></div>
             
 
           </div>
@@ -696,6 +713,26 @@
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/12/25/Java_core/Dynamic-Proxy/';
+          this.page.identifier = '2016/12/25/Java_core/Dynamic-Proxy/';
+          this.page.title = 'Java动态代理';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

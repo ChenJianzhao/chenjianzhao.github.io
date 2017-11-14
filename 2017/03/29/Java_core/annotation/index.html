@@ -87,40 +87,37 @@
 
 
 
-<meta name="description" content="元注解
-　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
+<meta name="description" content="元注解　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
 
 @Target
 @Retention
 @Documented
 @Inherited
 
-这些类型和它们所支持的类在java.lang.annotation包中可以找到。下面我们看一下每个元注解的作用和相">
+这些类型和它们所支持的类在 java.lang.annotation 包中可以找到。下面我们看一下每个元注解的作用和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java Annotation 自定义注解">
 <meta property="og:url" content="http://yoursite.com/2017/03/29/Java_core/annotation/index.html">
 <meta property="og:site_name" content="Pandora">
-<meta property="og:description" content="元注解
-　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
+<meta property="og:description" content="元注解　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
 
 @Target
 @Retention
 @Documented
 @Inherited
 
-这些类型和它们所支持的类在java.lang.annotation包中可以找到。下面我们看一下每个元注解的作用和相">
-<meta property="og:updated_time" content="2017-05-07T01:49:27.819Z">
+这些类型和它们所支持的类在 java.lang.annotation 包中可以找到。下面我们看一下每个元注解的作用和">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.206Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java Annotation 自定义注解">
-<meta name="twitter:description" content="元注解
-　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
+<meta name="twitter:description" content="元注解　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
 
 @Target
 @Retention
 @Documented
 @Inherited
 
-这些类型和它们所支持的类在java.lang.annotation包中可以找到。下面我们看一下每个元注解的作用和相">
+这些类型和它们所支持的类在 java.lang.annotation 包中可以找到。下面我们看一下每个元注解的作用和">
 
 
 
@@ -366,6 +363,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/29/Java_core/annotation/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/03/29/Java_core/annotation/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -388,17 +396,25 @@
       
 
       
-        <h2 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h2><hr>
-<p>　　<strong>元注解的作用就是负责注解其他注解。</strong> Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：</p>
+        <h2 id="元注解"><a href="#元注解" class="headerlink" title="元注解"></a>元注解</h2><p>　　<strong>元注解的作用就是负责注解其他注解。</strong> Java5.0定义了4个标准的<code>meta-annotation</code>类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：</p>
 <ol>
 <li>@Target</li>
 <li>@Retention</li>
 <li>@Documented</li>
 <li>@Inherited</li>
 </ol>
-<p>这些类型和它们所支持的类在java.lang.annotation包中可以找到。下面我们看一下每个元注解的作用和相应分参数的使用说明。</p>
-<h2 id="Target"><a href="#Target" class="headerlink" title="@Target"></a>@Target</h2><hr>
-<p><strong><code>@Target</code> 说明了Annotation所修饰的对象范围：</strong>Annotation可被用于 packages、types（类、接口、枚举、Annotation类型）、类型成员（方法、构造方法、成员变量、枚举值）、方法参数和本地变量（如循环变量、catch参数）。<strong>在Annotation类型的声明中使用了target可更加明晰其修饰的目标。</strong><br><strong>作用</strong>：用于描述注解的使用范围（即：被描述的注解可以用在什么地方）<br><strong>取值</strong>(ElementType)：</p>
+<p>这些类型和它们所支持的类在 <strong>java.lang.annotation</strong> 包中可以找到。下面我们看一下每个元注解的作用和相应分参数的使用说明。</p>
+<a id="more"></a>
+<h2 id="Target"><a href="#Target" class="headerlink" title="@Target"></a>@Target</h2><p><strong><code>@Target</code> 说明了Annotation所修饰的对象范围。</strong></p>
+<p>Annotation可被用于 </p>
+<ul>
+<li>packages（包）</li>
+<li>types（类、接口、枚举、Annotation类型）</li>
+<li>类型成员（方法、构造方法、成员变量、枚举值）</li>
+<li>方法参数和本地变量（如循环变量、catch参数）。</li>
+</ul>
+<p><strong>在Annotation类型的声明中使用了target可更加明晰其修饰的目标。</strong></p>
+<p><strong>作用</strong>：用于描述注解的使用范围（即：被描述的注解可以用在什么地方）<br><strong>取值：(ElementType)</strong></p>
 <ol>
 <li>CONSTRUCTOR:用于描述构造器</li>
 <li>FIELD:用于描述域</li>
@@ -408,19 +424,24 @@
 <li>PARAMETER:用于描述参数</li>
 <li>TYPE:用于描述类、接口(包括注解类型) 或enum声明</li>
 </ol>
-<h2 id="Retention"><a href="#Retention" class="headerlink" title="@Retention"></a>@Retention</h2><hr>
-<p><strong><code>@Retention</code>定义了该Annotation被保留的时间长短：</strong>某些Annotation仅出现在源代码中，而被编译器丢弃；而另一些却被编译在class文件中；编译在class文件中的Annotation可能会被虚拟机忽略，而另一些在class被装载时将被读取（请注意并不影响class的执行，因为Annotation与class在使用上是被分离的）。使用这个meta-Annotation可以对 Annotation的“生命周期”限制。<br><strong>作用</strong>：表示需要在什么级别保存该注释信息，用于描述注解的生命周期（即：被描述的注解在什么范围内有效）<br><strong>取值</strong>（RetentionPoicy）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">1. SOURCE:在源文件中有效（即源文件保留）</div><div class="line">2. CLASS:在class文件中有效（即class保留）</div><div class="line">3. RUNTIME:在运行时有效（即运行时保留）</div></pre></td></tr></table></figure></p>
-<p>Retention meta-annotation类型有唯一的value作为成员，它的取值来自java.lang.annotation.RetentionPolicy的枚举类型值。</p>
-<h2 id="Documented"><a href="#Documented" class="headerlink" title="@Documented"></a>@Documented</h2><hr>
-<p><strong><code>@Documented</code>用于描述其它类型的annotation应该被作为被标注的程序成员的公共API，</strong>因此可以被例如javadoc此类的工具文档化。Documented是一个标记注解，没有成员。</p>
-<h2 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h2><hr>
-<blockquote>
-<p>定义一个注解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.annotation.*;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义一个注解</div><div class="line"> */</div><div class="line"><span class="meta">@Target</span>(ElementType.METHOD) <span class="comment">// 这是一个对方法的注解，还可以是包、类、变量等很多东西</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME) <span class="comment">// 保留时间，一般注解就是为了框架开发时代替配置文件使用，JVM运行时用反射取参数处理，所以一般都为RUNTIME类型</span></div><div class="line"><span class="meta">@Documented</span> <span class="comment">// 用于描述其它类型的annotation应该被作为被标注的程序成员的公共API，因此可以被例如javadoc此类的工具文档化</span></div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> TestAnnotation &#123;</div><div class="line"></div><div class="line">    <span class="comment">// 定义注解的参数，类型可以为基本类型以及String、Class、enum、数组等，default为默认值</span></div><div class="line">    <span class="function">String <span class="title">parameter1</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">parameter2</span><span class="params">()</span> <span class="keyword">default</span> -1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>使用该注解注解类方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@TestAnnotation</span>(parameter1=<span class="string">"YES"</span>, parameter2=<span class="number">10000</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">oneMethod</span> <span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>测试代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.reflect.Method;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClient</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="comment">// 提取到被注解的方法Method，这里用到了反射的知识</span></div><div class="line">        Method method = Class.forName(<span class="string">"demo.annotation.Subject"</span>).getDeclaredMethod(<span class="string">"oneMethod"</span>);</div><div class="line">        <span class="comment">// 从Method方法中通过方法getAnnotation获得我们设置的注解</span></div><div class="line">        TestAnnotation testAnnotation = method.getAnnotation(TestAnnotation.class);</div><div class="line"></div><div class="line">        <span class="comment">// 得到注解的俩参数</span></div><div class="line">        System.out.println(testAnnotation.parameter1());</div><div class="line">        System.out.println(testAnnotation.parameter2());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>打印结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">YES</div><div class="line">10000</div><div class="line"></div><div class="line">Process finished with exit code 0</div></pre></td></tr></table></figure></p>
-</blockquote>
-
+<h2 id="Retention"><a href="#Retention" class="headerlink" title="@Retention"></a>@Retention</h2><p><strong><code>@Retention</code>定义了该Annotation被保留的时间长短。（生命周期）</strong></p>
+<p>某些Annotation仅出现在源代码中，而被编译器丢弃；而另一些却被编译在class文件中；编译在class文件中的Annotation可能会被虚拟机忽略，而另一些在class被装载时将被读取（请注意并不影响class的执行，因为Annotation与class在使用上是被分离的）。使用这个meta-Annotation可以对 Annotation的“生命周期”限制。</p>
+<p><strong>作用</strong>：表示需要在什么级别保存该注释信息，用于描述注解的生命周期（即：被描述的注解在什么范围内有效）<br><strong>取值（RetentionPoicy）：</strong></p>
+<ol>
+<li>SOURCE:在源文件中有效（即源文件保留）</li>
+<li>CLASS:在class文件中有效（即class保留）</li>
+<li>RUNTIME:在运行时有效（即运行时保留）</li>
+</ol>
+<p>Retention meta-annotation 类型有唯一的value作为成员，它的取值来自 <strong>java.lang.annotation.RetentionPolicy</strong> 的枚举类型值。</p>
+<h2 id="Documented"><a href="#Documented" class="headerlink" title="@Documented"></a>@Documented</h2><p><strong><code>@Documented</code>用于描述其它类型的annotation应该被作为被标注的程序成员的公共API，</strong>因此可以被例如javadoc 此类的工具文档化。Documented是一个标记注解，没有成员。</p>
+<h2 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h2><p>定义一个注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.annotation.*;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 定义一个注解</div><div class="line"> */</div><div class="line"><span class="meta">@Target</span>(ElementType.METHOD) <span class="comment">// 这是一个对方法的注解，还可以是包、类、变量等很多东西</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME) <span class="comment">// 保留时间，一般注解就是为了框架开发时代替配置文件使用，JVM运行时用反射取参数处理，所以一般都为RUNTIME类型</span></div><div class="line"><span class="meta">@Documented</span> <span class="comment">// 用于描述其它类型的annotation应该被作为被标注的程序成员的公共API，因此可以被例如javadoc此类的工具文档化</span></div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> TestAnnotation &#123;</div><div class="line"></div><div class="line">    <span class="comment">// 定义注解的参数，类型可以为基本类型以及String、Class、enum、数组等，default为默认值</span></div><div class="line">    <span class="function">String <span class="title">parameter1</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">parameter2</span><span class="params">()</span> <span class="keyword">default</span> -1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用该注解注解类方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@TestAnnotation</span>(parameter1=<span class="string">"YES"</span>, parameter2=<span class="number">10000</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">oneMethod</span> <span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>测试代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> demo.annotation;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.lang.reflect.Method;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClient</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        <span class="comment">// 提取到被注解的方法Method，这里用到了反射的知识</span></div><div class="line">        Method method = Class.forName(<span class="string">"demo.annotation.Subject"</span>).getDeclaredMethod(<span class="string">"oneMethod"</span>);</div><div class="line">        <span class="comment">// 从Method方法中通过方法getAnnotation获得我们设置的注解</span></div><div class="line">        TestAnnotation testAnnotation = method.getAnnotation(TestAnnotation.class);</div><div class="line"></div><div class="line">        <span class="comment">// 得到注解的俩参数</span></div><div class="line">        System.out.println(testAnnotation.parameter1());</div><div class="line">        System.out.println(testAnnotation.parameter2());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>打印结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">YES</div><div class="line">10000</div><div class="line"></div><div class="line">Process finished with exit code 0</div></pre></td></tr></table></figure>
       
     </div>
 
@@ -494,6 +515,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -540,7 +568,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -551,7 +579,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -715,6 +743,26 @@
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/03/29/Java_core/annotation/';
+          this.page.identifier = '2017/03/29/Java_core/annotation/';
+          this.page.title = 'Java Annotation 自定义注解';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

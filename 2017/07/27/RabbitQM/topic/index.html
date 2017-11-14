@@ -1,0 +1,783 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在前面的小结，我们使用了 direct exchange 代替盲目广播的 fanout exchagne 使得接受者能够选择需要接收的日志消息。但 direct exchange 还是存在局限性——它无法根据多标准路由。
+日志系统中，我们可能不止需要根据日志级别订阅消息，同时也需要基于 ”日志发送来源“ 来过滤。你可能从  syslog unix tool 得知可以通过日志的 严重级别 sever">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ —— Topic">
+<meta property="og:url" content="http://yoursite.com/2017/07/27/RabbitQM/topic/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="在前面的小结，我们使用了 direct exchange 代替盲目广播的 fanout exchagne 使得接受者能够选择需要接收的日志消息。但 direct exchange 还是存在局限性——它无法根据多标准路由。
+日志系统中，我们可能不止需要根据日志级别订阅消息，同时也需要基于 ”日志发送来源“ 来过滤。你可能从  syslog unix tool 得知可以通过日志的 严重级别 sever">
+<meta property="og:image" content="http://yoursite.com/2017/07/27/RabbitQM/topic/python-five.png">
+<meta property="og:updated_time" content="2017-07-27T09:37:36.094Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ —— Topic">
+<meta name="twitter:description" content="在前面的小结，我们使用了 direct exchange 代替盲目广播的 fanout exchagne 使得接受者能够选择需要接收的日志消息。但 direct exchange 还是存在局限性——它无法根据多标准路由。
+日志系统中，我们可能不止需要根据日志级别订阅消息，同时也需要基于 ”日志发送来源“ 来过滤。你可能从  syslog unix tool 得知可以通过日志的 严重级别 sever">
+<meta name="twitter:image" content="http://yoursite.com/2017/07/27/RabbitQM/topic/python-five.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/07/27/RabbitQM/topic/"/>
+
+
+
+
+
+  <title> RabbitMQ —— Topic | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/27/RabbitQM/topic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RabbitMQ —— Topic
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-27T17:00:00+08:00">
+                2017-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/27/RabbitQM/topic/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/27/RabbitQM/topic/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前面的小结，我们使用了 <strong>direct</strong> exchange 代替盲目广播的 <strong>fanout</strong> exchagne 使得接受者能够选择需要接收的日志消息。但 <strong>direct</strong> exchange 还是存在局限性——<strong>它无法根据多标准路由</strong>。</p>
+<p>日志系统中，我们可能不止需要根据<strong>日志级别</strong>订阅消息，同时也需要基于 <strong>”日志发送来源“</strong> 来过滤。你可能从  <a href="http://en.wikipedia.org/wiki/Syslog" target="_blank" rel="external">syslog</a> unix tool 得知可以通过日志的 <strong>严重级别</strong> severity (info/warn/crit…) 和 <strong>来源设备</strong> facility (auth/cron/kern…) 来路由日志。</p>
+<p>这会基于我们更多的灵活性 —— 我们也许只想监听来自 ‘cron’ 的 critical errors 和 所有来自 ‘kern’ 的日志。</p>
+<a id="more"></a>
+<h2 id="Topic-exchange"><a href="#Topic-exchange" class="headerlink" title="Topic exchange"></a>Topic exchange</h2><p>发送到 <strong>topic</strong> exchange 的消息能跟随一个任意的 <strong>routing_key</strong>  —— 它必须是<strong>由许多点分隔的单词列表</strong>，单词可以是任意的词，但通常是指定了消息的某些特性。</p>
+<p>如下是几个合法的 routing key：”stock.usd.nyse”, “nyse.vmw”, “quick.orange.rabbit”。</p>
+<p>你可以在 routing key 中定义任意数量的单词，但上限为 255 字节（bytes）。</p>
+<p><strong>binding key</strong> 也必须是同样的格式，<strong>topic</strong> exchange 背后的逻辑和 <strong>direct</strong> 是类似的 —— <strong>发送到指定 routing key 的消息将被分发到所有绑定了相匹配的 binding key 的队列</strong>。 但是 binding keys 有两个重要特殊例子：</p>
+<ul>
+<li>*（star）星号能完全代替 1 个单词</li>
+<li>#（hash） 井号能代替 0 个或多个单词。</li>
+</ul>
+<p>如以下例子：</p>
+<p><img src="/2017/07/27/RabbitQM/topic/python-five.png" alt="python-five"></p>
+<p>在这个例子中，我们将发送的所有消息都是描述动物的。发送的消息将跟随由3个单词（2个分隔号）组成的 routing key。第一个单词描述速度（speed），第二个颜色（colour），第三个物种（species）： <code>&quot;&lt;speed&gt;.&lt;colour&gt;.&lt;species&gt;&quot;</code></p>
+<p>接着创建 binding： Q1 和 <code>*.orange.*</code> 绑定，Q2 和 <code>*.*.rabbit</code> 以及 <code>lazy.#</code> 绑定。</p>
+<p>这些绑定总结为：</p>
+<ul>
+<li>Q1 对所有 orange 的动物感兴趣</li>
+<li>Q2 监听所有关于 rabbit 和 lazy 的动物</li>
+</ul>
+<blockquote>
+<p><strong>例子：</strong></p>
+<p>“quick.<strong>orange</strong>.rabbit” 和  “<strong>lazy</strong>.orange.elephant”  的消息将被分发给两个队列，</p>
+<p>“quick.<strong>orange</strong>.fox” 将只被分发个第一个队列，”<strong>lazy</strong>.brown.fox” 将只被分发给第二个队列，</p>
+<p>“<strong>lazy</strong>.pink.<strong>rabbit</strong>“ 将<strong>只分发给第二个队列一次</strong>，即使它匹配了两个 binding。”quick.brown.fox” 不匹配任何 binding，消息将被丢弃。</p>
+<p>如果我们不按约定而发送1个单词或者4个单词的消息，如：”orange” or “quick.orange.male.rabbit” ， 这些消息不匹配任何一个 binding，将被丢弃。但是”<strong>lazy</strong>.orange.male.rabbit” 虽然有四个单词，但是它将匹配最后一个 binding <code>lazy.#</code> 并分发给第二个队列。</p>
+<p><strong>Topic exchange</strong></p>
+<p>Topic exchange 非常强大，它能表现得像其他的 exchange 一样。</p>
+<p>当队列绑定了 binding key “#”（hash） —— 它将收到所有的消息，不管 routing key 是怎样的 —— 这表现得像 fanout exchange。</p>
+<p>当这些特殊字符 “<em>”（star）和 “#”（hash）不在 binding 中使用，topic exchange 将表现得像 <em>*direct</em></em> exchange</p>
+</blockquote>
+<h2 id="合并代码"><a href="#合并代码" class="headerlink" title="合并代码"></a>合并代码</h2><p>我们将在日志系统中使用 <strong>topic</strong> exchange ，假定日志的 routing key 有两个单词：<code>&lt;facility&gt;.&lt;severity&gt;</code></p>
+<p><strong>EmitLogTopic.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmitLogTopic</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"topic_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> </span>&#123;</div><div class="line">    Connection connection = <span class="keyword">null</span>;</div><div class="line">    Channel channel = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">      factory.setHost(<span class="string">"localhost"</span>);</div><div class="line"></div><div class="line">      connection = factory.newConnection();</div><div class="line">      channel = connection.createChannel();</div><div class="line"></div><div class="line">      channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);</div><div class="line">      </div><div class="line">      <span class="comment">/**</span></div><div class="line">       *  both severity (info/warn/critical...) and facility (auth/cron/kern...).</div><div class="line">       */</div><div class="line">      String routingKey = <span class="string">"auth.info"</span>; </div><div class="line">      String message = <span class="string">"A critical kernel error"</span>;</div><div class="line"></div><div class="line">      channel.basicPublish(EXCHANGE_NAME, routingKey, <span class="keyword">null</span>, message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">      System.out.println(<span class="string">" [x] Sent '"</span> + routingKey + <span class="string">"':'"</span> + message + <span class="string">"'"</span>);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">catch</span>  (Exception e) &#123;</div><div class="line">      e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">finally</span> &#123;</div><div class="line">      <span class="keyword">if</span> (connection != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">          connection.close();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">catch</span> (Exception ignore) &#123;&#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>ReceiveLogsTopic.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.logQueues.topic;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.*;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReceiveLogsTopic</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"topic_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">    factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);</div><div class="line">    String queueName = channel.queueDeclare().getQueue();</div><div class="line"></div><div class="line">    <span class="comment">/** </span></div><div class="line">      * 所有来源、所有等级的日志都需要打印到屏幕上 </div><div class="line">      */</div><div class="line">    String[] topics = <span class="keyword">new</span> String[]&#123;<span class="string">"#"</span>&#125;;</div><div class="line">    <span class="keyword">for</span> (String bindingKey : topics) &#123;</div><div class="line">      channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">    Consumer consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">      <span class="meta">@Override</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope,</span></span></div><div class="line">                                 AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body) <span class="keyword">throws</span> IOException &#123;</div><div class="line">        String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line">        System.out.println(<span class="string">" [x] Received '"</span> + envelope.getRoutingKey() + <span class="string">"':'"</span> + message + <span class="string">"'"</span>);</div><div class="line">      &#125;</div><div class="line">    &#125;;</div><div class="line">    channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>ReceiveLogsTopicToDisk.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo.rabbitMQDemo.logQueues.topic;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</div><div class="line"><span class="keyword">import</span> java.io.FileOutputStream;</div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"></div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.AMQP;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.BuiltinExchangeType;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Channel;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Connection;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.ConnectionFactory;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Consumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.DefaultConsumer;</div><div class="line"><span class="keyword">import</span> com.rabbitmq.client.Envelope;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReceiveLogsTopicToDisk</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXCHANGE_NAME = <span class="string">"topic_logs"</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    ConnectionFactory factory = <span class="keyword">new</span> ConnectionFactory();</div><div class="line">    factory.setHost(<span class="string">"localhost"</span>);</div><div class="line">    Connection connection = factory.newConnection();</div><div class="line">    Channel channel = connection.createChannel();</div><div class="line"></div><div class="line">    channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.TOPIC);</div><div class="line">    String queueName = channel.queueDeclare().getQueue();</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * both severity (info/warn/critical...) and facility (auth/cron/kern...).</div><div class="line">     * 所有 from kern and critical severity 的日志会保存到日志文件中</div><div class="line">     */</div><div class="line">    String[] topics = <span class="keyword">new</span> String[]&#123;<span class="string">"kern.*"</span>,<span class="string">"*.critical"</span>&#125;;</div><div class="line">    <span class="keyword">for</span> (String bindingKey : topics) &#123;</div><div class="line">      channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    System.out.println(<span class="string">" [*] Waiting for messages. To exit press CTRL+C"</span>);</div><div class="line"></div><div class="line">    Consumer consumer = <span class="keyword">new</span> DefaultConsumer(channel) &#123;</div><div class="line">      <span class="meta">@Override</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope,</span></span></div><div class="line">                                 AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body) <span class="keyword">throws</span> IOException &#123;</div><div class="line">        String message = <span class="keyword">new</span> String(body, <span class="string">"UTF-8"</span>);</div><div class="line">        message = <span class="string">" [x] Received '"</span> + envelope.getRoutingKey() + <span class="string">"':'"</span> + message + <span class="string">"'"</span> + <span class="string">"\n"</span>;</div><div class="line">        FileOutputStream file = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span>&#123;</div><div class="line">        	file = <span class="keyword">new</span> FileOutputStream(<span class="string">"./topic.log"</span>,<span class="keyword">true</span>);</div><div class="line">        	file.write(message.getBytes(<span class="string">"UTF-8"</span>));</div><div class="line">        &#125;<span class="keyword">catch</span>(FileNotFoundException e)&#123;</div><div class="line">        	e.printStackTrace();</div><div class="line">        &#125;<span class="keyword">finally</span>&#123;</div><div class="line">        	file.close();</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">      &#125;</div><div class="line">    &#125;;</div><div class="line">    channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># EmitLogTopic</div><div class="line"></div><div class="line"> [x] Sent &apos;auth.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;auth.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;auth.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;cron.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;cron.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;cron.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;kern.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;kern.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Sent &apos;kern.critical&apos;:&apos;A critical kernel error&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># ReceiveLogsTopic</div><div class="line"># see in console</div><div class="line"></div><div class="line"> [*] Waiting for messages. To exit press CTRL+C</div><div class="line"> [x] Received &apos;auth.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;auth.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;auth.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;cron.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;cron.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;cron.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.critical&apos;:&apos;A critical kernel error&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># ReceiveLogsTopicToDisk</div><div class="line"># see in file &quot;topic.log&quot;</div><div class="line"></div><div class="line"> [x] Received &apos;auth.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;cron.critical&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.info&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.warn&apos;:&apos;A critical kernel error&apos;</div><div class="line"> [x] Received &apos;kern.critical&apos;:&apos;A critical kernel error&apos;</div></pre></td></tr></table></figure>
+<p>可以看出，屏幕上打印出来所有发送出去的日志消息，而日志文件只记录了等级为 “critical” 和所有来自 “kern” 的日志。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/26/RabbitQM/publish-subscribe/" rel="next" title="RabbitMQ —— publish/subscribe">
+                <i class="fa fa-chevron-left"></i> RabbitMQ —— publish/subscribe
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/31/RabbitQM/rpc/" rel="prev" title="RabbitMQ —— RPC">
+                RabbitMQ —— RPC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Topic-exchange"><span class="nav-text">Topic exchange</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合并代码"><span class="nav-text">合并代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/07/27/RabbitQM/topic/';
+          this.page.identifier = '2017/07/27/RabbitQM/topic/';
+          this.page.title = 'RabbitMQ —— Topic';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

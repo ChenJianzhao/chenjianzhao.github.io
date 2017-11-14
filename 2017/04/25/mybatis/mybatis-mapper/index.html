@@ -105,7 +105,7 @@ resultMap – 是最复杂也是最强大的元素，用来描述如何从数据
 parameterMap – 已废弃！老式风格的参数映射。内联参数是首选,这个元素可能在将来被移除，这里不会记录。
 sql – 可被其他语句引用的可重用语句块。
 insert – 映射">
-<meta property="og:updated_time" content="2017-05-07T01:49:27.995Z">
+<meta property="og:updated_time" content="2017-11-14T00:45:24.776Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MyBatis Mapper">
 <meta name="twitter:description" content="Mapper XML 文件
@@ -349,6 +349,17 @@ insert – 映射">
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/25/mybatis/mybatis-mapper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/25/mybatis/mybatis-mapper/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -545,18 +556,51 @@ insert – 映射">
 </tr>
 </tbody>
 </table>
-<h1 id="参数（Parameters）"><a href="#参数（Parameters）" class="headerlink" title="参数（Parameters）"></a>参数（Parameters）</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"insertUser"</span> <span class="attr">parameterType</span>=<span class="string">"User"</span>&gt;</span></div><div class="line">  insert into users (id, username, password)</div><div class="line">  values (#&#123;id&#125;, #&#123;username&#125;, #&#123;password&#125;)</div><div class="line"><span class="tag">&lt;/<span class="name">insert</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>像 MyBatis 的剩余部分一样，javaType 通常可以从参数对象中来去确定，前提是只要对象不是一个 HashMap。那么 <code>javaType</code> 应该被确定来保证使用正确类型处理器。</p>
-<p><code>NOTE</code> 如果 null 被当作值来传递，对于所有可能为空的列，<code>JDBC Type</code> 是需要的。你可以自己通过阅读预处理语句的 setNull() 方法的 JavaDocs 文档来研究这种情况。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#&#123;firstName&#125;</div><div class="line">#&#123;middleInitial,jdbcType=VARCHAR&#125;</div><div class="line">#&#123;lastName&#125;</div></pre></td></tr></table></figure>
+<h1 id="参数（Parameters）"><a href="#参数（Parameters）" class="headerlink" title="参数（Parameters）"></a>参数（Parameters）</h1><h2 id="参数为原生类型或简单数据"><a href="#参数为原生类型或简单数据" class="headerlink" title="参数为原生类型或简单数据"></a>参数为原生类型或简单数据</h2><p>前面的所有语句中你所见到的都是简单参数的例子，实际上参数是 MyBatis 非常强大的元素，对于简单的做法，大概 90% 的情况参数都很少，比如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectUsers"</span> <span class="attr">resultType</span>=<span class="string">"User"</span>&gt;</span></div><div class="line">  select id, username, password</div><div class="line">  from users</div><div class="line">  where id = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="参数为复杂对象"><a href="#参数为复杂对象" class="headerlink" title="参数为复杂对象"></a>参数为复杂对象</h2><ul>
+<li>上面的这个示例说明了一个非常简单的命名参数映射。参数类型被设置为 <code>int</code>，这样这个参数就可以被设置成任何内容。原生的类型或简单数据类型（比如整型和字符串）因为没有相关属性，它会完全用参数值来替代。然而，如果传入一个复杂的对象，行为就会有一点不同了。比如：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"insertUser"</span> <span class="attr">parameterType</span>=<span class="string">"User"</span>&gt;</span></div><div class="line">  insert into users (id, username, password)</div><div class="line">  values (#&#123;id&#125;, #&#123;username&#125;, #&#123;password&#125;)</div><div class="line"><span class="tag">&lt;/<span class="name">insert</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li>如果 User 类型的参数对象传递到了语句中，id、username 和 password 属性将会被查找，然后将它们的值传入预处理语句的参数中。这点对于向语句中传参是比较好的而且又简单，不过参数映射的功能远不止于此。</li>
+<li>首先，像 MyBatis 的其他部分一样，参数也可以指定一个特殊的数据类型。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#&#123;property,javaType=int,jdbcType=NUMERIC&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>像 MyBatis 的剩余部分一样，<strong>javaType 通常可以从参数对象中来去确定，前提是只要对象不是一个 HashMap。</strong>那么 <code>javaType</code> 应该被确定来保证使用正确类型处理器。</li>
+</ul>
+<blockquote>
+<p> <code>NOTE</code> 如果 null 被当作值来传递，对于所有可能为空的列，<code>JDBC Type</code> 是需要的。你可以自己通过阅读预处理语句的 setNull() 方法的 JavaDocs 文档来研究这种情况。</p>
+</blockquote>
+<ul>
+<li>为了以后定制类型处理方式，你也可以指定一个特殊的类型处理器类（或别名），比如：（尽管看起来配置变得越来越繁琐，但实际上是很少去设置它们。）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#&#123;age,javaType=int,jdbcType=NUMERIC,typeHandler=MyTypeHandler&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>对于数值类型，还有一个小数保留位数的设置，来确定小数点后保留的位数。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#&#123;height,javaType=double,jdbcType=NUMERIC,numericScale=2&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>最后，mode 属性允许你指定 IN，OUT 或 INOUT 参数。如果参数为 OUT 或 INOUT，参数对象属性的真实值将会被改变，就像你在获取输出参数时所期望的那样。如果 mode 为 OUT（或 INOUT），而且 jdbcType 为 CURSOR(也就是 Oracle 的 REFCURSOR)，你必须指定一个 resultMap 来映射结果集到参数类型。要注意这里的 javaType 属性是可选的，如果左边的空白是 jdbcType 的 CURSOR 类型，它会自动地被设置为结果集。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#&#123;department, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=departmentResultMap&#125;</div></pre></td></tr></table></figure>
+<p>MyBatis 也支持很多高级的数据类型，比如结构体，但是当注册 out 参数时你必须告诉它语句类型名称。比如（再次提示，在实际中要像这样不能换行）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#&#123;middleInitial, mode=OUT, jdbcType=STRUCT, jdbcTypeName=MY_TYPE, resultMap=departmentResultMap&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>尽管所有这些强大的选项很多时候你只简单指定属性名，其他的事情 MyBatis 会自己去推断，最多你需要为可能为空的列名指定 <code>jdbcType</code>。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#&#123;firstName&#125;</div><div class="line">#&#123;middleInitial,jdbcType=VARCHAR&#125;</div><div class="line">#&#123;lastName&#125;</div></pre></td></tr></table></figure>
 <h1 id="字符串替换"><a href="#字符串替换" class="headerlink" title="字符串替换"></a>字符串替换</h1><p>默认情况下,使用#{}格式的语法会导致 MyBatis 创建预处理语句属性并安全地设置值（比如?）。这样做更安全，更迅速，通常也是首选做法，不过有时你只是想直接在 SQL 语句中插入一个不改变的字符串。比如，像 ORDER BY，你可以这样来使用：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ORDER BY $&#123;columnName&#125;</div></pre></td></tr></table></figure>
+<p>这里 MyBatis 不会修改或转义字符串。</p>
+<p><code>NOTE</code> 以这种方式接受从用户输出的内容并提供给语句中不变的字符串是不安全的，会导致潜在的 SQL 注入攻击，因此要么不允许用户输入这些字段，要么自行转义并检验。</p>
 <h1 id="ResultMaps"><a href="#ResultMaps" class="headerlink" title="ResultMaps"></a>ResultMaps</h1><p>resultMap 元素是 MyBatis 中最重要最强大的元素。ResultMap 的设计就是简单语句不需要明确的结果映射,而很多复杂语句确实需要描述它们的关系。</p>
 <h2 id="resultType-为-Hashmap"><a href="#resultType-为-Hashmap" class="headerlink" title="resultType 为 Hashmap"></a>resultType 为 Hashmap</h2><p>你已经看到简单映射语句的示例了,但没有明确的 resultMap。比如:</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectUsers"</span> <span class="attr">resultType</span>=<span class="string">"map"</span>&gt;</span></div><div class="line">  select id, username, hashedPassword</div><div class="line">  from some_table</div><div class="line">  where id = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>这样一个语句简单作用于所有列被自动映射到 <code>HashMap</code> 的键上,这由 resultType 属性 指定。</p>
 <h2 id="resultType-为-JavaBean"><a href="#resultType-为-JavaBean" class="headerlink" title="resultType 为 JavaBean"></a>resultType 为 JavaBean</h2><p>这在很多情况下是有用的,但是 HashMap 不能很好描述一个领域模型。那样你的应 用程序将会使用 <code>JavaBeans</code> 或 <code>POJO</code> (Plain Old Java Objects,普通 Java 对象)来作为领域 模型。MyBatis 对两者都支持。看看下面这个 JavaBean:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.someapp.model;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">  <span class="keyword">private</span> String username;</div><div class="line">  <span class="keyword">private</span> String hashedPassword;</div><div class="line"></div><div class="line">  <span class="comment">//setter and getter</span></div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.someapp.model;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> id;</div><div class="line">  <span class="keyword">private</span> String username;</div><div class="line">  <span class="keyword">private</span> String hashedPassword;</div><div class="line">  </div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> id;</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.id = id;</div><div class="line">  &#125;</div><div class="line">  <span class="comment">//setter and getter</span></div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>基于 JavaBean 的规范,上面这个类有 3 个属性:id,username 和 hashedPassword。这些 在 select 语句中会<strong>精确匹配到列名</strong>。</p>
 <p>这样的一个 JavaBean 可以被映射到结果集,就像映射到 HashMap 一样简单。    </p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- In mybatis-config.xml file --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">typeAlias</span> <span class="attr">type</span>=<span class="string">"com.someapp.model.User"</span> <span class="attr">alias</span>=<span class="string">"User"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- In SQL Mapping XML file --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectUsers"</span> <span class="attr">resultType</span>=<span class="string">"User"</span>&gt;</span></div><div class="line">  select id, username, hashedPassword</div><div class="line">  from some_table</div><div class="line">  where id = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
@@ -601,11 +645,16 @@ insert – 映射">
 <li><code>result</code> – 注入到字段或 JavaBean 属性的普通结果</li>
 <li><code>association</code> – 一个复杂类型的<strong>关联</strong>属性。（嵌入resultMap  – 映射自身的<strong>关联</strong>属性，或者引用一个外部resultMap ）</li>
 <li><code>collection</code> – 复杂类型的<strong>集合</strong>属性。（嵌入resultMap   – 映射自身的<strong>集合</strong>属性,或者引用一个外部resultMap）</li>
-<li><code>discriminator</code> – 使用结果值来决定使用哪个结果映射<code>case</code> – 基于某些值的结果映射嵌入结果映射 – 这种情形结果也映射它本身,因此可以包含很多相 同的元素,或者它可以参照一个外部的结果映射。</li>
+<li><code>discriminator</code> – 使用结果值来决定使用哪个结果映射<ul>
+<li><code>case</code> – 基于某些值的结果映射嵌入结果映射 – 这种情形结果也映射它本身,因此可以包含很多相 同的元素,或者它可以参照一个外部的结果映射。</li>
+</ul>
+</li>
 </ul>
 <h4 id="id-amp-result（ID-和普通结果）"><a href="#id-amp-result（ID-和普通结果）" class="headerlink" title="id &amp; result（ID 和普通结果）"></a>id &amp; result（ID 和普通结果）</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"post_id"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"subject"</span> <span class="attr">column</span>=<span class="string">"post_subject"</span>/&gt;</span></div></pre></td></tr></table></figure>
-<p>这些是结果映射最基本内容。id 和 result 都映射一个单独列的值到<strong>简单数据类型</strong>(字符 串,整型,双精度浮点数,日期等)的单独属性或字段。</p>
-<p>这两者之间的唯一不同是 <strong>id 表示的结果将是当比较对象实例时用到的标识属性</strong>。这帮助来<strong>改进整体表现</strong>,特别是缓存和嵌入结果映射(也就是联合映射) 。</p>
+<ul>
+<li>这些是结果映射最基本内容。id 和 result 都映射一个单独列的值到<strong>简单数据类型</strong>(字符串,整型,双精度浮点数,日期等)的单独属性或字段。</li>
+<li>这两者之间的唯一不同是 <strong>id 表示的结果将是当比较对象实例时用到的标识属性</strong>。这帮助来<strong>改进整体表现</strong>,特别是缓存和嵌入结果映射(也就是联合映射) 。</li>
+</ul>
 <p>每个都有一些属性:</p>
 <p><strong>Id and Result Attributes</strong></p>
 <table>
@@ -638,8 +687,11 @@ insert – 映射">
 </tr>
 </tbody>
 </table>
-<p><strong>支持的 JDBC 类型</strong></p>
+<ul>
+<li><p><strong>支持的 JDBC 类型</strong></p>
 <p>为了未来的参考,MyBatis 通过包含的 jdbcType 枚举型,支持下面的 JDBC 类型。</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -653,52 +705,52 @@ insert – 映射">
 </thead>
 <tbody>
 <tr>
-<td><code>TINYINT</code></td>
-<td><code>REAL</code></td>
-<td><code>VARCHAR</code></td>
-<td><code>BINARY</code></td>
-<td><code>BLOB</code></td>
-<td><code>NVARCHAR</code></td>
+<td><strong><code>TINYINT</code></strong></td>
+<td><strong><code>REAL</code></strong></td>
+<td><strong><code>VARCHAR</code></strong></td>
+<td><strong><code>BINARY</code></strong></td>
+<td><strong><code>BLOB</code></strong></td>
+<td><strong><code>NVARCHAR</code></strong></td>
 </tr>
 <tr>
-<td><code>SMALLINT</code></td>
-<td><code>DOUBLE</code></td>
-<td><code>LONGVARCHAR</code></td>
-<td><code>VARBINARY</code></td>
-<td><code>CLOB</code></td>
-<td><code>NCHAR</code></td>
+<td><strong><code>SMALLINT</code></strong></td>
+<td><strong><code>DOUBLE</code></strong></td>
+<td><strong><code>LONGVARCHAR</code></strong></td>
+<td><strong><code>VARBINARY</code></strong></td>
+<td><strong><code>CLOB</code></strong></td>
+<td><strong><code>NCHAR</code></strong></td>
 </tr>
 <tr>
-<td><code>INTEGER</code></td>
-<td><code>NUMERIC</code></td>
-<td><code>DATE</code></td>
-<td><code>LONGVARBINARY</code></td>
-<td><code>BOOLEAN</code></td>
-<td><code>NCLOB</code></td>
+<td><strong><code>INTEGER</code></strong></td>
+<td><strong><code>NUMERIC</code></strong></td>
+<td><strong><code>DATE</code></strong></td>
+<td><strong><code>LONGVARBINARY</code></strong></td>
+<td><strong><code>BOOLEAN</code></strong></td>
+<td><strong><code>NCLOB</code></strong></td>
 </tr>
 <tr>
-<td><code>BIGINT</code></td>
-<td><code>DECIMAL</code></td>
-<td><code>TIME</code></td>
-<td><code>NULL</code></td>
-<td><code>CURSOR</code></td>
-<td><code>ARRAY</code></td>
+<td><strong><code>BIGINT</code></strong></td>
+<td><strong><code>DECIMAL</code></strong></td>
+<td><strong><code>TIME</code></strong></td>
+<td><strong><code>NULL</code></strong></td>
+<td><strong><code>CURSOR</code></strong></td>
+<td><strong><code>ARRAY</code></strong></td>
 </tr>
 </tbody>
 </table>
-<h4 id="constructor（构造方法）"><a href="#constructor（构造方法）" class="headerlink" title="constructor（构造方法）"></a>constructor（构造方法）</h4><p>构造方法注入允许你在初始化时为类设置属性的值,而不用暴露出公有方法。MyBatis 也支持私有属性和私有 JavaBeans 属 性来达到这个目的,还有一些人更青睐构造方法注入。构造方法元素支持这个。</p>
+<h4 id="constructor（构造方法）"><a href="#constructor（构造方法）" class="headerlink" title="constructor（构造方法）"></a>constructor（构造方法）</h4><p>构造方法注入允许你在初始化时为类设置属性的值,而不用暴露出公有方法。MyBatis 也支持私有属性和私有 JavaBeans 属性来达到这个目的,还有一些人更青睐构造方法注入。构造方法元素支持这个。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(Integer id, String username, <span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">     <span class="comment">//...</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>为了把查询结果注入到构造器方法中，MyBatis需要通过特定的方法确定使用哪个构造方法，下例中，MyBatis 查找按顺序定义了这三个参数的构造方法：<code>java.lang.Integer</code>, <code>java.lang.String</code> 和 <code>int</code> </p>
+<p>为了把查询结果注入到构造器方法中，MyBatis需要通过特定的方法确定使用哪个构造方法，下例中，MyBatis 查找<strong>按顺序</strong>定义了这三个参数的构造方法：<code>java.lang.Integer</code>, <code>java.lang.String</code> 和 <code>int</code> </p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">constructor</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">idArg</span> <span class="attr">column</span>=<span class="string">"id"</span> <span class="attr">javaType</span>=<span class="string">"int"</span>/&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">arg</span> <span class="attr">column</span>=<span class="string">"username"</span> <span class="attr">javaType</span>=<span class="string">"String"</span>/&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">arg</span> <span class="attr">column</span>=<span class="string">"age"</span> <span class="attr">javaType</span>=<span class="string">"_int"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">constructor</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>从 3.4.3 版本之后，通过指定 每个构造方法参数的<code>name</code> 属性，你可以按任意顺序书写参数元素。</p>
+<p>从 <code>3.4.3 版本</code>之后，通过指定 每个构造方法参数的<code>name</code> 属性，你可以按任意顺序书写参数元素。</p>
 <p>你也可以通过为参数添加 <code>@Param</code> 注解并启用 <code>useActualParamName</code> (默认启用)，来引用构造方法的参数。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">constructor</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">idArg</span> <span class="attr">column</span>=<span class="string">"id"</span> <span class="attr">javaType</span>=<span class="string">"int"</span> <span class="attr">name</span>=<span class="string">"id"</span> /&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">arg</span> <span class="attr">column</span>=<span class="string">"age"</span> <span class="attr">javaType</span>=<span class="string">"_int"</span> <span class="attr">name</span>=<span class="string">"age"</span> /&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">arg</span> <span class="attr">column</span>=<span class="string">"username"</span> <span class="attr">javaType</span>=<span class="string">"String"</span> <span class="attr">name</span>=<span class="string">"username"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">constructor</span>&gt;</span></div></pre></td></tr></table></figure>
 <h4 id="association（关联）"><a href="#association（关联）" class="headerlink" title="association（关联）"></a>association（关联）</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span> <span class="attr">column</span>=<span class="string">"blog_author_id"</span> <span class="attr">javaType</span>=<span class="string">"Author"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"author_id"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"author_username"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">association</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>关联元素处理“有一个”类型的关联属性。比如,在我们的示例中,一个博客有一个用户。 </p>
 <p>关联中不同的是你需要告诉 MyBatis 如何加载关联。MyBatis 在这方面会有两种不同的方式:</p>
 <ul>
-<li>嵌套查询:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。</li>
-<li>嵌套结果:使用嵌套 resultMap 来处理重复的联合结果的子集。</li>
+<li><strong>嵌套查询</strong>:通过执行另外一个 SQL 映射语句来返回预期的复杂类型。</li>
+<li><strong>嵌套结果</strong>:使用嵌套 resultMap 来处理重复的联合结果的子集。</li>
 </ul>
 <h5 id="关联的嵌套查询"><a href="#关联的嵌套查询" class="headerlink" title="关联的嵌套查询"></a>关联的嵌套查询</h5><table>
 <thead>
@@ -724,13 +776,15 @@ insert – 映射">
 </table>
 <p>示例:</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectBlog"</span> <span class="attr">resultMap</span>=<span class="string">"blogResult"</span>&gt;</span></div><div class="line">  SELECT * FROM BLOG WHERE ID = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"blogResult"</span> <span class="attr">type</span>=<span class="string">"Blog"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span> <span class="attr">column</span>=<span class="string">"author_id"</span> <span class="attr">javaType</span>=<span class="string">"Author"</span> <span class="attr">select</span>=<span class="string">"selectAuthor"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 此处传递了查询结果列 "author_id" 的值作为子查询参数 --&gt;</span></div><div class="line"><span class="comment">&lt;!-- 若为复合主键，需要传递参数对象 column="&#123;id=author_id,prop2=col2&#125;" --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectAuthor"</span> <span class="attr">resultType</span>=<span class="string">"Author"</span>&gt;</span></div><div class="line">  SELECT * FROM AUTHOR WHERE ID = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>我们有两个查询语句:一个来加载博客,另外一个来加载作者,而且博客的结果映射描 述了“selectAuthor”语句应该被用来加载它的 author 属性。</p>
-<p>其他所有的属性将会被自动加载,假设它们的列和属性名相匹配。</p>
-<p>这种方式很简单, 但是对于大型数据集合和列表将不会表现很好。 问题就是我们熟知的 “N+1 查询问题”。</p>
-<p>概括地讲,N+1 查询问题可以是这样引起的:</p>
 <ul>
+<li>我们有两个查询语句:一个来加载博客,另外一个来加载作者,而且博客的结果映射描 述了“selectAuthor”语句应该被用来加载它的 author 属性。</li>
+<li>其他所有的属性将会被自动加载,假设它们的列和属性名相匹配。</li>
+<li>这种方式很简单, 但是对于大型数据集合和列表将不会表现很好。 问题就是我们熟知的 “N+1 查询问题”。</li>
+<li>概括地讲,N+1 查询问题可以是这样引起的:<ul>
 <li>你执行了一个单独的 SQL 语句来获取结果列表(就是“+1”)。</li>
 <li>对返回的每条记录,你执行了一个查询语句来为每个加载细节(就是“N”)。</li>
+</ul>
+</li>
 </ul>
 <p>这个问题会导致成百上千的 SQL 语句被执行。这通常不是期望的。</p>
 <h5 id="关联的嵌套结果"><a href="#关联的嵌套结果" class="headerlink" title="关联的嵌套结果"></a>关联的嵌套结果</h5><table>
@@ -763,11 +817,10 @@ insert – 映射">
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectBlog"</span> <span class="attr">resultMap</span>=<span class="string">"blogResult"</span>&gt;</span></div><div class="line">  select</div><div class="line">    B.id            as blog_id,</div><div class="line">    B.title         as blog_title,</div><div class="line">    A.id            as author_id,</div><div class="line">    A.username      as author_username,</div><div class="line">    A.password      as author_password,</div><div class="line">    A.email         as author_email,</div><div class="line">    A.bio           as author_bio,</div><div class="line">    CA.id           as co_author_id,</div><div class="line">    CA.username     as co_author_username,</div><div class="line">    CA.password     as co_author_password,</div><div class="line">    CA.email        as co_author_email,</div><div class="line">    CA.bio          as co_author_bio</div><div class="line">  from Blog B</div><div class="line">  left outer join Author A on B.author_id = A.id</div><div class="line">  left outer join Author CA on B.co_author_id = CA.id</div><div class="line">  where B.id = #&#123;id&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>注意这个联合查询, 以及采取保护来确保所有结果被唯一而且清晰的名字来重命名。 这使得映射非常简单。现在我们可以映射这个结果:</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"blogResult"</span> <span class="attr">type</span>=<span class="string">"Blog"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"blog_id"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"title"</span> <span class="attr">column</span>=<span class="string">"blog_title"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span> <span class="attr">column</span>=<span class="string">"author_id"</span> <span class="attr">javaType</span>=<span class="string">"Author"</span> <span class="attr">resultMap</span>=<span class="string">"authorResult"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span> <span class="attr">column</span>=<span class="string">"co_author_id"</span> <span class="attr">javaType</span>=<span class="string">"Author"</span> <span class="attr">resultMap</span>=<span class="string">"co_authorResult"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"authorResult"</span> <span class="attr">type</span>=<span class="string">"Author"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"author_id"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"author_username"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"password"</span> <span class="attr">column</span>=<span class="string">"author_password"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"email"</span> <span class="attr">column</span>=<span class="string">"author_email"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"bio"</span> <span class="attr">column</span>=<span class="string">"author_bio"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"co_authorResult"</span> <span class="attr">type</span>=<span class="string">"Author"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"co_author_id"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"co_author_username"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"password"</span> <span class="attr">column</span>=<span class="string">"co_author_password"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"email"</span> <span class="attr">column</span>=<span class="string">"co_author_email"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"bio"</span> <span class="attr">column</span>=<span class="string">"co_author_bio"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div></pre></td></tr></table></figure>
-<p><strong>重用 resultMap</strong></p>
-<p>假如已经存在 Author的resultMap 定义如下：</p>
+<h5 id="重用-resultMap"><a href="#重用-resultMap" class="headerlink" title="重用 resultMap"></a><strong>重用 resultMap</strong></h5><p>假如已经存在 Author的resultMap 定义如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"authorResult"</span> <span class="attr">type</span>=<span class="string">"Author"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"author_id"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"author_username"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"password"</span> <span class="attr">column</span>=<span class="string">"author_password"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"email"</span> <span class="attr">column</span>=<span class="string">"author_email"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"bio"</span> <span class="attr">column</span>=<span class="string">"author_bio"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>因为结果中的列名与resultMap中的列名不同。 你需要指定<code>columnPrefix</code>去重用映射co-author结果的resultMap。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"blogResult"</span> <span class="attr">type</span>=<span class="string">"Blog"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"blog_id"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"title"</span> <span class="attr">column</span>=<span class="string">"blog_title"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span></span></div><div class="line">    <span class="attr">resultMap</span>=<span class="string">"authorResult"</span> /&gt;</div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"coAuthor"</span></span></div><div class="line">    <span class="attr">resultMap</span>=<span class="string">"authorResult"</span></div><div class="line">    <span class="attr">columnPrefix</span>=<span class="string">"co_"</span> /&gt;</div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"blogResult"</span> <span class="attr">type</span>=<span class="string">"Blog"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"blog_id"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"title"</span> <span class="attr">column</span>=<span class="string">"blog_title"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span> <span class="attr">resultMap</span>=<span class="string">"authorResult"</span> /&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"coAuthor"</span> <span class="attr">resultMap</span>=<span class="string">"authorResult"</span> <span class="attr">columnPrefix</span>=<span class="string">"co_"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></div></pre></td></tr></table></figure>
 <h4 id="Collection（集合）"><a href="#Collection（集合）" class="headerlink" title="Collection（集合）"></a>Collection（集合）</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">collection</span> <span class="attr">property</span>=<span class="string">"posts"</span> <span class="attr">ofType</span>=<span class="string">"domain.blog.Post"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"post_id"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"subject"</span> <span class="attr">column</span>=<span class="string">"post_subject"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"body"</span> <span class="attr">column</span>=<span class="string">"post_body"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">collection</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>集合元素的作用几乎和关联是相同的。实际上,它们也很相似,文档的异同是多余的。 所以我们更多关注于它们的不同。</p>
 <p>我们来继续上面的示例,一个博客只有一个作者。但是博客有很多文章。在博客类中, 这可以由下面这样的写法来表示:</p>
@@ -876,8 +929,8 @@ insert – 映射">
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/25/mybatis/MyBatis-config/" rel="next" title="MyBatis基本配置">
-                <i class="fa fa-chevron-left"></i> MyBatis基本配置
+              <a href="/2017/04/25/mybatis/Mybatis-generator/" rel="next" title="MyBatis-Generator">
+                <i class="fa fa-chevron-left"></i> MyBatis-Generator
               </a>
             
           </div>
@@ -886,8 +939,8 @@ insert – 映射">
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/05/07/dev_tool/git/" rel="prev" title="git 教程">
-                git 教程 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/04/25/mybatis/MyBatis-config/" rel="prev" title="MyBatis基本配置">
+                MyBatis基本配置 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -913,6 +966,13 @@ insert – 映射">
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -960,7 +1020,7 @@ insert – 映射">
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -971,7 +1031,7 @@ insert – 映射">
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1008,7 +1068,7 @@ insert – 映射">
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mapper-XML-文件"><span class="nav-text">Mapper XML 文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#select"><span class="nav-text">select</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Insert-Update-Delete"><span class="nav-text">Insert, Update, Delete</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数（Parameters）"><span class="nav-text">参数（Parameters）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符串替换"><span class="nav-text">字符串替换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ResultMaps"><span class="nav-text">ResultMaps</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType-为-Hashmap"><span class="nav-text">resultType 为 Hashmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType-为-JavaBean"><span class="nav-text">resultType 为 JavaBean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列名和-POJO-属性名不匹配"><span class="nav-text">列名和 POJO 属性名不匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用SQL别名"><span class="nav-text">使用SQL别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用外部的-resultMap"><span class="nav-text">使用外部的 resultMap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级结果映射"><span class="nav-text">高级结果映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap的属性"><span class="nav-text">ResultMap的属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap的子元素"><span class="nav-text">ResultMap的子元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#id-amp-result（ID-和普通结果）"><span class="nav-text">id & result（ID 和普通结果）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#constructor（构造方法）"><span class="nav-text">constructor（构造方法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#association（关联）"><span class="nav-text">association（关联）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关联的嵌套查询"><span class="nav-text">关联的嵌套查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关联的嵌套结果"><span class="nav-text">关联的嵌套结果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection（集合）"><span class="nav-text">Collection（集合）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#集合的嵌套查询"><span class="nav-text">集合的嵌套查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#集合的嵌套结果"><span class="nav-text">集合的嵌套结果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#discriminator（鉴别器）"><span class="nav-text">discriminator（鉴别器）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap-自动映射"><span class="nav-text">ResultMap 自动映射</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#映射等级"><span class="nav-text">映射等级</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用自定义缓存"><span class="nav-text">使用自定义缓存</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mapper-XML-文件"><span class="nav-text">Mapper XML 文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#select"><span class="nav-text">select</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Insert-Update-Delete"><span class="nav-text">Insert, Update, Delete</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数（Parameters）"><span class="nav-text">参数（Parameters）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数为原生类型或简单数据"><span class="nav-text">参数为原生类型或简单数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数为复杂对象"><span class="nav-text">参数为复杂对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符串替换"><span class="nav-text">字符串替换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ResultMaps"><span class="nav-text">ResultMaps</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType-为-Hashmap"><span class="nav-text">resultType 为 Hashmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resultType-为-JavaBean"><span class="nav-text">resultType 为 JavaBean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列名和-POJO-属性名不匹配"><span class="nav-text">列名和 POJO 属性名不匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用SQL别名"><span class="nav-text">使用SQL别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用外部的-resultMap"><span class="nav-text">使用外部的 resultMap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级结果映射"><span class="nav-text">高级结果映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap的属性"><span class="nav-text">ResultMap的属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap的子元素"><span class="nav-text">ResultMap的子元素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#id-amp-result（ID-和普通结果）"><span class="nav-text">id & result（ID 和普通结果）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#constructor（构造方法）"><span class="nav-text">constructor（构造方法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#association（关联）"><span class="nav-text">association（关联）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关联的嵌套查询"><span class="nav-text">关联的嵌套查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关联的嵌套结果"><span class="nav-text">关联的嵌套结果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#重用-resultMap"><span class="nav-text">重用 resultMap</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection（集合）"><span class="nav-text">Collection（集合）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#集合的嵌套查询"><span class="nav-text">集合的嵌套查询</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#集合的嵌套结果"><span class="nav-text">集合的嵌套结果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#discriminator（鉴别器）"><span class="nav-text">discriminator（鉴别器）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultMap-自动映射"><span class="nav-text">ResultMap 自动映射</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#映射等级"><span class="nav-text">映射等级</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用自定义缓存"><span class="nav-text">使用自定义缓存</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -1135,6 +1195,26 @@ insert – 映射">
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/04/25/mybatis/mybatis-mapper/';
+          this.page.identifier = '2017/04/25/mybatis/mybatis-mapper/';
+          this.page.title = 'MyBatis Mapper';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

@@ -98,7 +98,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/direct-exchange.png">
 <meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/direct-exchange-multiple.png">
 <meta property="og:image" content="http://yoursite.com/2017/07/26/RabbitQM/routing/python-four.png">
-<meta property="og:updated_time" content="2017-07-27T02:18:18.797Z">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.331Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RabbitMQ —— Rounting">
 <meta name="twitter:description" content="在前面的小节，我们构建了一个简单的日志系统，让我们能够向许多接受者广播日志消息。
@@ -338,6 +338,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/26/RabbitQM/routing/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/26/RabbitQM/routing/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -375,8 +386,6 @@
 <p>之前使用的 fanout exchange 并不灵活——它只能做到盲目地广播。</p>
 <p>接下来我们将使用 <code>direct exchange</code> 来代替，direct exchange 背后的路由算法其实很简单—— <strong>消息将进入 binding key 和 消息的 routing key 完全匹配的 queue 中</strong>。</p>
 <p><img src="/2017/07/26/RabbitQM/routing/direct-exchange.png" alt="direct-exchange"></p>
-<p>n this setup, we can see the direct exchange X with two queues bound to it. The first queue is bound with binding key orange, and the second has two bindings, one with binding key black and the other one with green.</p>
-<p>In such a setup a message published to the exchange with a routing key orange will be routed to queue Q1. Messages with a routing key of black or green will go to Q2. All other messages will be discarded.</p>
 <p>上面的例子中，我们看到 direct 类型的 exchange X 和两个队列绑定了，第一个队列使用 <strong>orange</strong> 的 banding key 和它绑定，第二个使用 <strong>black</strong> 和 <strong>green</strong> 两个 binding key 绑定。</p>
 <p>在这样的设置下，使用 <strong>orange</strong> routing key 的消息将被路由到 队列 Q1，而使用 <strong>black</strong> 和 <strong>green</strong> routing key 的消息将被路由到队列 Q2，其他的消息将被丢弃。</p>
 <h2 id="多个绑定（Multiple-bindings）"><a href="#多个绑定（Multiple-bindings）" class="headerlink" title="多个绑定（Multiple bindings）"></a>多个绑定（Multiple bindings）</h2><p><img src="/2017/07/26/RabbitQM/routing/direct-exchange-multiple.png" alt="direct-exchange-multiple"></p>
@@ -474,6 +483,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -520,7 +536,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -531,7 +547,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -695,6 +711,26 @@
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/07/26/RabbitQM/routing/';
+          this.page.identifier = '2017/07/26/RabbitQM/routing/';
+          this.page.title = 'RabbitMQ —— Rounting';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

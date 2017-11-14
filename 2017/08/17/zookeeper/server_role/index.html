@@ -1,0 +1,939 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下
+
+事务请求的唯一调度和处理者，保证集群事务处理的顺序性。
+集群内部各服务器的调度者
+
+请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下
+
+
+PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper 的服务器角色">
+<meta property="og:url" content="http://yoursite.com/2017/08/17/zookeeper/server_role/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下
+
+事务请求的唯一调度和处理者，保证集群事务处理的顺序性。
+集群内部各服务器的调度者
+
+请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下
+
+
+PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/server_role/leader_chain.png">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/server_role/follewer_chain.png">
+<meta property="og:image" content="http://yoursite.com/2017/08/17/zookeeper/server_role/observer_chain.png">
+<meta property="og:updated_time" content="2017-08-29T02:21:53.500Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper 的服务器角色">
+<meta name="twitter:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下
+
+事务请求的唯一调度和处理者，保证集群事务处理的顺序性。
+集群内部各服务器的调度者
+
+请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下
+
+
+PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创">
+<meta name="twitter:image" content="http://yoursite.com/2017/08/17/zookeeper/server_role/leader_chain.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/17/zookeeper/server_role/"/>
+
+
+
+
+
+  <title> Zookeeper 的服务器角色 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/17/zookeeper/server_role/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper 的服务器角色
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-17T23:30:00+08:00">
+                2017-08-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/17/zookeeper/server_role/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/17/zookeeper/server_role/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h2><p>Leader服务器是Zookeeper集群工作的核心，其主要工作如下</p>
+<ol>
+<li>事务请求的<strong>唯一调度和处理者</strong>，保证集群事务处理的<strong>顺序性</strong>。</li>
+<li>集群内部各服务器的<strong>调度者</strong></li>
+</ol>
+<h3 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a><strong>请求处理链</strong></h3><p>使用<strong>责任链</strong>来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下</p>
+<p><img src="/2017/08/17/zookeeper/server_role/leader_chain.png" alt="server_role"></p>
+<ol>
+<li><strong>PrepRequestProcessor</strong>。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为<strong>事务请求</strong>（创建节点、更新数据、删除节点、创建会话等），PrepRequestProcessor能够识别出当前客户端请求是否是事务请求。对于事务请求，PrepRequestProcessor处理器会<strong>对其进行一系列预处理</strong>，如创建请求事务头、事务体、会话检查、ACL检查和版本检查等。</li>
+<li><strong>ProposalRequestProcessor</strong>。事务投票处理器。<strong>Leader服务器事务处理流程的发起者</strong>，对于非事务性请求，ProposalRequestProcessor会直接将请求转发到CommitProcessor处理器，不再做任何处理，而对于事务性请求，处理将请求转发到CommitProcessor外，还会<strong>根据请求类型创建对应的Proposal提议</strong>，并发送给所有的Follower服务器来<strong>发起一次集群内的事务投票</strong>。同时，ProposalRequestProcessor还会将事务请求交付给SyncRequestProcessor进行<strong>事务日志的记录</strong>。</li>
+<li><strong>SyncRequestProcessor</strong>。事务日志记录处理器。用来将事务请求记录到事务日志文件中，同时会触发Zookeeper进行数据快照。</li>
+<li><strong>AckRequestProcessor</strong>。负责在SyncRequestProcessor完成事务日志记录后，向Proposal的投票收集器<strong>发送ACK反馈</strong>，以通知投票收集器当前服务器已经完成了对该Proposal的<strong>事务日志记录</strong>。</li>
+<li><strong>CommitProcessor</strong>。事务提交处理器。对于非事务请求，该处理器会直接将其交付给下一级处理器处理；对于事务请求，其会等待集群内针对Proposal的投票直到该Proposal可被提交，利用CommitProcessor，每个服务器都可以很好地<strong>控制对事务请求的顺序处理</strong>。</li>
+<li><strong>ToBeCommitProcessor</strong>。该处理器有一个<strong><code>toBeApplied</code></strong>队列，用来存储那些已经被CommitProcessor处理过的可被提交的Proposal。其会将这些请求交付给FinalRequestProcessor处理器处理，待其处理完后，再将其从toBeApplied队列中移除。</li>
+<li><strong>FinalRequestProcessor</strong>。用来进行客户端请求返回之前的操作，包括创建客户端请求的响应，针对事务请求，该处理还会负责<strong>将事务应用</strong>到内存数据库中去。</li>
+</ol>
+<h3 id="LearnerHandler"><a href="#LearnerHandler" class="headerlink" title="LearnerHandler"></a>LearnerHandler</h3><p>为了保证整个集群内部的实时通信，同时为了确保可以控制所有的Follower/Observer服务器，Leader服务器会<strong>与每个Follower/Observer服务器建立一个TCP长连接</strong>。同时也会为每个Follower/Observer服务器创建一个名为<strong><code>LearnerHandler</code></strong>的实体。LearnerHandler是Learner服务器的管理者，主要负责Follower/Observer服务器和Leader服务器之间的一系列网络通信，包括<strong>数据同步、请求转发和Proposal提议的投票等</strong>。Leader服务器中保存了所有Follower/Observer对应的LearnerHandler。</p>
+<h2 id="Follower"><a href="#Follower" class="headerlink" title="Follower"></a><strong>Follower</strong></h2><p>　　Follower是Zookeeper集群的跟随者，其主要工作如下</p>
+<ol>
+<li>处理客户端非事务性请求（读取数据），转发事务请求给Leader服务器。</li>
+<li>参与事务请求Proposal的投票。</li>
+<li>参与Leader选举投票。</li>
+</ol>
+<p>Follower也采用了<strong>责任链模式</strong>组装的请求处理链来处理每一个客户端请求，由于不需要对事务请求的投票处理，因此Follower的请求处理链会相对简单，其处理链如下</p>
+<p><img src="/2017/08/17/zookeeper/server_role/follewer_chain.png" alt="follewer_chain"></p>
+<ol>
+<li><strong>FollowerRequestProcessor</strong>。其用作识别当前请求是否是事务请求，若是，那么Follower就会<strong>将该请求转发给Leader服务器</strong>，Leader服务器是在接收到这个事务请求后，就会将其提交到请求处理链，按照正常事务请求进行处理。</li>
+<li><strong>SendAckRequestProcessor</strong>。其承担了事务日志记录反馈的角色，在完成事务日志记录后，会向Leader服务器<strong>发送ACK消息</strong>以表明自身完成了事务日志的记录工作。</li>
+</ol>
+<h2 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h2><p>Observer充当观察者角色，观察Zookeeper集群的最新状态变化并将这些状态同步过来，其对于非事务请求可以进行独立处理，对于事务请求，则会转发给Leader服务器进行处理。<strong>Observer不会参与任何形式的投票</strong>，包括事务请求Proposal的投票和Leader选举投票。其处理链如下</p>
+<p><img src="/2017/08/17/zookeeper/server_role/observer_chain.png" alt="observer_chain"></p>
+<h2 id="集群间消息通信"><a href="#集群间消息通信" class="headerlink" title="集群间消息通信"></a>集群间消息通信</h2><p>Zookeeper的消息类型大体分为<strong>数据同步型、服务器初始化型、请求处理型和会话管理型</strong>。</p>
+<ol>
+<li><strong>数据同步型</strong>。指在Learner和Leader服务器进行数据同步时，网络通信所用到的消息，通常有<strong>DIFF、TRUNC、SNAP、UPTODATE</strong>。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">消息类型</th>
+<th style="text-align:left">发送方-&gt; 接收方</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>DIFF</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td>用于通知Learner服务器，Leader即将与其进 行DIFF方式的数据同步</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>TRUNC</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td>用于触发Learner服务器进行内存数据库的回 滚操作</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SNAP</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td>用于通知Learner服务器，Leader即将与其进 行SNAP方式的数据同步</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UPTODATE</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td>用于告知Learner服务器已经完成了数据同步， 可以幵始对外提供服务</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>服务器初始化型</strong>。指在整个集群或是某些新机器初始化时，Leader和Learner之间相互通信所使用的消息类型，常见的有OBSERVERINFO、FOLLOWERINFO、LEADERINFO、ACKEPOCH和NEWLEADER五种。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">消息类型</th>
+<th style="text-align:left">发送方-&gt;接收方</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>OBSERVERINFO</strong></td>
+<td style="text-align:left">Observer-&gt;Leader</td>
+<td style="text-align:left">用于向Leader服务器注册自己，同时向Leader服务器 表明当前Learner服务器是Observer，消息中包含 Observer 的 SID 和 ZXID</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FOLLOWERINFO</strong></td>
+<td style="text-align:left">Follower-&gt;Leader</td>
+<td style="text-align:left">用于向Leader注册自己，表明当前Learner服务器是 Follower，消息中包含Follower的SID和ZXID</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>LEADERINFO</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td style="text-align:left">Leader 收到 OBSERVERINFO 和 FOLLOWERINFO 后， 会将自身的基本信息发送给这些Learner,这个消息就 是LEADERINFO,消息中包含Leader的EPOCH值</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ACKEPOCH</strong></td>
+<td style="text-align:left">Learner -&gt; Leader</td>
+<td style="text-align:left">Learner接受到Leader发来的LEADERINFO后，会将自 己最新的ZXID和EPOCH以ACKEPOCH消息的形式发 送给Leader</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NEWLEADER</strong></td>
+<td style="text-align:left">Leader -&gt; Learner</td>
+<td style="text-align:left">Leader向Learner发送阶段性的标识消息，Leader与 Learner完成交互后，向Learner发送NEWLEADER消 息，消息包含Leader最新的ZXID</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>请求处理型</strong>。指在进行清理时，Leader和Learner服务器之间互相通信所使用的消息，常见的有REQUEST、PROPOSAL、ACK、COMMIT、INFORM和SYNC六种。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">消息类型</th>
+<th style="text-align:left">发送方-&gt;接收方</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>REQUEST</strong></td>
+<td style="text-align:left">Learner-&gt;Leader</td>
+<td style="text-align:left">请求转发消息，Learner收到事务请求后，将该请求以 REQUEST消息的形式转发给Leader服务器处理</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>PROPOSAL</strong></td>
+<td style="text-align:left">Leader-&gt;Follower</td>
+<td style="text-align:left">ZAB协议中的提议。在处理事务请求时，Leader服务器会将事 务请求以PROPOSAL消息的形式创建投票发送给集群中的所 有Follower来进行事务日志的记录</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ACK</strong></td>
+<td style="text-align:left">Follower-&gt;Leader</td>
+<td style="text-align:left">Follower接收到PROPOSAL消息后，会进行事务日志记录，如 果完成记录后，就会以ACK消息的形式反馈给Leader</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>COMMIT</strong></td>
+<td style="text-align:left">Leader &gt;Follower</td>
+<td style="text-align:left">用于通知集群中所有Follower可以进行事务请求的提交了， Leader在接收到过半的Follower服务器发来的ACK消息后，就 进入事务请求的最终提交琉程一生成COMMIT消息，告知所 有的Follower服务器进行事务请求的提交</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>INFORM</strong></td>
+<td style="text-align:left">Leader-&gt;Observer</td>
+<td style="text-align:left">通知Observer已经可以提交事务请求，同时还会在消息中携带 事务请求的内容</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SYNC</strong></td>
+<td style="text-align:left">Leader-&gt;Learner</td>
+<td style="text-align:left">通知Learner服务器已经完成了 Sync操作</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>会话管理型</strong>。指Zookeeper在进行会话管理时和Learner服务器之间互相通信所使用的消息，常见的有PING和REVALIDATE两种。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">消息类型</th>
+<th style="text-align:left">发送方-&gt;接收方</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">PING</td>
+<td style="text-align:left">Leader-&gt;Learner</td>
+<td style="text-align:left">同步Learner上的客户端心跳检测，用以激活存活的客户端。 客户端往往会随机地和任意一台服务器保持连接，因此Leader 无法直接接收到所有客户端的心跳检测，霓要委托给Learner 来保存这些客户端的心跳检测记录，Leader会定时地向Learner 发送PENG消息，Learner在接收到PING消息后，会将这段时间 内保持心跳的客户端列表，同样以PING消息的形式反馈给 Leader服务器，由Leader负责逐个对这些客户端进行会话激活</td>
+</tr>
+<tr>
+<td style="text-align:left">REVALIDATE</td>
+<td style="text-align:left">Learner -&gt; Leader</td>
+<td style="text-align:left">检猃会话是否有效，同时也会激活会话，通常发生在客户端重 连的过程中，新的服务器霓要向Leader发送REVALIDATE消息 以确定该会话是否已经超时</td>
+</tr>
+</tbody>
+</table>
+<p>参考文章：</p>
+<p><a href="http://www.cnblogs.com/leesf456/p/6139266.html" target="_blank" rel="external">【分布式】Zookeeper的服务器角色</a></p>
+<p>《从Paxos到Zookeeper分布式一致性原理与实践》</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/17/zookeeper/data_storage/" rel="next" title="Zookeeper 数据与存储">
+                <i class="fa fa-chevron-left"></i> Zookeeper 数据与存储
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/18/kafka/kafka_quickStart/" rel="prev" title="kafka QuickStart">
+                kafka QuickStart <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leader"><span class="nav-text">Leader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求处理链"><span class="nav-text">请求处理链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LearnerHandler"><span class="nav-text">LearnerHandler</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Follower"><span class="nav-text">Follower</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Observer"><span class="nav-text">Observer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群间消息通信"><span class="nav-text">集群间消息通信</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/17/zookeeper/server_role/';
+          this.page.identifier = '2017/08/17/zookeeper/server_role/';
+          this.page.title = 'Zookeeper 的服务器角色';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

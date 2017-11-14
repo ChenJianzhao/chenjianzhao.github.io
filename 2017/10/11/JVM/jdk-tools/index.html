@@ -1,0 +1,724 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1234567891011121314151617181920212223242526272829chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps1376 QuorumPeerMain1392 Jps1364 QuorumPeerMain1388 QuorumPeerMainchenjianzhaodeMacBook-Pro:zookeeper cjz$ j">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK 自带工具">
+<meta property="og:url" content="http://yoursite.com/2017/10/11/JVM/jdk-tools/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="1234567891011121314151617181920212223242526272829chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps1376 QuorumPeerMain1392 Jps1364 QuorumPeerMain1388 QuorumPeerMainchenjianzhaodeMacBook-Pro:zookeeper cjz$ j">
+<meta property="og:updated_time" content="2017-11-06T00:34:00.191Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JDK 自带工具">
+<meta name="twitter:description" content="1234567891011121314151617181920212223242526272829chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps1376 QuorumPeerMain1392 Jps1364 QuorumPeerMain1388 QuorumPeerMainchenjianzhaodeMacBook-Pro:zookeeper cjz$ j">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/11/JVM/jdk-tools/"/>
+
+
+
+
+
+  <title> JDK 自带工具 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/11/JVM/jdk-tools/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JDK 自带工具
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-11T20:00:00+08:00">
+                2017-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/10/11/JVM/jdk-tools/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/10/11/JVM/jdk-tools/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps</div><div class="line">1376 QuorumPeerMain</div><div class="line">1392 Jps</div><div class="line">1364 QuorumPeerMain</div><div class="line">1388 QuorumPeerMain</div><div class="line"></div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps -l</div><div class="line">1376 org.apache.zookeeper.server.quorum.QuorumPeerMain</div><div class="line">1393 sun.tools.jps.Jps</div><div class="line">1364 org.apache.zookeeper.server.quorum.QuorumPeerMain</div><div class="line">1388 org.apache.zookeeper.server.quorum.QuorumPeerMain</div><div class="line"></div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps -q</div><div class="line">1376</div><div class="line">1364</div><div class="line">1388</div><div class="line">1437</div><div class="line"></div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps -m</div><div class="line">1376 QuorumPeerMain ./server/zk2/conf/zoo.cfg</div><div class="line">1364 QuorumPeerMain ./server/zk1/conf/zoo.cfg</div><div class="line">1388 QuorumPeerMain ./server/zk3/conf/zoo.cfg</div><div class="line">1439 Jps -m</div><div class="line"></div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps -v</div><div class="line">1376 QuorumPeerMain -Dzookeeper.log.dir=. -Dzookeeper.root.logger=INFO,CONSOLE -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false</div><div class="line">1440 Jps -Dapplication.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home -Xms8m</div><div class="line">1364 QuorumPeerMain -Dzookeeper.log.dir=. -Dzookeeper.root.logger=INFO,CONSOLE -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false</div><div class="line">1388 QuorumPeerMain -Dzookeeper.log.dir=. -Dzookeeper.root.logger=INFO,CONSOLE -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jstat -class 1376</div><div class="line">Loaded  Bytes  Unloaded  Bytes     Time   </div><div class="line">  1843  3400.8        0     0.0      13.43</div><div class="line">  </div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jstat -gc 1376</div><div class="line"> S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   </div><div class="line">5120.0 5120.0  0.0   2048.0 33280.0  18830.1   87552.0      32.0    9984.0 9584.0 1280.0 1123.4      3    0.010   0      0.000    0.010</div><div class="line"></div><div class="line">            </div><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jstat -gcnew 1376</div><div class="line"> S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT  </div><div class="line">5120.0 5120.0    0.0 2048.0  7  15 5120.0  33280.0  18830.1      3    0.010</div></pre></td></tr></table></figure>
+<blockquote>
+<p>$ jinfo -flags  1376</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jinfo -flags  1376</div><div class="line">Attaching to process ID 1376, please wait...</div><div class="line">Debugger attached successfully.</div><div class="line">Server compiler detected.</div><div class="line">JVM version is 25.131-b11</div><div class="line">Non-default VM flags: -XX:CICompilerCount=3 -XX:InitialHeapSize=134217728 -XX:+ManagementServer -XX:MaxHeapSize=2147483648 -XX:MaxNewSize=715653120 -XX:MinHeapDeltaBytes=524288 -XX:NewSize=44564480 -XX:OldSize=89653248 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:+UseParallelGC </div><div class="line">Command line:  -Dzookeeper.log.dir=. -Dzookeeper.root.logger=INFO,CONSOLE -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false</div></pre></td></tr></table></figure>
+<blockquote>
+<p>$ jmap -heap  1376</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jmap -heap  1376</div><div class="line">Attaching to process ID 1376, please wait...</div><div class="line">Debugger attached successfully.</div><div class="line">Server compiler detected.</div><div class="line">JVM version is 25.131-b11</div><div class="line"></div><div class="line">using thread-local object allocation.</div><div class="line">Parallel GC with 4 thread(s)</div><div class="line"></div><div class="line">Heap Configuration:</div><div class="line">   MinHeapFreeRatio         = 0</div><div class="line">   MaxHeapFreeRatio         = 100</div><div class="line">   MaxHeapSize              = 2147483648 (2048.0MB)</div><div class="line">   NewSize                  = 44564480 (42.5MB)</div><div class="line">   MaxNewSize               = 715653120 (682.5MB)</div><div class="line">   OldSize                  = 89653248 (85.5MB)</div><div class="line">   NewRatio                 = 2</div><div class="line">   SurvivorRatio            = 8</div><div class="line">   MetaspaceSize            = 21807104 (20.796875MB)</div><div class="line">   CompressedClassSpaceSize = 1073741824 (1024.0MB)</div><div class="line">   MaxMetaspaceSize         = 17592186044415 MB</div><div class="line">   G1HeapRegionSize         = 0 (0.0MB)</div><div class="line"></div><div class="line">Heap Usage:</div><div class="line">PS Young Generation</div><div class="line">Eden Space:</div><div class="line">   capacity = 34078720 (32.5MB)</div><div class="line">   used     = 20645536 (19.689117431640625MB)</div><div class="line">   free     = 13433184 (12.810882568359375MB)</div><div class="line">   60.58189978966346% used</div><div class="line">From Space:</div><div class="line">   capacity = 5242880 (5.0MB)</div><div class="line">   used     = 2097184 (2.000030517578125MB)</div><div class="line">   free     = 3145696 (2.999969482421875MB)</div><div class="line">   40.0006103515625% used</div><div class="line">To Space:</div><div class="line">   capacity = 5242880 (5.0MB)</div><div class="line">   used     = 0 (0.0MB)</div><div class="line">   free     = 5242880 (5.0MB)</div><div class="line">   0.0% used</div><div class="line">PS Old Generation</div><div class="line">   capacity = 89653248 (85.5MB)</div><div class="line">   used     = 32768 (0.03125MB)</div><div class="line">   free     = 89620480 (85.46875MB)</div><div class="line">   0.03654970760233918% used</div><div class="line"></div><div class="line">3600 interned Strings occupying 290208 bytes.</div></pre></td></tr></table></figure>
+<blockquote>
+<p>$ jmap -histo  1376</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">chenjianzhaodeMacBook-Pro:zookeeper cjz$ jmap -histo  1376</div><div class="line"></div><div class="line"> num     #instances         #bytes  class name</div><div class="line">----------------------------------------------</div><div class="line">   1:         53143        7764360  [B</div><div class="line">   2:          1218        5205784  [I</div><div class="line">   3:         37349        3780904  [C</div><div class="line">   4:         26463         635112  java.lang.String</div><div class="line">   5:         13820         442240  org.apache.zookeeper.server.quorum.QuorumPacket</div><div class="line">   6:         10474         401088  [Ljava.lang.Object;</div><div class="line">   7:         11666         373312  java.util.concurrent.locks.AbstractQueuedSynchronizer$Node</div><div class="line">   8:          6889         330672  java.util.HashMap</div><div class="line">   9:         10310         329920  java.util.HashMap$Node</div><div class="line">  10:          3844         276768  org.apache.zookeeper.server.Request</div><div class="line">  11:          8330         266560  java.io.DataInputStream</div><div class="line">  12:          8320         266240  java.io.ByteArrayInputStream</div><div class="line">  13:         10768         258432  java.util.ArrayList</div><div class="line">  14:          2895         231656  [Ljava.util.HashMap$Node;</div><div class="line">  15:          2037         230200  java.lang.Class</div><div class="line">  16:          5053         202120  java.util.HashMap$KeyIterator</div><div class="line">  17:          3342         187152  org.apache.zookeeper.server.DataTree$ProcessTxnResult</div><div class="line">  18:          3843         184464  org.apache.zookeeper.txn.TxnHeader</div><div class="line">  19:          5755         184160  java.util.ArrayList$Itr</div><div class="line">  20:          3371         161808  java.nio.HeapByteBuffer</div><div class="line">  21:          4995         119880  java.util.concurrent.LinkedBlockingQueue$Node</div><div class="line">  22:          3348         107136  java.io.DataOutputStream</div><div class="line">  23:          6622         105952  java.util.HashSet</div><div class="line">  24:          2370          94800  java.util.ArrayList$SubList</div><div class="line">  25:          2370          94800  java.util.ArrayList$SubList$1</div><div class="line">  26:          3856          92544  java.util.LinkedList$Node</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/10/JVM/GC/" rel="next" title="Java GC">
+                <i class="fa fa-chevron-left"></i> Java GC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/13/Java_concurrency/thread_security/" rel="prev" title="基础知识">
+                基础知识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/10/11/JVM/jdk-tools/';
+          this.page.identifier = '2017/10/11/JVM/jdk-tools/';
+          this.page.title = 'JDK 自带工具';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

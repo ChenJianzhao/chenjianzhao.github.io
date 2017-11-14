@@ -1,0 +1,902 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Leader选举概述Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集群中的一台服务器出现以下两种情况之一时，需要进入Leader选举。
+
+服务器初始化启动。
+服务器运行期间无法和Leader保持连接。
+
+下面就两种情况进行分析讲解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper 的 Leader 选举">
+<meta property="og:url" content="http://yoursite.com/2017/08/10/zookeeper/election/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="Leader选举概述Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集群中的一台服务器出现以下两种情况之一时，需要进入Leader选举。
+
+服务器初始化启动。
+服务器运行期间无法和Leader保持连接。
+
+下面就两种情况进行分析讲解。">
+<meta property="og:image" content="http://yoursite.com/2017/08/10/zookeeper/election/vote.png">
+<meta property="og:image" content="http://yoursite.com/2017/08/10/zookeeper/election/fastLeaderElection.png">
+<meta property="og:updated_time" content="2017-08-14T11:44:01.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper 的 Leader 选举">
+<meta name="twitter:description" content="Leader选举概述Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集群中的一台服务器出现以下两种情况之一时，需要进入Leader选举。
+
+服务器初始化启动。
+服务器运行期间无法和Leader保持连接。
+
+下面就两种情况进行分析讲解。">
+<meta name="twitter:image" content="http://yoursite.com/2017/08/10/zookeeper/election/vote.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/10/zookeeper/election/"/>
+
+
+
+
+
+  <title> Zookeeper 的 Leader 选举 | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/zookeeper/election/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper 的 Leader 选举
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T18:00:00+08:00">
+                2017-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/10/zookeeper/election/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/10/zookeeper/election/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Leader选举概述"><a href="#Leader选举概述" class="headerlink" title="Leader选举概述"></a>Leader选举概述</h2><p>Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集群中的一台服务器出现以下两种情况之一时，需要进入Leader选举。</p>
+<ol>
+<li>服务器初始化启动。</li>
+<li>服务器运行期间无法和Leader保持连接。</li>
+</ol>
+<p>下面就两种情况进行分析讲解。</p>
+<a id="more"></a>
+<h2 id="服务器启动时期的Leader选举"><a href="#服务器启动时期的Leader选举" class="headerlink" title="服务器启动时期的Leader选举"></a>服务器启动时期的Leader选举</h2><p>若进行Leader选举，则至少需要两台机器，这里选取3台机器组成的服务器集群为例。在集群初始化阶段，当有一台服务器Server1启动时，其单独无法进行和完成Leader选举，当第二台服务器Server2启动时，此时两台机器可以相互通信，每台机器都试图找到Leader，于是进入Leader选举过程。选举过程如下：</p>
+<ol>
+<li><p><strong>每个Server发出一个投票</strong>。由于是初始情况，Server1和Server2都会将自己作为Leader服务器来进行投票，每次投票会包含所推举的服务器的myid和ZXID，使用 (myid, ZXID) 来表示</p>
+<blockquote>
+<p>此时Server1的投票为(1, 0)，Server2的投票为(2, 0)，然后各自将这个投票发给集群中其他机器。</p>
+</blockquote>
+</li>
+<li><p><strong>接受来自各个服务器的投票</strong>。集群的每个服务器收到投票后，首先判断该投票的有效性，如：检查是否是本轮投票、是否来自LOOKING状态的服务器。</p>
+</li>
+<li><p><strong>处理投票</strong>。针对每一个投票，服务器都需要将别人的投票和自己的投票进行PK，PK规则如下</p>
+<ul>
+<li>优先检查ZXID。ZXID比较大的服务器优先作为Leader。</li>
+<li>如果ZXID相同，那么就比较myid。myid较大的服务器作为Leader服务器。</li>
+</ul>
+<blockquote>
+<p>对于Server1而言，它的投票是(1, 0)，接收Server2的投票为(2, 0)，首先会比较两者的ZXID，均为0，再比较myid，此时Server2的myid最大，于是更新自己的投票为(2, 0)，然后重新投票，对于Server2而言，其无须更新自己的投票，只是再次向集群中所有机器发出上一次投票信息即可。</p>
+</blockquote>
+</li>
+<li><p><strong>统计投票</strong>。每次投票后，服务器都会统计投票信息，判断是否已经有过半机器接受到相同的投票信息，对于Server1、Server2而言，都统计出集群中已经有两台机器接受了(2, 0)的投票信息，此时便认为已经选出了Leader。</p>
+</li>
+<li><p><strong>改变服务器状态</strong>。一旦确定了Leader，每个服务器就会更新自己的状态，如果是Follower，那么就变更为FOLLOWING，如果是Leader，就变更为LEADING。</p>
+</li>
+</ol>
+<h2 id="服务器运行时期的Leader选举"><a href="#服务器运行时期的Leader选举" class="headerlink" title="服务器运行时期的Leader选举"></a>服务器运行时期的Leader选举</h2><p>在Zookeeper运行期间，Leader与非Leader服务器各司其职，即便当有非Leader服务器宕机或新加入，此时也不会影响Leader，但是一旦Leader服务器挂了，那么整个集群将暂停对外服务，进入新一轮Leader选举，其过程和启动时期的Leader选举过程基本一致。假设正在运行的有Server1、Server2、Server3三台服务器，当前Leader是Server2，若某一时刻Leader挂了，此时便开始Leader选举。选举过程如下</p>
+<ol>
+<li><strong>变更状态</strong>。Leader挂后，余下的非Observer服务器都会讲自己的服务器状态变更为LOOKING，然后开始进入Leader选举过程。</li>
+<li><strong>每个Server会发出一个投票</strong>。在运行期间，每个服务器上的ZXID可能不同，此时假定Server1的ZXID为123，Server3的ZXID为122；在第一轮投票中，Server1和Server3都会投自己，产生投票(1, 123)，(3, 122)，然后各自将投票发送给集群中所有机器。</li>
+<li><strong>接收来自各个服务器的投票</strong>。与启动时过程相同。</li>
+<li><strong>处理投票</strong>。与启动时过程相同，此时，Server1将会成为Leader。</li>
+<li><strong>统计投票</strong>。与启动时过程相同。</li>
+<li><strong>改变服务器的状态</strong>。与启动时过程相同。</li>
+</ol>
+<h2 id="Leader-选举算法分析"><a href="#Leader-选举算法分析" class="headerlink" title="Leader 选举算法分析"></a>Leader 选举算法分析</h2><p>在3.4.0后的Zookeeper的版本只保留了TCP版本的 <strong>FastLeaderElection 选举算法</strong>。当一台机器进入Leader选举时，当前集群可能会处于以下两种状态</p>
+<ul>
+<li>集群中已经存在Leader。</li>
+<li>集群中不存在Leader。</li>
+</ul>
+<p>对于集群中已经存在Leader而言，此种情况一般都是某台机器启动得较晚，在其启动之前，集群已经在正常工作，对这种情况，该机器试图去选举Leader时，会被告知当前服务器的Leader信息，对于该机器而言，仅仅需要和Leader机器建立起连接，并进行状态同步即可。</p>
+<p>而在集群中不存在Leader情况下则会相对复杂，<strong>其步骤如下</strong>：</p>
+<ol>
+<li><strong>第一次投票</strong>。无论哪种导致进行Leader选举，集群的所有机器都处于试图选举出一个Leader的状态，即LOOKING状态，LOOKING机器会向所有其他机器发送消息，该消息称为投票。投票中包含了SID（服务器的唯一标识）和ZXID（事务ID），(SID, ZXID) 形式来标识一次投票信息。假定Zookeeper由5台机器组成，SID分别为1、2、3、4、5，ZXID分别为9、9、9、8、8，并且此时SID为2的机器是Leader机器，某一时刻，1、2所在机器出现故障，因此集群开始进行Leader选举。在第一次投票时，每台机器都会将自己作为投票对象，于是SID为3、4、5的机器投票情况分别为(3, 9)，(4, 8)， (5, 8)。</li>
+<li><strong>变更投票</strong>。每台机器发出投票后，也会收到其他机器的投票，每台机器会根据一定规则来处理收到的其他机器的投票，并以此来决定是否需要变更自己的投票，这个规则也是整个Leader选举算法的核心所在，其中术语描述如下</li>
+</ol>
+<p>　　　　<strong>· vote_sid</strong>：接收到的投票中所推举Leader服务器的SID。</p>
+<p>　　　　<strong>· vote_zxid</strong>：接收到的投票中所推举Leader服务器的ZXID。</p>
+<p>　　　　<strong>· self_sid</strong>：当前服务器自己的SID。</p>
+<p>　　　　<strong>· self_zxid</strong>：当前服务器自己的ZXID。</p>
+<p>　　每次对收到的投票的处理，都是对(vote_sid, vote_zxid)和(self_sid, self_zxid)对比的过程。</p>
+<p>　　　　规则一：如果vote_zxid大于self_zxid，就认可当前收到的投票，并再次将该投票发送出去。</p>
+<p>　　　　规则二：如果vote_zxid小于self_zxid，那么坚持自己的投票，不做任何变更。</p>
+<p>　　　　规则三：如果vote_zxid等于self_zxid，那么就对比两者的SID，如果vote_sid大于self_sid，那么就认可当前收到的投票，并再次将该投票发送出去。</p>
+<p>　　　　规则四：如果vote_zxid等于self_zxid，并且vote_sid小于self_sid，那么坚持自己的投票，不做任何变更。</p>
+<p>　　结合上面规则，给出下面的集群变更过程。</p>
+<p><img src="/2017/08/10/zookeeper/election/vote.png" alt="vote"></p>
+<ol>
+<li><strong>确定Leader</strong>。经过第二轮投票后，集群中的每台机器都会再次接收到其他机器的投票，然后开始统计投票，如果一台机器收到了<strong>超过半数</strong>的相同投票，那么这个投票对应的SID机器即为Leader。此时Server3将成为Leader。</li>
+</ol>
+<p>　　由上面规则可知，通常那台服务器上的数据越新（ZXID会越大），其成为Leader的可能性越大，也就越能够保证数据的恢复。如果ZXID相同，则SID越大机会越大。</p>
+<h2 id="Leader选举实现细节"><a href="#Leader选举实现细节" class="headerlink" title="Leader选举实现细节"></a>Leader选举实现细节</h2><h3 id="服务器状态"><a href="#服务器状态" class="headerlink" title="服务器状态"></a>服务器状态</h3><ul>
+<li>服务器具有四种状态，分别是 LOOKING、FOLLOWING、LEADING、OBSERVING<ul>
+<li><strong>LOOKING</strong>：寻找Leader状态。当服务器处于该状态时，它会认为当前集群中没有Leader，因此需要进入Leader选举状态。</li>
+<li><strong>FOLLOWING</strong>：跟随者状态。表明当前服务器角色是Follower。</li>
+<li><strong>LEADING</strong>：领导者状态。表明当前服务器角色是Leader。</li>
+<li><strong>OBSERVING</strong>：观察者状态。表明当前服务器角色是Observer。</li>
+</ul>
+</li>
+</ul>
+<h3 id="投票数据结构"><a href="#投票数据结构" class="headerlink" title="投票数据结构"></a><strong>投票数据结构</strong></h3><p>每个投票中包含了两个最基本的信息，所推举服务器的SID和ZXID，投票（Vote）在Zookeeper中包含字段如下</p>
+<ul>
+<li><strong>id</strong>：被推举的Leader的SID。</li>
+<li><strong>zxid</strong>：被推举的Leader事务ID。</li>
+<li><strong>electionEpoch</strong>：逻辑时钟，用来判断多个投票是否在同一轮选举周期中，该值在服务端是一个自增序列，每次进入新一轮的投票后，都会对该值进行加1操作。</li>
+<li><strong>peerEpoch</strong>：被推举的Leader的epoch。</li>
+<li><strong>state</strong>：当前服务器的状态。</li>
+</ul>
+<h3 id="QuorumCnxManager：网络I-O"><a href="#QuorumCnxManager：网络I-O" class="headerlink" title="QuorumCnxManager：网络I/O"></a><strong>QuorumCnxManager：网络I/O</strong></h3><p>每台服务器在启动的过程中，会启动一个 <strong>QuorumPeerManager</strong>，负责各台服务器之间的底层Leader选举过程中的网络通信。</p>
+<ol>
+<li><strong>消息队列</strong>。<strong>QuorumCnxManager</strong> 内部维护了一系列的队列，用来保存接收到的、待发送的消息以及消息的发送器，除接收队列以外，其他队列都按照SID分组形成队列集合，如一个集群中除了自身还有3台机器，那么就会为这3台机器分别创建一个发送队列，互不干扰。<ul>
+<li><strong>recvQueue</strong>：消息接收队列，用于存放那些从其他服务器接收到的消息。</li>
+<li><strong>queueSendMap</strong>：消息发送队列，用于保存那些待发送的消息，按照SID进行分组。</li>
+<li><strong>senderWorkerMap</strong>：发送器集合，每个SenderWorker消息发送器，都对应一台远程Zookeeper服务器，负责消息的发送，也按照SID进行分组。</li>
+<li><strong>lastMessageSent</strong>：最近发送过的消息，为每个SID保留最近发送过的一个消息。</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p><strong>建立连接</strong>。</p>
+<ul>
+<li>为了能够相互投票，Zookeeper集群中的所有机器都需要两两建立起网络连接。</li>
+<li>QuorumCnxManager在启动时会创建一个ServerSocket来监听Leader选举的通信端口(默认为3888)。开启监听后，Zookeeper能够不断地接收到来自其他服务器的创建连接请求，在接收到其他服务器的TCP连接请求时，会进行处理。</li>
+<li>为了避免两台机器之间重复地创建TCP连接，Zookeeper只允许SID大的服务器主动和其他机器建立连接，否则断开连接。在接收到创建连接请求后，服务器通过对比自己和远程服务器的SID值来判断是否接收连接请求，如果当前服务器发现自己的SID更大，那么会断开当前连接，然后自己主动和远程服务器建立连接。一旦连接建立，就会根据远程服务器的SID来创建相应的消息发送器 SendWorker 和消息接收器 RecvWorker，并启动。</li>
+</ul>
+<p>​</p>
+</li>
+<li><p><strong>消息接收与发送</strong>。</p>
+<ul>
+<li><strong>消息接收</strong>：由消息接收器<strong>RecvWorker</strong>负责，由于Zookeeper为每个远程服务器都分配一个单独的<strong>RecvWorker</strong>，因此，每个<strong>RecvWorker</strong>只需要不断地从这个TCP连接中读取消息，并将其保存到recvQueue队列中。</li>
+<li><strong>消息发送</strong>：由于Zookeeper为每个远程服务器都分配一个单独的<strong>SendWorker</strong>，因此，每个SendWorker只需要不断地从对应的消息发送队列中获取出一个消息发送即可，同时将这个消息放入<strong>lastMessageSent</strong>中。在SendWorker中，一旦Zookeeper发现针对当前服务器的消息发送队列为空，那么此时需要从 <strong>lastMessageSent</strong>中取出一个最近发送过的消息来进行再次发送，这是为了解决接收方在消息接收前或者接收到消息后服务器挂了，导致消息尚未被正确处理。同时，Zookeeper能够保证接收方在处理消息时，会对重复消息进行正确的处理。</li>
+</ul>
+</li>
+</ol>
+<h2 id="FastLeaderElection：选举算法核心"><a href="#FastLeaderElection：选举算法核心" class="headerlink" title="FastLeaderElection：选举算法核心"></a>FastLeaderElection：选举算法核心</h2><p>几个概念</p>
+<ul>
+<li><strong>外部投票</strong>：特指其他服务器发来的投票。 </li>
+<li><strong>内部投票</strong>：服务器自身当前的投票。</li>
+<li><strong>选举轮次</strong>：Zookeeper服务器Leader选举的轮次，即 logicalclock。</li>
+<li><strong>PK</strong>：对内部投票和外部投票进行对比来确定是否需要变更内部投票。</li>
+</ul>
+<h2 id="选票管理"><a href="#选票管理" class="headerlink" title="选票管理"></a>选票管理</h2><ul>
+<li><strong>sendqueue</strong>：选票发送队列，用于保存待发送的选票。</li>
+<li><strong>recvqueue</strong>：选票接收队列，用于保存接收到的外部投票。</li>
+<li><strong>WorkerReceiver</strong>：选票接收器。其会不断地从QuorumCnxManager中获取其他服务器发来的选举消息，并将其转换成一个选票，然后保存到recvqueue中，在选票接收过程中，如果发现该外部选票的选举轮次小于当前服务器的，那么<strong>忽略该外部投票</strong>，同时立即发送自己的内部投票。</li>
+<li><strong>WorkerSender</strong>：选票发送器，不断地从sendqueue中获取待发送的选票，并将其传递到底层QuorumCnxManager中。</li>
+</ul>
+<p><img src="/2017/08/10/zookeeper/election/fastLeaderElection.png" alt="fastLeaderElection"></p>
+<p>上图展示了 FastLeaderElection 模块是如何与底层网络I/O进行交互的。Leader选举的基本流程如下：</p>
+<ol>
+<li><strong>自增选举轮次</strong>。Zookeeper规定所有有效的投票都必须在同一轮次中，在开始新一轮投票时，会首先对logicalclock进行自增操作。</li>
+<li><strong>初始化选票</strong>。在开始进行新一轮投票之前，每个服务器都会初始化自身的选票，并且在初始化阶段，每台服务器都会将自己推举为Leader。</li>
+<li><strong>发送初始化选票</strong>。完成选票的初始化后，服务器就会发起第一次投票。Zookeeper会将刚刚初始化好的选票放入sendqueue中，由发送器WorkerSender负责发送出去。</li>
+<li><strong>接收外部投票</strong>。每台服务器会不断地从recvqueue队列中获取外部选票。如果服务器发现无法获取到任何外部投票，那么就会立即<strong>确认自己是否和集群中其他服务器保持着有效的连接</strong>，如果没有连接，则马上建立连接，如果已经建立了连接，则再次发送自己当前的内部投票。</li>
+<li><strong>判断选举轮次</strong>。在发送完初始化选票之后，接着开始处理外部投票。在处理外部投票时，会根据选举轮次来进行不同的处理。<ul>
+<li><strong>外部投票的选举轮次大于内部投票</strong>。若服务器自身的选举轮次落后于该外部投票对应服务器的选举轮次，那么就会立即更新自己的选举轮次(logicalclock)，并且清空所有已经收到的投票，然后使用初始化的投票来进行PK以确定是否变更内部投票。最终再将内部投票发送出去。</li>
+<li><strong>外部投票的选举轮次小于内部投票</strong>。若服务器接收的外选票的选举轮次落后于自身的选举轮次，那么Zookeeper就会直接忽略该外部投票，不做任何处理，并返回步骤4。</li>
+<li><strong>外部投票的选举轮次等于内部投票</strong>。此时可以开始进行选票PK。</li>
+</ul>
+</li>
+<li><strong>选票PK</strong>。在进行选票PK时，符合任意一个条件就需要变更投票。<ul>
+<li>若外部投票中推举的Leader服务器的选举轮次大于内部投票，那么需要变更投票。</li>
+<li>若选举轮次一致，那么就对比两者的ZXID，若外部投票的ZXID大，那么需要变更投票。</li>
+<li>若两者的ZXID一致，那么就对比两者的SID，若外部投票的SID大，那么就需要变更投票。</li>
+</ul>
+</li>
+<li><strong>变更投票</strong>。经过PK后，若确定了外部投票优于内部投票，那么就变更投票，即使用外部投票的选票信息来覆盖内部投票，变更完成后，再次将这个变更后的内部投票发送出去。</li>
+<li><strong>选票归档</strong>。无论是否变更了投票，都会将刚刚收到的那份外部投票放入选票集合recvset中进行归档。recvset用于记录当前服务器在本轮次的Leader选举中收到的所有外部投票（按照服务队的SID区别，如{(1, vote1), (2, vote2)…}）。</li>
+<li><strong>统计投票</strong>。完成选票归档后，就可以开始统计投票，统计投票是为了统计集群中是否已经有过半的服务器认可了当前的内部投票，如果确定已经有过半服务器认可了该投票，则终止投票。否则返回步骤4。</li>
+<li><strong>更新服务器状态</strong>。若已经确定可以终止投票，那么就开始更新服务器状态，服务器首选判断当前被过半服务器认可的投票所对应的Leader服务器是否是自己，若是自己，则将自己的服务器状态更新为LEADING，若不是，则根据具体情况来确定自己是FOLLOWING或是OBSERVING。</li>
+</ol>
+<p><strong>以上10个步骤就是FastLeaderElection的核心，其中步骤4-9会经过几轮循环，直到有Leader选举产生。</strong></p>
+<p>参考文章：</p>
+<p><a href="http://www.cnblogs.com/leesf456/p/6107600.html" target="_blank" rel="external">【分布式】Zookeeper的Leader选举</a></p>
+<p>《从Paxos到Zookeeper分布式一致性原理与实践》</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/09/zookeeper/paxos-zab/" rel="next" title="Zookeeper 与 Paxos">
+                <i class="fa fa-chevron-left"></i> Zookeeper 与 Paxos
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/12/zookeeper/scenario/" rel="prev" title="Zookeeper典型应用场景">
+                Zookeeper典型应用场景 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leader选举概述"><span class="nav-text">Leader选举概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器启动时期的Leader选举"><span class="nav-text">服务器启动时期的Leader选举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器运行时期的Leader选举"><span class="nav-text">服务器运行时期的Leader选举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leader-选举算法分析"><span class="nav-text">Leader 选举算法分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leader选举实现细节"><span class="nav-text">Leader选举实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器状态"><span class="nav-text">服务器状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#投票数据结构"><span class="nav-text">投票数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QuorumCnxManager：网络I-O"><span class="nav-text">QuorumCnxManager：网络I/O</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FastLeaderElection：选举算法核心"><span class="nav-text">FastLeaderElection：选举算法核心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选票管理"><span class="nav-text">选票管理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/10/zookeeper/election/';
+          this.page.identifier = '2017/08/10/zookeeper/election/';
+          this.page.title = 'Zookeeper 的 Leader 选举';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

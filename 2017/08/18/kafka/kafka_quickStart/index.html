@@ -1,0 +1,820 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Step 1: 下载代码下载0.10.0.0版本并且解压它。
+12$ tar -xzf kafka_2.11-0.10.0.0.tgz $ cd kafka_2.11-0.10.0.0
+Step 2: 启动服务运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。
+123$ ./bin/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka QuickStart">
+<meta property="og:url" content="http://yoursite.com/2017/08/18/kafka/kafka_quickStart/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="Step 1: 下载代码下载0.10.0.0版本并且解压它。
+12$ tar -xzf kafka_2.11-0.10.0.0.tgz $ cd kafka_2.11-0.10.0.0
+Step 2: 启动服务运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。
+123$ ./bin/">
+<meta property="og:updated_time" content="2017-11-08T00:27:09.397Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kafka QuickStart">
+<meta name="twitter:description" content="Step 1: 下载代码下载0.10.0.0版本并且解压它。
+12$ tar -xzf kafka_2.11-0.10.0.0.tgz $ cd kafka_2.11-0.10.0.0
+Step 2: 启动服务运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。
+123$ ./bin/">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/18/kafka/kafka_quickStart/"/>
+
+
+
+
+
+  <title> kafka QuickStart | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/18/kafka/kafka_quickStart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                kafka QuickStart
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-18T20:30:00+08:00">
+                2017-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/18/kafka/kafka_quickStart/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/18/kafka/kafka_quickStart/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="Step-1-下载代码"><a href="#Step-1-下载代码" class="headerlink" title="Step 1: 下载代码"></a>Step 1: 下载代码</h4><p>下载0.10.0.0版本并且解压它。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ tar -xzf kafka_2.11-0.10.0.0.tgz </div><div class="line">$ cd kafka_2.11-0.10.0.0</div></pre></td></tr></table></figure>
+<h4 id="Step-2-启动服务"><a href="#Step-2-启动服务" class="headerlink" title="Step 2: 启动服务"></a>Step 2: 启动服务</h4><p>运行kafka需要使用Zookeeper，所以你需要先启动Zookeeper，如果你没有Zookeeper，你可以使用kafka自带打包和配置好的Zookeeper。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ./bin/zookeeper-server-start.sh config/zookeeper.properties</div><div class="line">[2013-04-22 15:01:37,495] INFO Reading configuration from: config/zookeeper.properties (org.apache.zookeeper.server.quorum.QuorumPeerConfig)</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>现在启动kafka服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-server-start.sh config/server.properties</div><div class="line">[2013-04-22 15:01:47,028] INFO Verifying properties (kafka.utils.VerifiableProperties)</div><div class="line">[2013-04-22 15:01:47,051] INFO Property socket.send.buffer.bytes is overridden to 1048576 (kafka.utils.VerifiableProperties)</div><div class="line">...</div></pre></td></tr></table></figure>
+<h4 id="Step-3-创建一个主题-topic"><a href="#Step-3-创建一个主题-topic" class="headerlink" title="Step 3: 创建一个主题(topic)"></a>Step 3: 创建一个主题(topic)</h4><p>创建一个名为“test”的Topic，只有一个分区和一个备份：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</div></pre></td></tr></table></figure>
+<p>创建好之后，可以通过运行以下命令，查看已创建的topic信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-topics.sh --list --zookeeper localhost:2181</div><div class="line">test</div></pre></td></tr></table></figure>
+<p>或者，除了手工创建topic外，你也可以配置你的broker，当发布一个不存在的topic时自动创建topic。</p>
+<h4 id="Step-4-发送消息"><a href="#Step-4-发送消息" class="headerlink" title="Step 4: 发送消息"></a>Step 4: 发送消息</h4><p>Kafka提供了一个命令行的工具，可以从输入文件或者命令行中读取消息并发送给Kafka集群。每一行是一条消息。<br>运行producer（生产者）,然后在控制台输入几条消息到服务器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test </div><div class="line">This is a message</div><div class="line">This is another message</div></pre></td></tr></table></figure>
+<h4 id="Step-5-消费消息"><a href="#Step-5-消费消息" class="headerlink" title="Step 5: 消费消息"></a>Step 5: 消费消息</h4><p>Kafka也提供了一个消费消息的命令行工具，将存储的信息输出出来。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning</div><div class="line">This is a message</div><div class="line">This is another message</div></pre></td></tr></table></figure>
+<p>如果你有2台不同的终端上运行上述命令，那么当你在运行生产者时，消费者就能消费到生产者发送的消息。<br>所有的命令行工具有很多的选项，你可以查看文档来了解更多的功能。</p>
+<h4 id="Step-6-设置多个broker集群"><a href="#Step-6-设置多个broker集群" class="headerlink" title="Step 6: 设置多个broker集群"></a>Step 6: 设置多个broker集群</h4><p>到目前，我们只是单一的运行一个broker,，没什么意思。对于Kafka,一个broker仅仅只是一个集群的大小, 所有让我们多设几个broker.<br>首先为每个broker创建一个配置文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">$ mkdir server/server1/log</div><div class="line">$ mkdir server/server1/config</div><div class="line"></div><div class="line">$ cp config/server.properties server/server1/config/server.properties  </div><div class="line">$ cp -R server1/ server2/</div><div class="line">$ cp -R server1/ server3/</div></pre></td></tr></table></figure>
+<p>现在编辑这些新建的文件，设置以下属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># server1/config/server.properties: </div><div class="line">    broker.id=1 </div><div class="line">    listeners=PLAINTEXT://:9092 </div><div class="line">    log.dir=/Users/cjz/Documents/devtool/kafka_2.11-0.11.0.0/server/server1/log/kafka-log</div><div class="line"></div><div class="line"># server2/config/server.properties: </div><div class="line">    broker.id=2 </div><div class="line">    listeners=PLAINTEXT://:9093</div><div class="line">    log.dir=/Users/cjz/Documents/devtool/kafka_2.11-0.11.0.0/server/server2/log/kafka-log</div><div class="line">    </div><div class="line"># server3/config/server.properties: </div><div class="line">	broker.id=3 </div><div class="line">    listeners=PLAINTEXT://:9094 </div><div class="line">    log.dir=/Users/cjz/Documents/devtool/kafka_2.11-0.11.0.0/server/server3/log/kafka-log</div></pre></td></tr></table></figure>
+<p><code>broker.id</code>是集群中每个节点的唯一且永久的名称，我们修改端口和日志分区是因为我们现在在同一台机器上运行，我们要防止broker在同一端口上注册和覆盖对方的数据。</p>
+<p>我们已经运行了zookeeper和刚才的一个kafka节点，所有我们只需要在启动2个新的kafka节点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; ./bin/kafka-server-start.sh server/server1/config/server.properties</div><div class="line">... </div><div class="line">&gt; ./bin/kafka-server-start.sh server/server2/config/server.properties</div><div class="line">...</div><div class="line">&gt; ./bin/kafka-server-start.sh server/server3/config/server.properties</div></pre></td></tr></table></figure>
+<p>现在，我们创建一个新topic，把备份设置为：3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic</div></pre></td></tr></table></figure>
+<p>好了，现在我们已经有了一个集群了，我们怎么知道每个集群在做什么呢？运行命令“describe topics”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic</div><div class="line">Topic:my-replicated-topic	PartitionCount:1	ReplicationFactor:3	Configs:</div><div class="line">	Topic: my-replicated-topic	Partition: 0	Leader: 3	Replicas: 3,1,2	Isr: 3,1,2</div></pre></td></tr></table></figure>
+<p>这是一个解释输出，第一行是所有分区的摘要，每一个线提供一个分区信息，因为我们只有一个分区，所有只有一条线。</p>
+<ul>
+<li>“leader”：该节点负责所有指定分区的读和写，每个节点的领导都是随机选择的。</li>
+<li>“replicas”:备份的节点，无论该节点是否是leader或者目前是否还活着，只是显示。</li>
+<li>“isr”：备份节点的集合，也就是活着的节点集合。</li>
+</ul>
+<p>让我们来发布一些信息在新的topic上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic</div><div class="line">&gt;my test message 1</div><div class="line">&gt;my test message 2</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<p>现在，消费这些消息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-consumer.sh --from-beginning --zookeeper localhost:2181 --topic my-replicated-topic</div><div class="line">my test message 1</div><div class="line">my test message 2</div></pre></td></tr></table></figure>
+<p>我们要测试集群的容错，kill掉leader，Broker1作为当前的leader，也就是kill掉Broker1。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; ps | grep server-1.properties</div><div class="line">7564 ttys002    0:15.91 /System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java... </div><div class="line">&gt; kill -9 7564</div></pre></td></tr></table></figure>
+<p>备份节点之一成为新的leader，而broker1已经不在同步备份集合里了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic</div><div class="line">Topic:my-replicated-topic    PartitionCount:1    ReplicationFactor:3    Configs:</div><div class="line">Topic: my-replicated-topic    Partition: 0    Leader: 2    Replicas: 1,2,0    Isr: 2,0</div></pre></td></tr></table></figure>
+<p>但是，消息仍然没丢：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; bin/kafka-console-consumer.sh --zookeeper localhost:2181 --from-beginning --topic my-replicated-topic</div><div class="line">...</div><div class="line">my test message 1</div><div class="line">my test message 2</div><div class="line">^C</div></pre></td></tr></table></figure>
+<h4 id="Step-7-使用-Kafka-Connect-来-导入-导出-数据"><a href="#Step-7-使用-Kafka-Connect-来-导入-导出-数据" class="headerlink" title="Step 7: 使用 Kafka Connect 来 导入/导出 数据"></a>Step 7: 使用 Kafka Connect 来 导入/导出 数据</h4><p>从控制台写入和写回数据是一个方便的开始，但你可能想要从其他来源导入或导出数据到其他系统。对于大多数系统，可以使用kafka Connect，而不需要编写自定义集成代码。Kafka Connect是导入和导出数据的一个工具。它是一个可扩展的工具，运行连接器，实现与自定义的逻辑的外部系统交互。在这个快速入门里，我们将看到如何运行Kafka Connect用简单的连接器从文件导入数据到Kafka主题，再从Kafka主题导出数据到文件，首先，我们首先创建一些种子数据用来测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo -e &quot;foo\nbar&quot; &gt; test.txt</div></pre></td></tr></table></figure>
+<p>接下来，我们开始2个连接器运行在独立的模式，这意味着它们运行在一个单一的，本地的，专用的进程。我们提供3个配置文件作为参数。第一个始终是kafka Connect进程，如kafka broker连接和数据库序列化格式，剩下的配置文件每个指定的连接器来创建，这些文件包括一个独特的连接器名称，连接器类来实例化和任何其他配置要求的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; bin/connect-standalone.sh config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties</div></pre></td></tr></table></figure>
+<p>这是示例的配置文件，使用默认的本地集群配置并创建了2个连接器：第一个是<strong>导入连接器</strong>，从导入文件中读取并发布到Kafka主题，第二个是<strong>导出连接器</strong>，从kafka主题读取消息输出到外部文件，在启动过程中，你会看到一些日志消息，包括一些连接器实例化的说明。</p>
+<p>一旦kafka Connect进程已经开始，<strong>导入连接器</strong>应该从 <code>test.txt</code> 读取消息，写入到 topic <code>connect-test</code>， <strong>导出连接器</strong>从主题 <code>connect-test</code> 写入到文件 <code>test.sink.txt</code>。</p>
+<p> 我们可以通过验证输出文件的内容来验证数据数据已经全部导出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cat test.sink.txt</div><div class="line"> foo</div><div class="line"> bar</div></pre></td></tr></table></figure>
+<p>注意，导入的数据也已经在Kafka主题 <code>connect-test</code>里,所以我们可以使用该命令查看这个主题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic connect-test --from-beginning</div><div class="line">Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].</div><div class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;foo&quot;&#125;</div><div class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;bar&quot;&#125;</div></pre></td></tr></table></figure>
+<p>连接器继续处理数据，因此我们可以添加数据到文件并通过管道移动：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo &quot;Another line&quot; &gt;&gt; test.txt</div></pre></td></tr></table></figure>
+<p>你应该会看到出现在消费者控台输出一行信息并导出到文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;foo&quot;&#125;</div><div class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;bar&quot;&#125;</div><div class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;Another line&quot;&#125;</div></pre></td></tr></table></figure>
+<h4 id="Step-8-使用Kafka-Stream来处理数据"><a href="#Step-8-使用Kafka-Stream来处理数据" class="headerlink" title="Step 8: 使用Kafka Stream来处理数据"></a>Step 8: 使用Kafka Stream来处理数据</h4><p>Kafka Stream是kafka的客户端库，用于实时流处理和分析存储在kafka broker的数据，这个快速入门示例将演示如何运行一个流应用程序。一个WordCountDemo的例子（为了方便阅读，使用的是java8 lambda表达式）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">KTable wordCounts = textLines</div><div class="line">    <span class="comment">// Split each text line, by whitespace, into words.</span></div><div class="line">    .flatMapValues(value -&gt; Arrays.asList(value.toLowerCase().split(<span class="string">"W+"</span>)))</div><div class="line"></div><div class="line">    <span class="comment">// Ensure the words are available as record keys for the next aggregate operation.</span></div><div class="line">    .map((key, value) -&gt; <span class="keyword">new</span> KeyValue&lt;&gt;(value, value))</div><div class="line"></div><div class="line">    <span class="comment">// Count the occurrences of each word (record key) and store the results into a table named "Counts".</span></div><div class="line">    .countByKey(<span class="string">"Counts"</span>)</div></pre></td></tr></table></figure>
+<p>它实现了wordcount算法，从输入的文本计算出一个词出现的次数。然而，不像其他的WordCount的例子，你可能会看到，在有限的数据之前，执行的演示应用程序的行为略有不同，因为它的目的是在一个无限的操作，数据流。类似的有界变量，它是一种动态算法，跟踪和更新的单词计数。然而，由于它必须假设潜在的无界输入数据，它会定期输出其当前状态和结果，同时继续处理更多的数据，因为它不知道什么时候它处理过的“所有”的输入数据。</p>
+<p>现在准备输入数据到kafka的topic中，随后kafka Stream应用处理这个topic的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ echo -e &quot;all streams lead to kafka\nhello kafka streams\njoin kafka summit&quot; $ file-input.txt</div></pre></td></tr></table></figure>
+<p>接下来，使用控制台的producer 将输入的数据发送到指定的topic（streams-file-input）中，（在实践中，stream数据可能会持续流入，其中kafka的应用将启动并运行）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-topics.sh --create \</div><div class="line">--zookeeper localhost:2181 \</div><div class="line">--replication-factor 1 \</div><div class="line">--partitions 1 \</div><div class="line">--topic streams-file-input</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cat /tmp/file-input.txt | ./bin/kafka-console-producer --broker-list localhost:9092 --topic streams-file-input</div></pre></td></tr></table></figure>
+<p>现在，我们运行 WordCount 处理输入的数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-run-class.sh org.apache.kafka.streams.examples.wordcount.WordCountDemo</div></pre></td></tr></table></figure>
+<p>不会有任何的STDOUT输出，除了日志，结果不断地写回另一个topic（streams-wordcount-output），demo运行几秒，然后，不像典型的流处理应用程序，自动终止。</p>
+<p>现在我们检查WordCountDemo应用，从输出的topic读取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 \</div><div class="line">--topic streams-wordcount-output \</div><div class="line">--from-beginning \</div><div class="line">--formatter kafka.tools.DefaultMessageFormatter \</div><div class="line">--property print.key=true \</div><div class="line">--property print.key=true \</div><div class="line">--property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \</div><div class="line">--property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer</div></pre></td></tr></table></figure>
+<p>输出数据打印到控台（你可以使用Ctrl-C停止）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">all	1</div><div class="line">streams	1</div><div class="line">lead	1</div><div class="line">to	1</div><div class="line">kafka	1</div><div class="line">hello	1</div><div class="line">kafka	2</div><div class="line">streams	2</div><div class="line">join	1</div><div class="line">kafka	3</div><div class="line">summit	1</div></pre></td></tr></table></figure>
+<p>第一列是message的key，第二列是message的value，要注意，输出的实际是一个连续的更新流，其中每条数据（即：原始输出的每行）是一个单词的最新的count，又叫记录键“kafka”。对于同一个key有多个记录，每个记录之后是前一个的更新。    </p>
+<p>参考：</p>
+<p><a href="https://kafka.apache.org/quickstart" target="_blank" rel="external">Apache Kafka QuickStart</a></p>
+<p><a href="http://www.orchome.com/6" target="_blank" rel="external">kafka安装和启动 —— 半兽人</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/17/zookeeper/server_role/" rel="next" title="Zookeeper 的服务器角色">
+                <i class="fa fa-chevron-left"></i> Zookeeper 的服务器角色
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/19/kafka/kafka_producer/" rel="prev" title="kafka生产者客户端（0.10.1.1API）">
+                kafka生产者客户端（0.10.1.1API） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-1-下载代码"><span class="nav-text">Step 1: 下载代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-启动服务"><span class="nav-text">Step 2: 启动服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-3-创建一个主题-topic"><span class="nav-text">Step 3: 创建一个主题(topic)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-4-发送消息"><span class="nav-text">Step 4: 发送消息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-5-消费消息"><span class="nav-text">Step 5: 消费消息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-6-设置多个broker集群"><span class="nav-text">Step 6: 设置多个broker集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-7-使用-Kafka-Connect-来-导入-导出-数据"><span class="nav-text">Step 7: 使用 Kafka Connect 来 导入/导出 数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-8-使用Kafka-Stream来处理数据"><span class="nav-text">Step 8: 使用Kafka Stream来处理数据</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/18/kafka/kafka_quickStart/';
+          this.page.identifier = '2017/08/18/kafka/kafka_quickStart/';
+          this.page.title = 'kafka QuickStart';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

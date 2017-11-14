@@ -1,0 +1,801 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="KafkaProducer 0.10.1.1 API 和0.9.0.0的API没有什么区别。
+
+kafka客户端发布record(消息)到kafka集群。新的生产者是线程安全的，在线程之间共享单个生产者实例，通常单例比多个实例要快。
+一个简单的例子，使用producer发送一个有序的key/value(键值对)，放到java的main方法里就能直接运行，
+12345678910111213141">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka生产者客户端（0.10.1.1API）">
+<meta property="og:url" content="http://yoursite.com/2017/08/19/kafka/kafka_producer/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="KafkaProducer 0.10.1.1 API 和0.9.0.0的API没有什么区别。
+
+kafka客户端发布record(消息)到kafka集群。新的生产者是线程安全的，在线程之间共享单个生产者实例，通常单例比多个实例要快。
+一个简单的例子，使用producer发送一个有序的key/value(键值对)，放到java的main方法里就能直接运行，
+12345678910111213141">
+<meta property="og:updated_time" content="2017-09-26T00:54:07.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kafka生产者客户端（0.10.1.1API）">
+<meta name="twitter:description" content="KafkaProducer 0.10.1.1 API 和0.9.0.0的API没有什么区别。
+
+kafka客户端发布record(消息)到kafka集群。新的生产者是线程安全的，在线程之间共享单个生产者实例，通常单例比多个实例要快。
+一个简单的例子，使用producer发送一个有序的key/value(键值对)，放到java的main方法里就能直接运行，
+12345678910111213141">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/19/kafka/kafka_producer/"/>
+
+
+
+
+
+  <title> kafka生产者客户端（0.10.1.1API） | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/19/kafka/kafka_producer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                kafka生产者客户端（0.10.1.1API）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T14:30:00+08:00">
+                2017-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/19/kafka/kafka_producer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/19/kafka/kafka_producer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>KafkaProducer 0.10.1.1 API 和<a href="http://orchome.com/197" target="_blank" rel="external">0.9.0.0</a>的API没有什么区别。</p>
+</blockquote>
+<h2 id="kafka客户端发布record-消息-到kafka集群。"><a href="#kafka客户端发布record-消息-到kafka集群。" class="headerlink" title="kafka客户端发布record(消息)到kafka集群。"></a>kafka客户端发布<code>record(消息)</code>到kafka集群。</h2><p>新的生产者是线程安全的，在线程之间共享<strong>单个生产者</strong>实例，通常单例比多个实例要快。</p>
+<p>一个简单的例子，使用producer发送一个有序的key/value(键值对)，放到java的<code>main</code>方法里就能直接运行，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Properties props = <span class="keyword">new</span> Properties();</div><div class="line"> props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</div><div class="line"> props.put(<span class="string">"acks"</span>, <span class="string">"all"</span>);</div><div class="line"> props.put(<span class="string">"retries"</span>, <span class="number">0</span>);</div><div class="line"> props.put(<span class="string">"batch.size"</span>, <span class="number">16384</span>);</div><div class="line"> props.put(<span class="string">"linger.ms"</span>, <span class="number">1</span>);</div><div class="line"> props.put(<span class="string">"buffer.memory"</span>, <span class="number">33554432</span>);</div><div class="line"> props.put(<span class="string">"key.serializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringSerializer"</span>);</div><div class="line"> props.put(<span class="string">"value.serializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringSerializer"</span>);</div><div class="line"></div><div class="line"> Producer&lt;String, String&gt; producer = <span class="keyword">new</span> KafkaProducer&lt;&gt;(props);</div><div class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</div><div class="line">     producer.send(<span class="keyword">new</span> ProducerRecord&lt;String, String&gt;(<span class="string">"my-topic"</span>, Integer.toString(i), Integer.toString(i)));</div><div class="line"></div><div class="line"> producer.close();</div></pre></td></tr></table></figure>
+<p>生产者的缓冲空间池保留尚未发送到服务器的消息，后台I/O线程负责将这些消息转换成请求发送到集群。如果使用后不关闭生产者，则会泄露这些资源。</p>
+<ul>
+<li><code>send()</code><strong>方法是异步的</strong>，添加消息到缓冲区等待发送，并立即返回。生产者将单个的消息批量在一起发送来提高效率。</li>
+<li><code>ack</code>是判别请求是否为完整的条件（就是是<strong>判断是不是成功发送</strong>了）。我们指定了“all”将会<strong>阻塞消息</strong>，这种设置性能最低，但是是最可靠的。</li>
+<li><code>retries</code>，如果请求失败，生产者会自动重试，我们指定是0次，如果启用重试，则会有<strong>重复消息的可能性</strong>。</li>
+<li><code>producer</code>(生产者)缓存每个分区未发送消息。缓存的大小是通过 <code>batch.size</code> 配置指定的。值较大的话将会产生更大的批。并需要更多的内存（因为每个“活跃”的分区都有1个缓冲区）。</li>
+<li><code>linger.ms</code>, 默认缓冲可立即发送，即遍缓冲空间还没有满，但是，如果你想减少请求的数量，可以设置<code>linger.ms</code>大于0。这将指示生产者发送请求之前等待一段时间，希望更多的消息填补到未满的批中。这类似于TCP的算法，例如上面的代码段，可能100条消息在一个请求发送，因为我们设置了linger(逗留)时间为1毫秒，然后，如果我们没有填满缓冲区，这个设置将增加1毫秒的延迟请求以等待更多的消息。需要注意的是，在高负载下，相近的时间一般也会组成批，即使是 <code>linger.ms=0</code>。在不处于高负载的情况下，如果设置比0大，以少量的延迟代价换取更少的，更有效的请求。</li>
+<li><code>buffer.memory</code> 控制生产者可用的缓存总量，如果消息发送速度比其传输到服务器的快，将会耗尽这个缓存空间。当缓存空间耗尽，其他发送调用将被阻塞，阻塞时间的阈值通过<code>max.block.ms</code>设定，之后它将抛出一个TimeoutException。</li>
+<li><code>key.serializer</code>和<code>value.serializer</code>示例，将用户提供的key和value对象ProducerRecord转换成字节，你可以使用附带的<strong>ByteArraySerializaer</strong> 或 <strong>StringSerializer</strong> 处理简单的 string 或 byte 类型。</li>
+</ul>
+<h2 id="send"><a href="#send" class="headerlink" title="send()"></a>send()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Future&lt;RecordMetadata&gt; <span class="title">send</span><span class="params">(ProducerRecord&lt;K,V&gt; record,Callback callback)</span></span></div></pre></td></tr></table></figure>
+<ul>
+<li>异步发送一条消息到topic，并调用<code>callback</code>（当发送已确认）。</li>
+<li>send是异步的，并且一旦消息被保存在<strong>等待发送的消息缓存</strong>中，此方法就立即返回。这样并行发送多条消息而<strong>不阻塞去等待每一条消息的响应</strong>。<ul>
+<li>发送的结果是一个<code>RecordMetadata</code>，它指定了<strong>消息发送的分区，分配的offset和消息的时间戳</strong>。如果topic使用的是CreateTime，则使用用户提供的时间戳或发送的时间（如果用户没有指定指定消息的时间戳）如果topic使用的是LogAppendTime，则追加消息时，时间戳是broker的本地时间。</li>
+</ul>
+</li>
+<li>由于send调用是异步的，它将为分配消息的此消息的<code>RecordMetadata</code>返回一个<code>Future</code>。如果future调用<code>get()</code>，则将<strong>阻塞，直到相关请求完成并返回该消息的metadata，或抛出发送异常</strong>。</li>
+<li>如果要模拟一个简单的阻塞调用，你可以调用<code>get()</code>方法。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">String key = <span class="string">"key"</span>;</div><div class="line">String value = <span class="string">"value"</span>;</div><div class="line">ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;String, String&gt;(<span class="string">"my-topic"</span>, key, value);</div><div class="line">producer.send(record).get();</div></pre></td></tr></table></figure>
+<ul>
+<li>完全无阻塞的话,可以利用<strong>回调参数</strong>提供的请求完成时将调用的回调通知。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;String, String&gt;(<span class="string">"the-topic"</span>, key, value);</div><div class="line">producer.send(myRecord,</div><div class="line">	<span class="keyword">new</span> Callback() &#123;</div><div class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompletion</span><span class="params">(RecordMetadata metadata, Exception e)</span> </span>&#123;</div><div class="line">			<span class="keyword">if</span>(e != <span class="keyword">null</span>)</div><div class="line">            	e.printStackTrace();</div><div class="line">            System.out.println(<span class="string">"The offset of the record we just sent is: "</span> + metadata.offset());</div><div class="line">		&#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<ul>
+<li>发送到同一个分区的消息回调保证按一定的顺序执行，也就是说，在下面的例子中 <code>callback1</code> 保证执行 <code>callback2</code> 之前：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">producer.send(<span class="keyword">new</span> ProducerRecord&lt;<span class="keyword">byte</span>[],<span class="keyword">byte</span>[]&gt;(topic, partition, key1, value1), callback1);</div><div class="line">producer.send(<span class="keyword">new</span> ProducerRecord&lt;<span class="keyword">byte</span>[],<span class="keyword">byte</span>[]&gt;(topic, partition, key2, value2), callback2);</div></pre></td></tr></table></figure>
+<p>注意：<strong>callback一般在生产者的I/O线程中执行</strong>，所以是相当的快的，否则将延迟其他的线程的消息发送。如果你需要执行阻塞或计算昂贵（消耗）的回调，建议在callback主体中使用自己的 <strong>Executor</strong>来并行处理。</p>
+<ul>
+<li><strong>pecified by:</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">send in <span class="class"><span class="keyword">interface</span> <span class="title">Producer</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li><strong>Parameters:</strong><ul>
+<li><strong>record</strong> - 发送的记录（消息）</li>
+<li><strong>callback</strong> - 用户提供的callback，服务器来调用这个callback来应答结果（null表示没有callback）。</li>
+</ul>
+</li>
+<li><strong>Throws:</strong><ul>
+<li><strong>InterruptException</strong> - 如果线程在阻塞中断。</li>
+<li><strong>SerializationException</strong> - 如果key或value不是给定有效配置的serializers。</li>
+<li><strong>TimeoutException</strong> - 如果获取元数据或消息分配内存话费的时间超过max.block.ms。</li>
+<li><strong>KafkaException</strong> - Kafka有关的错误（不属于公共API的异常）。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/18/kafka/kafka_quickStart/" rel="next" title="kafka QuickStart">
+                <i class="fa fa-chevron-left"></i> kafka QuickStart
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/19/kafka/kafka_consumer/" rel="prev" title="kafka消费者客户端（0.10.0.1API）">
+                kafka消费者客户端（0.10.0.1API） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#kafka客户端发布record-消息-到kafka集群。"><span class="nav-text">kafka客户端发布record(消息)到kafka集群。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#send"><span class="nav-text">send()</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/08/19/kafka/kafka_producer/';
+          this.page.identifier = '2017/08/19/kafka/kafka_producer/';
+          this.page.title = 'kafka生产者客户端（0.10.1.1API）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

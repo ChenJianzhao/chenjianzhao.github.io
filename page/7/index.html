@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_dp/0-java-design-patten/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/5-nio-transform/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -279,8 +279,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_dp/0-java-design-patten/" itemprop="url">
-                  Java设计模式总览
+                <a class="post-title-link" href="/2017/04/24/java_nio/5-nio-transform/" itemprop="url">
+                  Java NIO（五）之 transfer
                 </a>
               
             
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T19:06:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T21:00:00+08:00">
+                2017-04-24
               </time>
             
 
@@ -330,8 +330,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 设计模式</span>
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
                   </a>
                 </span>
 
@@ -342,6 +342,17 @@
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/java_nio/5-nio-transform/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/java_nio/5-nio-transform/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -367,17 +378,12 @@
       
         
           
-          原文：Java之美[从菜鸟到高手演变]之设计模式
-设计模式的分类
- 总体来说设计模式分为三大类：
-
-创建型模式，共五种：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。
-结构型模式，共七种：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。
-行为型模式，共十一种：
+          通道之间的数据传输在Java NIO中，如果两个通道中有一个是FileChannel，那你可以直接将数据从一个channel（译者注：channel中文常译作通道）传输到另外一个channel。
+1. transferFrom()FileChannel的transferFrom()方法可以将数据从源
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_dp/0-java-design-patten/#more" rel="contents">
+            <a class="btn" href="/2017/04/24/java_nio/5-nio-transform/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -423,7 +429,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/db/oracle-ExplainPlan/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/4-nio-scatter-gather/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -445,8 +451,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/db/oracle-ExplainPlan/" itemprop="url">
-                  Oracle 索引和执行计划详解
+                <a class="post-title-link" href="/2017/04/24/java_nio/4-nio-scatter-gather/" itemprop="url">
+                  Java NIO（四）之 scatter/gather
                 </a>
               
             
@@ -462,8 +468,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T16:29:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T20:00:00+08:00">
+                2017-04-24
               </time>
             
 
@@ -485,8 +491,19 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
                   </a>
                 </span>
 
@@ -497,6 +514,17 @@
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/java_nio/4-nio-scatter-gather/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/java_nio/4-nio-scatter-gather/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -522,12 +550,11 @@
       
         
           
-          一、几个概念
-Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列就不是用户定义，而是系统自己给加上的。 对每个表都有一个rowid的伪列，但是表中并不物理存储ROWID列的值。不过你可以像使用其它列那样使用它，但是不能删除改列，也不能对该列的值进行 修改、插入。一旦一行数据插入数据库
+          分散（scatter）和聚集（gather）Java NIO开始支持scatter/gather，scatter/gather用于描述从Channel中读取或者写入到Channel的操作。分散（scatter）从Channel中读取是指在读操作时将读取的数据写入多个buffer中。因此，Channe
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/db/oracle-ExplainPlan/#more" rel="contents">
+            <a class="btn" href="/2017/04/24/java_nio/4-nio-scatter-gather/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -573,7 +600,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/29/Java_core/annotation/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/3-nio-buffer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -595,8 +622,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
             
               
                 
-                <a class="post-title-link" href="/2017/03/29/Java_core/annotation/" itemprop="url">
-                  Java Annotation 自定义注解
+                <a class="post-title-link" href="/2017/04/24/java_nio/3-nio-buffer/" itemprop="url">
+                  Java NIO（三）之 Buffer
                 </a>
               
             
@@ -612,8 +639,699 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-29T16:22:00+08:00">
-                2017-03-29
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T19:00:00+08:00">
+                2017-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/java_nio/3-nio-buffer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/java_nio/3-nio-buffer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          BufferJava NIO中的Buffer用于和NIO通道进行交互。如你所知，数据是从通道读入缓冲区，从缓冲区写入到通道中的。
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。
+1. Buffer的基本
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/04/24/java_nio/3-nio-buffer/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/2-nio-channel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/24/java_nio/2-nio-channel/" itemprop="url">
+                  Java NIO（二）之Channel
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T18:00:00+08:00">
+                2017-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/java_nio/2-nio-channel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/java_nio/2-nio-channel/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Channel1. Channel 和 StreamJava NIO的通道类似流，但又有些不同：
+
+既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。
+通道可以异步地读写。
+通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。
+
+正如上面所说，从通道读取数
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/04/24/java_nio/2-nio-channel/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/1-nio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/24/java_nio/1-nio/" itemprop="url">
+                  Java NIO（一）之概述
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T17:00:00+08:00">
+                2017-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
+                    <span itemprop="name">Java Core</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
+                    <span itemprop="name">Java NIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/java_nio/1-nio/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/java_nio/1-nio/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          NIO 概述Java NIO 由以下几个核心部分组成：
+
+Channels
+Buffers
+Selectors
+
+1. Channel 和 Buffer基本上，所有的 IO 在NIO 中都从一个Channel 开始。Channel 有点象流。 数据可以从Channel读到Buffer中，也可以从Bu
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/04/24/java_nio/1-nio/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/mybatis/quickstart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/24/mybatis/quickstart/" itemprop="url">
+                  MyBatis 入门
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T00:00:00+08:00">
+                2017-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
+                    <span itemprop="name">MyBatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/24/mybatis/quickstart/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/24/mybatis/quickstart/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          
+原文 [ mybatis 中文教程
+
+安装要使用 MyBatis，如果使用 Maven 来构建项目，则需将下面的 dependency 代码置于 pom.xml 文件中：
+12345&lt;dependency&gt;  &lt;groupId&gt;org.mybatis&lt;/groupId
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/04/24/mybatis/quickstart/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/09/Java_core/regular/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/09/Java_core/regular/" itemprop="url">
+                  正则表达式高级用法(分组与捕获)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-09T15:40:00+08:00">
+                2017-04-09
               </time>
             
 
@@ -659,6 +1377,17 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/09/Java_core/regular/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/09/Java_core/regular/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -683,19 +1412,39 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
       
         
           
-          元注解
-　　元注解的作用就是负责注解其他注解。 Java5.0定义了4个标准的meta-annotation类型，它们被用来提供对其它 annotation类型作说明。Java5.0定义的元注解：
+          1. 分组的引入对于要重复单个字符，非常简单，直接在字符后卖弄加上限定符即可，例如 
+这些限定符如下所示：
 
-@Target
-@Retention
-@Documented
-@Inherited
 
-这些类型和它们
+
+公式
+含义
+
+
+
+
+X ?
+X ，一次或一次也没有
+
+
+X *
+X ，零次或多次
+
+
+X +
+X ，一次或多次
+
+
+X { n }
+X ，恰好 n 次
+
+
+X { n ,}
+X ，至少 
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/29/Java_core/annotation/#more" rel="contents">
+            <a class="btn" href="/2017/04/09/Java_core/regular/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -741,7 +1490,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/27/Java_collection/LinkedList/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/09/Java_core/io/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -763,8 +1512,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
             
               
                 
-                <a class="post-title-link" href="/2017/03/27/Java_collection/LinkedList/" itemprop="url">
-                  Java集合类深入分析之LinkedList
+                <a class="post-title-link" href="/2017/04/09/Java_core/io/" itemprop="url">
+                  Java IO
                 </a>
               
             
@@ -780,8 +1529,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-27T00:41:00+08:00">
-                2017-03-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-09T11:35:00+08:00">
+                2017-04-09
               </time>
             
 
@@ -814,8 +1563,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/Java-Core/Java-进阶/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 进阶</span>
                   </a>
                 </span>
 
@@ -827,165 +1576,16 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
           
             
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          
-          
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/27/Java_collection/LinkedList/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/27/Java_collection/ArrayList/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/27/Java_collection/ArrayList/" itemprop="url">
-                  Java集合类深入分析之ArrayList
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/09/Java_core/io/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/04/09/Java_core/io/" itemprop="commentCount"></span>
                 </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-27T00:37:00+08:00">
-                2017-03-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
             
           
 
@@ -1011,11 +1611,38 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
       
         
           
-          1. ArrayList概述：   ArrayList是List接口的可变数组的实现。实现了所有可选列表操作，并允许包括 null 在内的所有元素。除了实现 List 接口外，此类还提供一些方法来操作内部用来存储列表的数组的大小。   每个ArrayList实例都有一个容量，该容量是指用来存储列表元
+          原文：Java IO流学习总结-Oubo的博客 
+参考：Java I/O操作
+Java流操作有关的类或接口：
+
+
+类
+说明
+
+
+
+
+File
+文件类
+
+
+RandomAccessFile
+随机存取文件类
+
+
+InputStream
+字节输入流
+
+
+OutputStream
+字节输出流
+
+
+Reade
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/27/Java_collection/ArrayList/#more" rel="contents">
+            <a class="btn" href="/2017/04/09/Java_core/io/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1061,7 +1688,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Java_collection/LinkedHashMap/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/23-Interpreter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1083,8 +1710,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
             
               
                 
-                <a class="post-title-link" href="/2017/03/26/Java_collection/LinkedHashMap/" itemprop="url">
-                  Java集合类深入分析之LinkedHashMap
+                <a class="post-title-link" href="/2017/03/31/Java_dp/23-Interpreter/" itemprop="url">
+                  Java设计模式（二十三）解释器模式（Interpreter）
                 </a>
               
             
@@ -1100,8 +1727,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T22:53:00+08:00">
-                2017-03-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T23:06:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1134,8 +1761,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1146,6 +1773,17 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/31/Java_dp/23-Interpreter/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/03/31/Java_dp/23-Interpreter/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1170,13 +1808,10 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
       
         
-          
-          原文：深入Java集合学习系列：LinkedHashMap的实现原理参考：深入Java集合学习系列：HashMap的实现原理
-1. LinkedHashMap概述：   LinkedHashMap是Map接口的哈希表和链接列表实现，具有可预知的迭代顺序（默认为插入顺序），并允许使用null值和nul
-          ...
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>解释器模式是我们暂时的最后一讲，一般主要应用在OOP开发中的编译器的开发中，所以适用面比较窄。<br>Context类是一个上下文环境类，Plus和Minus分别是用来计算的实现，代码如下：<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/26/Java_collection/LinkedHashMap/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/23-Interpreter/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1222,7 +1857,7 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Java_collection/serialization/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/31/Java_dp/22-Mediator/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1244,8 +1879,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
             
               
                 
-                <a class="post-title-link" href="/2017/03/26/Java_collection/serialization/" itemprop="url">
-                  深入理解Java对象序列化
+                <a class="post-title-link" href="/2017/03/31/Java_dp/22-Mediator/" itemprop="url">
+                  Java设计模式（二十二）中介者模式（Mediator）
                 </a>
               
             
@@ -1261,8 +1896,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T14:54:00+08:00">
-                2017-03-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-31T23:00:00+08:00">
+                2017-03-31
               </time>
             
 
@@ -1295,8 +1930,8 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
+                  <a href="/categories/Java-Core/Java-设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">Java 设计模式</span>
                   </a>
                 </span>
 
@@ -1308,167 +1943,16 @@ Rowid的概念：　　rowid是一个伪列，既然是伪列，那么这个列�
 
           
             
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          原文：理解Java对象序列化——John Jiang
-一、 什么是Java对象序列化
-Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/26/Java_collection/serialization/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/25/Java_collection/HashMap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/25/Java_collection/HashMap/" itemprop="url">
-                  Java集合类深入分析之HashMap(jdk1.6中的实现)
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/31/Java_dp/22-Mediator/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/03/31/Java_dp/22-Mediator/" itemprop="commentCount"></span>
                 </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-25T22:46:00+08:00">
-                2017-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 集合</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
             
           
 
@@ -1493,338 +1977,10 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
 
       
         
-          <p>整理转载自<br><a href="http://sauzny.iteye.com/blog/2020275">java集合类深入分析之HashSet, HashMap篇</a></p>
-<h2 id="一、HashMap概述："><a href="#一、HashMap概述：" class="headerlink" title="一、HashMap概述："></a>一、HashMap概述：</h2><ol>
-<li><p>HashMap是基于哈希表的Map接口的非同步实现。允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。</p>
-</li>
-<li><p>最常见的两种操作方法是<code>get</code>, <code>put</code>方法。get方法用于根据Key来取得所需要的Value值，而put方法用于根据特定的Key来放置对应的Value。除了这两个方法以外还有判断Key,Value是否存在的containsKey, containsValue方法。</p>
-</li>
-<li><p>Map类型的数据结构有一个比较好的地方就是在存取元素的时候都能够有比较高的效率。 因为每次存取元素的时候都是通过计算Key的hash值再通过一定的映射规则来实现，在理想的情况下可以达到一个常量值。</p></li></ol>
+          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>中介者模式也是用来降低类类之间的耦合的，因为如果类类之间有依赖关系的话，不利于功能的拓展和维护，因为只要修改一个对象，其它关联的对象都得进行修改。如果使用中介者模式，只需关心和Mediator类的关系，具体类类之间的关系及调度交给Mediator就行，这有点像spring容器的作用<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/03/25/Java_collection/HashMap/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/22/Java_thread/lock/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/22/Java_thread/lock/" itemprop="url">
-                  Java线程之Lock
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-22T23:17:00+08:00">
-                2017-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          重入锁Java中的重入锁（即ReentrantLock）与Java内置锁一样，是一种排它锁。使用synchronized的地方一定可以用ReentrantLock代替。
-重入锁需要显示请求获取锁，并显示释放锁。为了避免获得锁后，没有释放锁，而造成其它线程无法获得锁而造成死锁，一般建议将释放锁操作放在
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/22/Java_thread/lock/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/19/Java_thread/CountDownLatch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Jianzhao Chen">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Pandora">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/03/19/Java_thread/CountDownLatch/" itemprop="url">
-                  Java线程之CountDownLatch、CyclicBarrier、Parser
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-19T14:01:00+08:00">
-                2017-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-线程/" itemprop="url" rel="index">
-                    <span itemprop="name">Java 线程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-           本文转发自 Jason’s Blog
-##CountDownLatchCountDownLatch适用场景Java多线程编程中经常会碰到这样一种场景——某个线程需要等待一个或多个线程操作结束（或达到某种状态）才开始执行。比如开发一个并发测试工具时，主线程需要等到所有测试线程均执行完成再开始统计总共
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/03/19/Java_thread/CountDownLatch/#more" rel="contents">
+            <a class="btn" href="/2017/03/31/Java_dp/22-Mediator/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1865,7 +2021,7 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1910,7 +2066,7 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1921,7 +2077,7 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2065,6 +2221,14 @@ Java平台允许我们在内存中创建可复用的Java对象，但一般情况
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
 
   
 

@@ -1,0 +1,862 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="KStream APIfilter123org.apache.kafka.streams.kstream.KStreamKStream&amp;lt;K, V&amp;gt; filter(Predicate&amp;lt;? super K, ? super V&amp;gt; predicate)
+创建一个新的 KStream 包含所有满足 predicate 的记录，不满足 predicate 的所有记录将被丢弃。这是一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka Stream API（未完）">
+<meta property="og:url" content="http://yoursite.com/2017/09/10/kafka/kafka_stream_api/index.html">
+<meta property="og:site_name" content="Pandora">
+<meta property="og:description" content="KStream APIfilter123org.apache.kafka.streams.kstream.KStreamKStream&amp;lt;K, V&amp;gt; filter(Predicate&amp;lt;? super K, ? super V&amp;gt; predicate)
+创建一个新的 KStream 包含所有满足 predicate 的记录，不满足 predicate 的所有记录将被丢弃。这是一个">
+<meta property="og:updated_time" content="2017-09-26T00:54:07.932Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kafka Stream API（未完）">
+<meta name="twitter:description" content="KStream APIfilter123org.apache.kafka.streams.kstream.KStreamKStream&amp;lt;K, V&amp;gt; filter(Predicate&amp;lt;? super K, ? super V&amp;gt; predicate)
+创建一个新的 KStream 包含所有满足 predicate 的记录，不满足 predicate 的所有记录将被丢弃。这是一个">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/10/kafka/kafka_stream_api/"/>
+
+
+
+
+
+  <title> kafka Stream API（未完） | Pandora </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Pandora</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/10/kafka/kafka_stream_api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianzhao Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Pandora">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                kafka Stream API（未完）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-10T14:30:00+08:00">
+                2017-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/09/10/kafka/kafka_stream_api/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/09/10/kafka/kafka_stream_api/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="KStream-API"><a href="#KStream-API" class="headerlink" title="KStream API"></a>KStream API</h1><h2 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.<span class="function">KStream</span></div><div class="line"></div><div class="line">KStream&lt;K, V&gt; <span class="title">filter</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V&gt; predicate)</span></div></pre></td></tr></table></figure>
+<p>创建一个新的 KStream 包含所有满足 predicate 的记录，不满足 predicate 的所有记录将被丢弃。这是一个无状态 记录-到-记录 操作。</p>
+<h2 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;KR, VR&gt; <span class="function">KStream&lt;KR, VR&gt; <span class="title">flatMap</span><span class="params">(KeyValueMapper&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, ? extends Iterable&lt;? extends KeyValue&lt;? extends KR, ? extends VR&gt;&gt;&gt; mapper)</span></span></div></pre></td></tr></table></figure>
+<p> 将每一个记录转为化0个或多个记录，(key 和 value 的类型都可以任意替换为其他类型)。KeyValueMapper 会应用到每一个输入记录并计算出0个或者多个记录，因此，输入的记录 <k,v> 可以被转化为输出记录 <k': v'="">,<k'': v''="">, ….这是一个无状态 记录-记录 操作(cf. transform(TransformerSupplier, String…) for 有状态记录转换器)<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//以下的例子将包含有句子的的输入记录 &lt;null:String&gt; 切分为单词，并为每一个单词发出一条 &lt;word:1&gt; 的记录。</span></div><div class="line">KStream&lt;<span class="keyword">byte</span>[], String&gt; inputStream = builder.stream(<span class="string">"topic"</span>);</div><div class="line">KStream&lt;String, Integer&gt; outputStream = inputStream.flatMap(<span class="keyword">new</span> KeyValueMapper&lt;<span class="keyword">byte</span>[], String, Iterable&lt;KeyValue&lt;String, Integer&gt;&gt;&gt; &#123;</div><div class="line">  Iterable&lt;KeyValue&lt;String, Integer&gt;&gt; apply(<span class="keyword">byte</span>[] key, String value) &#123;</div><div class="line">    String[] tokens = value.split(<span class="string">" "</span>);</div><div class="line">    List&lt;KeyValue&lt;String, Integer&gt;&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;(tokens.length);</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(String token : tokens) &#123;</div><div class="line">      result.add(<span class="keyword">new</span> KeyValue&lt;&gt;(token, <span class="number">1</span>));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></k'':></k':></k,v></p>
+<h2 id="flatMapValues"><a href="#flatMapValues" class="headerlink" title="flatMapValues"></a>flatMapValues</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;VR&gt; <span class="function">KStream&lt;K, VR&gt; <span class="title">flatMapValues</span><span class="params">(ValueMapper&lt;? <span class="keyword">super</span> V, ? extends Iterable&lt;? extends VR&gt;&gt; processor)</span></span></div></pre></td></tr></table></figure>
+<p>通过将输入中的每一个记录转化为0个或多个和原来相同(未修改过的) key 的 value 来创建一个新的输出（value 的类型可以替换为任意其他类型）。提供的 ValueMapper 将应用到每一个输入的记录计算出0个或多个输出 value。 因此，一个输入记录 <k, v=""> 可以被转化为 &lt;K: V’&gt;, <k: v''="">, ….这是一个无状态 记录-记录 操作，(cf. transformValues(ValueTransformerSupplier, String…) for 有状态 value 转换器).</k:></k,></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 以下的例子把包含有句子作为 value 的输入记录 &lt;null:String&gt;，切分为单词</span></div><div class="line">The example below splits input records &lt;<span class="keyword">null</span>:String&gt; containing sentences as values into their words.</div><div class="line">  </div><div class="line">KStream&lt;<span class="keyword">byte</span>[], String&gt; inputStream = builder.stream(<span class="string">"topic"</span>);</div><div class="line">KStream&lt;<span class="keyword">byte</span>[], String&gt; outputStream = inputStream.flatMapValues(<span class="keyword">new</span> ValueMapper&lt;String, Iterable&lt;String&gt;&gt; &#123;</div><div class="line">  <span class="function">Iterable&lt;String&gt; <span class="title">apply</span><span class="params">(String value)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> Arrays.asList(value.split(<span class="string">" "</span>));</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;KR, VR&gt; <span class="function">KStream&lt;KR, VR&gt; <span class="title">map</span><span class="params">(KeyValueMapper&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, ? extends KeyValue&lt;? extends KR, ? extends VR&gt;&gt; mapper)</span></span></div></pre></td></tr></table></figure>
+<p>将输入中的每一个记录转化为输出的一个新的记录（key 和 value 的类型可以替换为任意其他类型）。提供的 KeyValueMapper 将应用到每一个输入的记录计算出一个新的记录。因此，一个输入记录 <k,v> 可以被转化为一个输出记录 <k': v'="">。这是一个无状态 记录-记录 操作。(cf. transform(TransformerSupplier, String…) for stateful record transformation).</k':></k,v></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">// 以下的例子把 String 类型的 key 格式化为“大写格式”的字母，并计算 value 字符串的单词个数</span></div><div class="line">KStream&lt;String, String&gt; inputStream = builder.stream(<span class="string">"topic"</span>);</div><div class="line">KStream&lt;Integer, String&gt; outputStream = inputStream.map(<span class="keyword">new</span> KeyValueMapper&lt;String, String, KeyValue&lt;String, Integer&gt;&gt; &#123;</div><div class="line">  <span class="function">KeyValue&lt;String, Integer&gt; <span class="title">apply</span><span class="params">(String key, String value)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> KeyValue&lt;&gt;(key.toUpperCase(), value.split(<span class="string">" "</span>).length);</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="mapValues"><a href="#mapValues" class="headerlink" title="mapValues"></a>mapValues</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;VR&gt; <span class="function">KStream&lt;K, VR&gt; <span class="title">mapValues</span><span class="params">(ValueMapper&lt;? <span class="keyword">super</span> V, ? extends VR&gt; mapper)</span></span></div></pre></td></tr></table></figure>
+<p> 将输入中的每一个记录的 value 转化为输出的一个新的 value (可能是一个新的类型)。提供的 ValueMapper 将应用到每一个输入记录的 value 并计算出一个新的 value。因此，一个输入记录 <k,v> 可以被转化为一个输出记录 &lt;K: V’&gt;。这是一个无状态 记录-记录 操作。(cf. transformValues(ValueTransformerSupplier, String…) for stateful value transformation).<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">  <span class="comment">// 下面的例子计算 value string 的 token 数量</span></div><div class="line">KStream&lt;String, String&gt; inputStream = builder.stream(<span class="string">"topic"</span>);</div><div class="line">KStream&lt;String, Integer&gt; outputStream = inputStream.mapValues(<span class="keyword">new</span> ValueMapper&lt;String, Integer&gt; &#123;</div><div class="line">  <span class="function">Integer <span class="title">apply</span><span class="params">(String value)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> value.split(<span class="string">" "</span>).length;</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></k,v></p>
+<h2 id="groupByKey"><a href="#groupByKey" class="headerlink" title="groupByKey"></a>groupByKey</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.<span class="function">KStream</span></div><div class="line">KGroupedStream&lt;K, V&gt; <span class="title">groupByKey</span><span class="params">()</span></div></pre></td></tr></table></figure>
+<ul>
+<li>根据记录当前的 key 将他们分组到一个 KGroupedStream 中同时保存原始的 values 和默认的序列化和反序列化器。根据记录的 key 将一个 stream 分组在进行聚合(aggregation)操作之前是必要的，它将应用数据中(cf. KGroupedStream)。如果记录的 key 为 null，它将不会包含在作为返回结果的 KGroupedStream。</li>
+<li>如果一个变更 key 的操作在分组操作之前进行，【e.g., selectKey(KeyValueMapper), map(KeyValueMapper), flatMap(KeyValueMapper), or transform(TransformerSupplier, String…)】,并且没有数据重分配(redistribution)在这之后发生(e.g., via through(String)) ，那么一个内部的重分区主题(repartitioning topic) 将被创建。这个主题将被命名为 “${applicationId}-XXX-repartition”，applicationId 是用户在 StreamsConfig 中通过 APPLICATION_ID_CONFIG 参数指定的，”XXX” 是一个内部生成的名字，”-repartition”是一个固定的后缀，你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</li>
+<li>在这些情形下，这个 stream 中所有数据将被重分配到重分区主题，通过将所有记录重新写入的方式，并且从该 stream 中重新读取所有的记录，这样作为结果返回的 KGroupedStream 就已经基于新的 key 正确地重新分区。如果最后的变更 key 的操作改变了 key 的类型，它将重新调用 groupByKey(Serde, Serde) 来代替这个分组操作。</li>
+</ul>
+<p><strong>Note</strong>： 在分组之前有变更 key 的操作，那么分组操作将产生一个内部主题并重新分。</p>
+<h2 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line">&lt;KR&gt; <span class="function">KGroupedStream&lt;KR, V&gt; <span class="title">groupBy</span><span class="params">(KeyValueMapper&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, KR&gt; selector)</span></span></div></pre></td></tr></table></figure>
+<ul>
+<li>使用了提供的 KeyValueMapper 和默认的序列化和反序列化器重新选择(select) 的 key 来把记录进行分组。根据记录的 key 将一个 stream 分组在进行聚合(aggregation)操作之前是必要的，它将应用数据中(cf. KGroupedStream)。KeyValueMapper 选择了一个新的 key（需要相同的类型）同时保存了原始的 values，如果新的 key 为 null，它将不会包含在作为返回结果的 KGroupedStream。</li>
+<li>因为选择了一个新的 key，一个内部的重分区主题将被创建。这个主题将被命名为 “${applicationId}-XXX-repartition”，applicationId 是用户在 StreamsConfig 中通过 APPLICATION_ID_CONFIG 参数指定的，”XXX” 是一个内部生成的名字，”-repartition”是一个固定的后缀，你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</li>
+<li>这个 stream 中所有数据将被重分配到重分区主题，通过将所有记录重新写入的方式，并且从该 stream 中重新读取所有的记录，这样作为结果返回的 KGroupedStream 就已经基于新的 key 正确地重新分区。如果最后的变更 key 的操作改变了 key 的类型，它将重新调用 groupByKey(Serde, Serde) 来代替这个分组操作。</li>
+<li>这个操作等效于在调用 selectKey(KeyValueMapper) 之后调用 groupByKey()。如果 key 的类型改变了，它将重新调用 groupByKey(Serde, Serde) 来代替这个分组操作。</li>
+</ul>
+<h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;VO, VR&gt; <span class="function">KStream&lt;K, VR&gt; <span class="title">join</span><span class="params">(</span></span></div><div class="line">  	KStream&lt;K, VO&gt; otherStream,</div><div class="line">	ValueJoiner&lt;? <span class="keyword">super</span> V, ? <span class="keyword">super</span> VO, ? extends VR&gt; joiner,</div><div class="line">	JoinWindows windows)</div></pre></td></tr></table></figure>
+<ul>
+<li><p>使用 windowed 内连接，连接当前 KStream 和另外一个 KStream 的所有记录，使用默认的序列化房序列化器。连接根据记录的 key 是否符合连接属性 <code>hisKStream.key == otherKStream.key</code> 。此外，只有两边的记录的时间戳差距在  JoinWindows 定义的时间</p>
+<p>内，他们才能被连接。</p>
+</li>
+<li><p>对于每一对连接的记录，都会调用提供的 ValueJoiner 来计算出可以是任意类型的结果。如果输入记录的 key 或 value 为 null，该记录将不会为包括在连接操作中，因此没有记录会被添加到结果 KStream 中。</p>
+</li>
+</ul>
+<p>Example (假设所有的输入记录都在窗口内):</p>
+<table>
+<thead>
+<tr>
+<th>this</th>
+<th>other</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><k1: a=""></k1:></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><k2: b=""></k2:></td>
+<td><k2: b=""></k2:></td>
+<td><k2: valuejoiner(b,b)=""></k2:></td>
+</tr>
+<tr>
+<td></td>
+<td><k3: c=""></k3:></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>连接的输入流（更准确地说是他们的下游 topics）需要有相同数量的分区。如果不是这种情况，你需要在连接之前调用 <code>through(String)</code> （为其中一个 stream），使用一个预先创建的有正确分区数的主题。并且，每个输入 stream 需要协同 key 的分区策略（例如：使用相同的 partitioner）。如果不能满足这个要求，Kafka Streams 将自动重新分配数据，例如，将创建一个内部的重分配 topic ，将数据写入并在真正连接之前再次从这个 topic 读取数据。重新分配的 topic 会被命名为 “${applicationId}-XXX-repartition”, “applicationId” 为用户在 StreamsConfig <code>APPLICATION_ID_CONFIG</code>指定的名称， “XXX”是一个内部生成的名称，”-repartition”是一个固定的后缀，你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</li>
+<li>重分配可能发生在一个或多个连接的 KStreams。这种情况下，stream 所有的数据都将被重定向写入到重新分配的 topic 中，并重新读取，这样连接的 KStream 就能在 key 上正确地分区。</li>
+<li>连接的 KStream 都将被保存在名称自动生成的本地 state stores 。为了失效备份和恢复，每个存储都将备份到一个Kafka创建的一个内部 changelog topic 。命名为 “${applicationId}-storeName-changelog”，”applicationId” 为用户在 StreamsConfig <code>APPLICATION_ID_CONFIG</code>指定的名称， “XXX”是一个内部生成的名称，”-changelog”是一个固定的后缀，你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</li>
+</ul>
+<p>其他连接类似</p>
+<ul>
+<li><p>leftJoin(KStream, ValueJoiner, JoinWindows)</p>
+</li>
+<li><p>outerJoin(KStream, ValueJoiner, JoinWindows)</p>
+</li>
+<li><p>leftJoin(KTable, ValueJoiner)</p>
+</li>
+<li><p>join(GlobalKTable, KeyValueMapper, ValueJoiner)</p>
+<p>…….</p>
+<p>​</p>
+</li>
+</ul>
+<h2 id="selectKey"><a href="#selectKey" class="headerlink" title="selectKey"></a>selectKey</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KStream</div><div class="line"></div><div class="line">&lt;KR&gt; <span class="function">KStream&lt;KR, V&gt; <span class="title">selectKey</span><span class="params">(KeyValueMapper&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, ? extends KR&gt; mapper)</span></span></div></pre></td></tr></table></figure>
+<ul>
+<li>为每一条记录设置一个新的 key（可能是新类型）。提供的 KeyValueMapper 将被应用到每一条记录上并计算出一个新的 key。因此，一个输入记录 <k,v> 可以被转换为输出记录 &lt;K’: V&gt;。这是一个无状态 记录-到-记录 操作。</k,v></li>
+<li><p>例如，你可以使用这中转换，在 KeyValueMapper 中为没有 key 的输入记录 <null,v> 提取出一个 key。</null,v></p>
+<p>The example below computes the new key as the length of the value string.</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">KStream&lt;Byte[], String&gt; keyLessStream = builder.stream(<span class="string">"key-less-topic"</span>);</div><div class="line">KStream&lt;Integer, String&gt; keyedStream = keyLessStream.selectKey(<span class="keyword">new</span> KeyValueMapper&lt;Byte[], String, Integer&gt; &#123;</div><div class="line">    <span class="function">Integer <span class="title">apply</span><span class="params">(Byte[] key, String value)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value.length();</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>如果一个基于 key 的操作（如：aggregation 或 join）应用于结果 KStream，那么像这样设置一个新的 key 可能会造成内部的数据重分配。</p>
+<h1 id="KGroupedStream"><a href="#KGroupedStream" class="headerlink" title="KGroupedStream"></a>KGroupedStream</h1><h2 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.<span class="function">KGroupedStream</span></div><div class="line">KTable&lt;K, V&gt; <span class="title">reduce</span><span class="params">(Reducer&lt;V&gt; reducer, String queryableStoreName)</span></div></pre></td></tr></table></figure>
+<ul>
+<li>根据分组后的 key 合并这个 Stream 中记录的 values。null key 或者 value 的记录会被忽略。合并意味着集合结果的类型和输入的 value 是一致的(c.f. aggregate(Initializer, Aggregator, Serde, String))。合并的结果会被写进一个本地的 KeyValueStore(基本上是一个持续更新的持久化视图  (which is basically an ever-updating materialized view) )，它能通过 queryableStoreName 查询。更详细地，store 的更新会被发送到下游进入一个 KTable changelog stream。</li>
+<li>指定的 Reducer 被应用到每个一个输入记录，并使用当前聚合值和记录的 value 计算出一个新的聚合值。如果没有当前聚合值，Reducer将不会被使用并且新的聚合值将直接使用记录的 value。因此，reduce(Reducer, String) 可以用来作为聚合函数计算，如：sum, min, or max。</li>
+<li>不是所有的更新都能发送到下游，因为一个内部的 cache 被运用来去除重复的、持续更新的相同 key的记录。更新增殖的速率基于你输入数据的速率，唯一 key 的数量，并行运行的 Kafka Streams 实例的数量和配置参数配置的 cache 大小和提交的间隔。</li>
+</ul>
+<ul>
+<li>想要查询本地 KeyValueStore 需要通过 KafkaStreams#store(…) 获得：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">KafkaStreams streams = ... <span class="comment">// compute sum</span></div><div class="line">ReadOnlyKeyValueStore&lt;String,Long&gt; localStore = streams.store(queryableStoreName, QueryableStoreTypes.&lt;String, Long&gt;keyValueStore());</div><div class="line">String key = <span class="string">"some-key"</span>;</div><div class="line">Long sumForKey = localStore.get(key); <span class="comment">// key must be local (application state is shared over all running Kafka Streams instances)</span></div></pre></td></tr></table></figure>
+<ul>
+<li>对于非本地的 keys，需要实现客户化的 RPC 机制并使用 <strong>KafkaStreams.allMetadata()</strong> 在并行运行的 Kafka Streams 应用实例中查询你需要的 key 的 value。</li>
+</ul>
+<ul>
+<li>为了失效备份和恢复，store 通过在 Kafka 中创建一个内部的 changelog topic 来备份。因此，store 的名字必须是一个有效的 kafka 主题名并且不能包含除<code>&#39;.&#39;, &#39;_&#39; and &#39;-&#39;</code> 之外的 ASCII 字符。changelog topic 将被命名为 <code>&quot;${applicationId}-${queryableStoreName}-changelog&quot;</code>,  “applicationId” 是用户在 StreamsConfig 中通过 <code>APPLICATION_ID_CONFIG</code> 参数指定的，”queryableStoreName” 用户是提供的 queryableStoreName，而 “-changelog” 是固定的后缀。你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</li>
+</ul>
+<p>Note：首先产生 store，产生下游的 KTable changelog stream，并产生备份的 topic</p>
+<h2 id="aggregate"><a href="#aggregate" class="headerlink" title="aggregate"></a>aggregate</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">org.apache.kafka.streams.kstream.KGroupedStream</div><div class="line"></div><div class="line">&lt;W extends Window, VR&gt; KTable&lt;Windowed&lt;K&gt;, VR&gt; aggregate(Initializer&lt;VR&gt; initializer,</div><div class="line">	Aggregator&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V, VR&gt; </div><div class="line">	aggregator,</div><div class="line">	Windows&lt;W&gt; windows,</div><div class="line">	Serde&lt;VR&gt; aggValueSerde,</div><div class="line">	String queryableStoreName)</div></pre></td></tr></table></figure>
+<ul>
+<li>通过分组后的 key 和 定义的 windows 聚合记录中的 value。key 或 value 为 null 的记录将被忽略。聚集是一个泛型化的结合，因为他是通过 <code>reduce(...)</code> 实现的。例如，允许结果拥有和输入不同的类型。指定的窗口既可以是 hopping time windows 也可以是 tumbling(c.f. TimeWindows) 或者自己定义的 landmark windows (c.f. UnlimitedWindows)。聚合的结果被写进本地的 windowed KeyValueStore (which is basically an ever-updating materialized view)，它可以通过提供的 queryableStoreName 查询到。窗口将一直保留直到他们的保留期超时(c.f. Windows.until(long))。并且，向 store 的进行的更新，将被发送到下游stream进入一个 windowed KTable changelog stream。“windowed” 意味着 KTable的 key 是一个普通 key 和 Window ID 的组合 key。</li>
+</ul>
+<ul>
+<li>指定的 Initializer 将在第一个输入记录被处理之前，直接应用到每个窗口，以提供一个初始的聚合值来处理第一条记录。指定的 Aggregator 将被应用到每一条输入记录，并根据当前的聚合值（或者 Initializer 提供的初始聚合值）和当前的记录值计算出一个新的聚合值。因此，这个方法能用来作为聚合函数如 count (c.f. count(String))。</li>
+<li>不是所有的更新都会被发送到下游，因为一个内部 cache 被用来给持续发送的、相同的 window 和 key 的记录去重。记录增加的速率取决于你输入数据的速率，不同 key 的数量，并行运行的 Kafka Streams 实例数量，和设置的 cache 大小以及提交的间隔。</li>
+<li>To query the local windowed KeyValueStore it must be obtained via KafkaStreams#store(…):</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">KafkaStreams streams = ... <span class="comment">// some windowed aggregation on value type double</span></div><div class="line">ReadOnlyWindowStore&lt;String,Long&gt; localWindowStore = streams.store(</div><div class="line">  	queryableStoreName, </div><div class="line">  	QueryableStoreTypes.&lt;String, Long&gt;windowStore());</div><div class="line">String key = <span class="string">"some-key"</span>;</div><div class="line"><span class="keyword">long</span> fromTime = ...;</div><div class="line"><span class="keyword">long</span> toTime = ...;</div><div class="line">WindowStoreIterator&lt;Long&gt; aggForKeyForWindows = localWindowStore.fetch(key, timeFrom, timeTo); <span class="comment">// key must be local (application state is shared over all running Kafka Streams instances)</span></div></pre></td></tr></table></figure>
+<ul>
+<li><p>如果需要查询费本地的 key，你必须实现一个客户化的 RPC 机制，然后通过 <code>KafkaStreams.allMetadata()</code>  来从你的 Kafka Streams 应用程序中并行运行的实例</p>
+<p>中查询 value。</p>
+</li>
+<li><p>为了失效备份和恢复，store 通过在 Kafka 中创建一个内部的 changelog topic 来备份。因此，store 的名字必须是一个有效的 kafka 主题名并且不能包含除<code>&#39;.&#39;, &#39;_&#39; and &#39;-&#39;</code> 之外的 ASCII 字符。changelog topic 将被命名为 <code>&quot;${applicationId}-${queryableStoreName}-changelog&quot;</code>,  “applicationId” 是用户在 StreamsConfig 中通过 <code>APPLICATION_ID_CONFIG</code> 参数指定的，”queryableStoreName” 用户是提供的 queryableStoreName，而 “-changelog” 是固定的后缀。你可以通过 KafkaStreams.toString() 取得所有生成的内部主题名称。</p>
+</li>
+</ul>
+<p>class KStreamMap<k, v,="" k1,="" v1=""> implements ProcessorSupplier<k, v=""> </k,></k,></p>
+<p>class KStreamMapValues<k, v,="" v1=""> implements ProcessorSupplier<k, v=""> </k,></k,></p>
+<h1 id="KTable-API"><a href="#KTable-API" class="headerlink" title="KTable API"></a>KTable API</h1><p>Note: KTable 没有 groupByKey 方法，因为KTable 包含了整个数据集，从 Topic 读取数据的时候，会去除相同 key 的重复记录，只保留最新的记录。因此，每个 key 只会有一条记录，那么 groupByKey 就没有意义了。</p>
+<h1 id="KGroupedTable-API"><a href="#KGroupedTable-API" class="headerlink" title="KGroupedTable API"></a>KGroupedTable API</h1><h1 id="StateStore"><a href="#StateStore" class="headerlink" title="StateStore"></a>StateStore</h1>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/09/kafka/kafka_stream/" rel="next" title="kafka Stream">
+                <i class="fa fa-chevron-left"></i> kafka Stream
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/11/Linux/vim/" rel="prev" title="Vim">
+                Vim <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianzhao Chen" />
+          <p class="site-author-name" itemprop="name">Jianzhao Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#KStream-API"><span class="nav-text">KStream API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#filter"><span class="nav-text">filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flatMap"><span class="nav-text">flatMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flatMapValues"><span class="nav-text">flatMapValues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map"><span class="nav-text">map</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mapValues"><span class="nav-text">mapValues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#groupByKey"><span class="nav-text">groupByKey</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#groupBy"><span class="nav-text">groupBy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-text">join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#selectKey"><span class="nav-text">selectKey</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KGroupedStream"><span class="nav-text">KGroupedStream</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#reduce"><span class="nav-text">reduce</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#aggregate"><span class="nav-text">aggregate</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KTable-API"><span class="nav-text">KTable API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KGroupedTable-API"><span class="nav-text">KGroupedTable API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StateStore"><span class="nav-text">StateStore</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianzhao Chen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/09/10/kafka/kafka_stream_api/';
+          this.page.identifier = '2017/09/10/kafka/kafka_stream_api/';
+          this.page.title = 'kafka Stream API（未完）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

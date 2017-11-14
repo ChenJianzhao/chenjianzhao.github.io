@@ -94,7 +94,7 @@
 <meta property="og:site_name" content="Pandora">
 <meta property="og:description" content="准备工作工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。">
 <meta property="og:image" content="http://yoursite.com/2017/07/25/RabbitQM/worker/python-two.png">
-<meta property="og:updated_time" content="2017-07-27T02:18:28.910Z">
+<meta property="og:updated_time" content="2017-07-27T09:34:16.154Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RabbitMQ —— Work Queues">
 <meta name="twitter:description" content="准备工作工作队列的主要设计思想是为了避免立即执行“资源密集型”的任务而必须等待其完成。取而代之，我们可以安排任务延迟执行。我们将一个任务封装成信息并发送到队列，在后台运行的“worker”进程将弹出任务并最终执行任务。如果你运行很多个“worker”，他们将共享这些任务。">
@@ -333,6 +333,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/25/RabbitQM/worker/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/25/RabbitQM/worker/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -477,6 +488,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -523,7 +541,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -534,7 +552,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -698,6 +716,26 @@
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/07/25/RabbitQM/worker/';
+          this.page.identifier = '2017/07/25/RabbitQM/worker/';
+          this.page.title = 'RabbitMQ —— Work Queues';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

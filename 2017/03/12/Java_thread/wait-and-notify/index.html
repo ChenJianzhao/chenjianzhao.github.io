@@ -89,31 +89,28 @@
 
 <meta name="description" content="参考并整合自Java进阶（三）多线程开发关键技术如何在 Java 中正确使用 wait, notify 和 notifyAll
 一、sleep和wait到底什么区别
-
 其实这个问题应该这么问——sleep和wait有什么相同点。因为这两个方法除了都能让当前线程暂停执行完，几乎没有其它相同点。
 
-wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Threa">
+wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Thread">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java线程之wait, notify 和 notifyAll">
 <meta property="og:url" content="http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/index.html">
 <meta property="og:site_name" content="Pandora">
 <meta property="og:description" content="参考并整合自Java进阶（三）多线程开发关键技术如何在 Java 中正确使用 wait, notify 和 notifyAll
 一、sleep和wait到底什么区别
-
 其实这个问题应该这么问——sleep和wait有什么相同点。因为这两个方法除了都能让当前线程暂停执行完，几乎没有其它相同点。
 
-wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Threa">
-<meta property="og:image" content="http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/微信截图_20170312214822.png">
-<meta property="og:updated_time" content="2017-05-07T01:49:27.918Z">
+wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Thread">
+<meta property="og:image" content="http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/producer_consumer.png">
+<meta property="og:updated_time" content="2017-10-22T00:49:37.497Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java线程之wait, notify 和 notifyAll">
 <meta name="twitter:description" content="参考并整合自Java进阶（三）多线程开发关键技术如何在 Java 中正确使用 wait, notify 和 notifyAll
 一、sleep和wait到底什么区别
-
 其实这个问题应该这么问——sleep和wait有什么相同点。因为这两个方法除了都能让当前线程暂停执行完，几乎没有其它相同点。
 
-wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Threa">
-<meta name="twitter:image" content="http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/微信截图_20170312214822.png">
+wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Thread">
+<meta name="twitter:image" content="http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/producer_consumer.png">
 
 
 
@@ -359,6 +356,17 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/12/Java_thread/wait-and-notify/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/03/12/Java_thread/wait-and-notify/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -382,8 +390,7 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
 
       
         <p>参考并整合自<br><a href="http://www.jasongj.com/java/multi_thread/" target="_blank" rel="external">Java进阶（三）多线程开发关键技术</a><br><a href="http://developer.51cto.com/art/201508/487488.htm" target="_blank" rel="external">如何在 Java 中正确使用 wait, notify 和 notifyAll</a></p>
-<h2 id="一、sleep和wait到底什么区别"><a href="#一、sleep和wait到底什么区别" class="headerlink" title="一、sleep和wait到底什么区别"></a>一、sleep和wait到底什么区别</h2><hr>
-<ol>
+<h2 id="一、sleep和wait到底什么区别"><a href="#一、sleep和wait到底什么区别" class="headerlink" title="一、sleep和wait到底什么区别"></a>一、sleep和wait到底什么区别</h2><ol>
 <li><p>其实这个问题应该这么问——sleep和wait有什么相同点。因为这两个方法除了都能让当前线程暂停执行完，几乎没有其它相同点。</p>
 </li>
 <li><p>wait方法是Object类的方法，这意味着所有的Java类都可以调用该方法。sleep方法是Thread类的静态方法。</p>
@@ -392,21 +399,35 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
 </li>
 </ol>
 <p><strong>此处通过生产者消费者问题来讲解如何使用 wait、notify 和 notifyAll 来实现线程间的通信。</strong></p>
-<h2 id="二、如何使用Wait"><a href="#二、如何使用Wait" class="headerlink" title="二、如何使用Wait"></a>二、如何使用Wait</h2><hr>
-<ol>
-<li><p>调用哪个对象的wait<br>正确的方法是对在多线程间共享的那个Object来使用wait。在生产者消费者问题中，这个共享的Object就是那个缓冲区队列。</p>
-</li>
-<li><p>何时调用wait<br>wait方法需要释放锁，那么前提条件是它已经持有锁。所以wait和notify（或者notifyAll）方法都必须被包裹在synchronized语句块中（或者synchronized修饰的方法中），并且synchronized后锁的对象应该与调用wait方法的对象一样。否则抛出IllegalMonitorStateException<br>既然我们应该在synchronized的函数或是synchronized语句块锁住的对象里调用wait，那哪个对象应该被synchronized呢？答案是，那个 你希望上锁的对象就应该被synchronized，即那个在多个线程间被共享的对象。在生产者消费者问题中，应该被synchronized的就是那个缓冲区队列。</p>
-</li>
-<li><p>永远在循环（loop）里调用 wait 和 notify，不是在 If 语句<br>if语句存在一些微妙的小问题，导致即使条件没被满足，你的线程你也有可能被错误地唤醒。所以如果你不在线程被唤 醒后再次使用while循环检查唤醒条件是否被满足，你的程序就有可能会出错——例如在缓冲区为满的时候生产者继续生成数据，或者缓冲区为空的时候消费者 开始小号数据。所以记住，永远在while循环而不是if语句中使用wait！</p>
-</li>
+<h2 id="二、如何使用Wait"><a href="#二、如何使用Wait" class="headerlink" title="二、如何使用Wait"></a>二、如何使用Wait</h2><ol>
+<li>调用哪个对象的wait<br>正确的方法是对在多线程间共享的那个Object来使用wait。在生产者消费者问题中，这个共享的Object就是那个缓冲区队列。</li>
+<li>何时调用wait<br>wait方法需要释放锁，那么前提条件是它已经持有锁。所以wait和notify（或者notifyAll）方法都必须被包裹在synchronized语句块中（或者synchronized修饰的方法中），并且synchronized后锁的对象应该与调用wait方法的对象一样。否则抛出IllegalMonitorStateException<br>既然我们应该在synchronized的函数或是synchronized语句块锁住的对象里调用wait，那哪个对象应该被synchronized呢？答案是，那个 你希望上锁的对象就应该被synchronized，即那个在多个线程间被共享的对象。在生产者消费者问题中，应该被synchronized的就是那个缓冲区队列。</li>
+<li>永远在循环（loop）里调用 wait 和 notify，不是在 If 语句<br>if语句存在一些微妙的小问题，导致即使条件没被满足，你的线程你也有可能被错误地唤醒。所以如果你不在线程被唤 醒后再次使用while循环检查唤醒条件是否被满足，你的程序就有可能会出错——例如在缓冲区为满的时候生产者继续生成数据，或者缓冲区为空的时候消费者开始消耗数据。所以记住，永远在while循环而不是if语句中使用wait！</li>
 </ol>
+<blockquote>
+<p>关于第3点：根据自己的理解举个栗子~</p>
+<ol>
+<li>程序运行2个消费者线程，1个生产者线程，consumer1 进入 synchronized 方法后发现缓冲区为空，调用 buffer.wait() 释放对象锁，此时 consumer1 进入 buffer 的<code>等待池</code>；</li>
+<li>producer 获得锁并开始生产数据；</li>
+<li>consumer2 想要进入 synchronized 方法消费数据，此时锁仍旧被 producer 持有，consumer2 进入 buffer 的<code>锁池</code></li>
+<li>producer 生产完数据，调用 buffer.notifyAll() 之后，释放锁；</li>
+<li>此时 consumer1 被唤醒，从 buffer 的<code>等待池</code> 移动到 <code>锁池</code> 竞争锁；</li>
+<li>consumer2 在竞争中获得锁，消费了唯一一个消息后释放锁；</li>
+<li>consumer1 最后获得锁，从调用 wait() 的地方继续运行；</li>
+<li>那么问题来了，如果此时的条件检查不是在循环中，那么 consumer1 将消费一个空的缓冲区而出错，如果条件检查是在循环中，那么 consumer1 被唤醒后发现条件还是不满足，那么会继续调用 buffer.wait() 释放锁，等待生产者线程生产消息。</li>
+</ol>
+</blockquote>
 <p><strong>基于以上认知，下面这个是使用wait和notify函数的规范代码模板：</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// The standard idiom for calling the wait method in Java </span></div><div class="line"><span class="keyword">synchronized</span> (sharedObject) &#123; </div><div class="line">    <span class="keyword">while</span> (condition) &#123; </div><div class="line">        sharedObject.wait(); </div><div class="line">        <span class="comment">// (Releases lock, and reacquires on wakeup) </span></div><div class="line">    &#125; </div><div class="line">    <span class="comment">// do action based upon condition e.g. take or put into queue </span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>就像我之前说的一样，在while循环里使用wait的目的，是在线程被唤醒的前后都持续检查条件是否被满足。如果条件并未改变，wait被调用之前notify的唤醒通知就来了，那么这个线程就不会被真正地唤醒。</p>
-<h2 id="三、示例程序"><a href="#三、示例程序" class="headerlink" title="三、示例程序"></a>三、示例程序</h2><hr>
-<p>以下是一段生产者和消费者利用 wait 和 notifyAll 方法通信的 Demo<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.util.LinkedList;</div><div class="line"><span class="keyword">import</span> java.util.Queue;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/3/12 0012.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProducerComsumerDemo</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Queue&lt;String&gt; buffer = <span class="keyword">new</span> LinkedList&lt;&gt;();</div><div class="line">        <span class="keyword">int</span> maxSize = <span class="number">10</span>;</div><div class="line"></div><div class="line">        Producer producer = <span class="keyword">new</span> Producer(buffer, maxSize, <span class="string">"Producer"</span>);</div><div class="line">        Consumer consumer = <span class="keyword">new</span> Consumer(buffer, maxSize, <span class="string">"Consumer"</span>);</div><div class="line"></div><div class="line">        producer.start();</div><div class="line">        consumer.start();</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Queue&lt;String&gt; buffer = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">int</span> maxSize = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> String name = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(Queue&lt;String&gt; buffer, <span class="keyword">int</span> maxSize, String name)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.buffer = buffer;</div><div class="line">            <span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">            <span class="keyword">this</span>.name = name;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">            <span class="keyword">int</span> product = <span class="number">0</span>;</div><div class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">                <span class="keyword">synchronized</span> (buffer) &#123;</div><div class="line"></div><div class="line">                    <span class="comment">//队列已满时释放锁，等待消费</span></div><div class="line">                    <span class="keyword">while</span> (buffer.size() == maxSize) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            buffer.wait();</div><div class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">//生产产品</span></div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        Thread.sleep(<span class="number">500</span>);</div><div class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    System.out.println(<span class="string">"produced --&gt; product "</span> + product);</div><div class="line">                    buffer.add(String.valueOf(product++));</div><div class="line">                    buffer.notifyAll();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Queue&lt;String&gt; buffer = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">int</span> maxSize = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> String name = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(Queue&lt;String&gt; buffer, <span class="keyword">int</span> maxSize, String name)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.buffer = buffer;</div><div class="line">            <span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">            <span class="keyword">this</span>.name = name;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">                <span class="keyword">synchronized</span> (buffer) &#123;</div><div class="line">                    <span class="comment">//队列为空时释放锁，等待生产</span></div><div class="line">                    <span class="keyword">while</span> (buffer.isEmpty()) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            buffer.wait();</div><div class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">//消费产品</span></div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        Thread.sleep(<span class="number">1000</span>);</div><div class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    System.out.println(<span class="string">"consume --&gt; product "</span> + buffer.poll());</div><div class="line">                    buffer.notifyAll();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="三、示例程序"><a href="#三、示例程序" class="headerlink" title="三、示例程序"></a>三、示例程序</h2><p>以下是一段生产者和消费者利用 wait 和 notifyAll 方法通信的 Demo<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> org.demo;</div><div class="line"></div><div class="line"><span class="keyword">import</span> java.util.LinkedList;</div><div class="line"><span class="keyword">import</span> java.util.Queue;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Created by jzchen on 2017/3/12 0012.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProducerComsumerDemo</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Queue&lt;String&gt; buffer = <span class="keyword">new</span> LinkedList&lt;&gt;();</div><div class="line">        <span class="keyword">int</span> maxSize = <span class="number">10</span>;</div><div class="line"></div><div class="line">        Producer producer = <span class="keyword">new</span> Producer(buffer, maxSize, <span class="string">"Producer"</span>);</div><div class="line">        Consumer consumer = <span class="keyword">new</span> Consumer(buffer, maxSize, <span class="string">"Consumer"</span>);</div><div class="line"></div><div class="line">        producer.start();</div><div class="line">        consumer.start();</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Queue&lt;String&gt; buffer = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">int</span> maxSize = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> String name = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(Queue&lt;String&gt; buffer, <span class="keyword">int</span> maxSize, String name)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.buffer = buffer;</div><div class="line">            <span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">            <span class="keyword">this</span>.name = name;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">            <span class="keyword">int</span> product = <span class="number">0</span>;</div><div class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">                <span class="keyword">synchronized</span> (buffer) &#123;</div><div class="line"></div><div class="line">                    <span class="comment">//队列已满时释放锁，等待消费</span></div><div class="line">                    <span class="keyword">while</span> (buffer.size() == maxSize) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            buffer.wait();</div><div class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">//生产产品</span></div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        Thread.sleep(<span class="number">500</span>);</div><div class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    System.out.println(<span class="string">"produced --&gt; product "</span> + product);</div><div class="line">                    buffer.add(String.valueOf(product++));</div><div class="line">                    buffer.notifyAll();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Queue&lt;String&gt; buffer = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">int</span> maxSize = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> String name = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(Queue&lt;String&gt; buffer, <span class="keyword">int</span> maxSize, String name)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.buffer = buffer;</div><div class="line">            <span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">            <span class="keyword">this</span>.name = name;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">                <span class="keyword">synchronized</span> (buffer) &#123;</div><div class="line">                    <span class="comment">//队列为空时释放锁，等待生产</span></div><div class="line">                    <span class="keyword">while</span> (buffer.isEmpty()) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            buffer.wait();</div><div class="line">                        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">//消费产品</span></div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        Thread.sleep(<span class="number">1000</span>);</div><div class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    System.out.println(<span class="string">"consume --&gt; product "</span> + buffer.poll());</div><div class="line">                    buffer.notifyAll();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p> <strong>可能看到的结果</strong></p>
-<p><img src="/2017/03/12/Java_thread/wait-and-notify/微信截图_20170312214822.png" alt=""></p>
+<p><img src="/2017/03/12/Java_thread/wait-and-notify/producer_consumer.png" alt=""></p>
+<h2 id="四、锁池和等待池"><a href="#四、锁池和等待池" class="headerlink" title="四、锁池和等待池"></a>四、锁池和等待池</h2><p>在Java中，每个对象都有两个池，锁(monitor)池和等待池</p>
+<ul>
+<li><strong>锁池</strong>：假设线程A已经拥有了某个对象(注意:不是类)的锁，而其它的线程想要调用这个对象的某个synchronized方法(或者synchronized块)，由于这些线程在进入对象的synchronized方法之前必须先获得该对象的锁的拥有权，但是该对象的锁目前正被线程A拥有，所以这些线程就进入了该对象的锁池中。</li>
+<li><strong>等待池</strong>：假设一个线程A调用了某个对象的wait()方法，线程A就会释放该对象的锁(因为wait()方法必须出现在synchronized中，这样自然在执行wait()方法之前线程A就已经拥有了该对象的锁)，同时线程A就进入到了该对象的等待池中。如果另外的一个线程调用了相同对象的notifyAll()方法，那么处于该对象的等待池中的线程就会全部进入该对象的锁池中，准备争夺锁的拥有权。如果另外的一个线程调用了相同对象的notify()方法，那么仅仅有一个处于该对象的等待池中的线程(随机)会进入该对象的锁池.</li>
+</ul>
+<p><strong>深入理解</strong>：<br>如果线程调用了对象的 wait()方法，那么线程便会处于该对象的等待池中，等待池中的线程不会去竞争该对象的锁。<br>当有线程调用了对象的 notifyAll()方法（唤醒所有 wait 线程）或 notify()方法（只随机唤醒一个 wait 线程），被唤醒的的线程便会进入该对象的锁池中，锁池中的线程会去竞争该对象锁。<br>优先级高的线程竞争到对象锁的概率大，假若某线程没有竞争到该对象锁，它还会留在锁池中，唯有线程再次调用 wait()方法，它才会重新回到等待池中。而竞争到对象锁的线程则继续往下执行，直到执行完了 synchronized 代码块，它会释放掉该对象锁，这时锁池中的线程会继续竞争该对象锁。</p>
 
       
     </div>
@@ -481,6 +502,13 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -527,7 +555,7 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -538,7 +566,7 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -575,7 +603,7 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、sleep和wait到底什么区别"><span class="nav-text">一、sleep和wait到底什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何使用Wait"><span class="nav-text">二、如何使用Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、示例程序"><span class="nav-text">三、示例程序</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、sleep和wait到底什么区别"><span class="nav-text">一、sleep和wait到底什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何使用Wait"><span class="nav-text">二、如何使用Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、示例程序"><span class="nav-text">三、示例程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、锁池和等待池"><span class="nav-text">四、锁池和等待池</span></a></li></ol></div>
             
 
           </div>
@@ -702,6 +730,26 @@ wait方法是Object类的方法，这意味着所有的Java类都可以调用该
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/03/12/Java_thread/wait-and-notify/';
+          this.page.identifier = '2017/03/12/Java_thread/wait-and-notify/';
+          this.page.title = 'Java线程之wait, notify 和 notifyAll';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://chenjianzhao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
 
   
 

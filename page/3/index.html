@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/mybatis-mapper/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/13/zookeeper/server/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -279,8 +279,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/mybatis/mybatis-mapper/" itemprop="url">
-                  MyBatis Mapper
+                <a class="post-title-link" href="/2017/08/13/zookeeper/server/" itemprop="url">
+                  Zookeeper 服务端启动
                 </a>
               
             
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-13T19:30:00+08:00">
+                2017-08-13
               </time>
             
 
@@ -319,8 +319,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
-                    <span itemprop="name">MyBatis</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -331,6 +331,17 @@
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/13/zookeeper/server/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/13/zookeeper/server/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -356,15 +367,26 @@
       
         
           
-          Mapper XML 文件
-cache – 给定命名空间的缓存配置。
-cache-ref – 其他命名空间缓存配置的引用。
-resultMap – 是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
-parameterMap – 已废弃！老式风格的参数映射。内联参数是首选,这个元素可
+          服务端服务端整体架构如下
+
+Zookeeper服务器的启动，大致可以分为以下五个步骤
+
+配置文件解析。
+初始化数据管理器。
+初始化网络I/O管理器。
+数据恢复。
+对外服务。
+
+单机版服务器启动单机版服务器的启动其流程图如下
+
+上图的过程可以分为预启动和初始化过程。
+1. 预启动
+
+统一由Quorum
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/mybatis/mybatis-mapper/#more" rel="contents">
+            <a class="btn" href="/2017/08/13/zookeeper/server/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -410,7 +432,7 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/MyBatis-config/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/13/zookeeper/client/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -432,8 +454,8 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/mybatis/MyBatis-config/" itemprop="url">
-                  MyBatis基本配置
+                <a class="post-title-link" href="/2017/08/13/zookeeper/client/" itemprop="url">
+                  Zookeeper 客户端
                 </a>
               
             
@@ -449,8 +471,8 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-13T14:30:00+08:00">
+                2017-08-13
               </time>
             
 
@@ -472,8 +494,8 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
-                    <span itemprop="name">MyBatis</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -484,6 +506,17 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/13/zookeeper/client/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/13/zookeeper/client/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -509,17 +542,18 @@ parameterMap – 已废弃！老式风格的参数映射。内联参数是首选
       
         
           
-          
-原文 mybatis 中文教程
+          客户端组成Zookeeper客户端主要由如下核心部件构成。
+  　　1. **Zookeeper实例**，客户端入口。
 
-XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，它们会改变 MyBatis 的运行时行为。下表描述了设置中各项的意图、默认值等。
-表格：略。
-一个配置完整的 settings 元素的示例如下：（可整合Spring）
-12345678
+  　　2. **ClientWatchManager**， 客户端Watcher管理器。
+
+  　　3. **HostProvider**，客户端地址列表管理器。
+
+  　　4
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/mybatis/MyBatis-config/#more" rel="contents">
+            <a class="btn" href="/2017/08/13/zookeeper/client/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -565,7 +599,7 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/mybatis/Mybatis-generator/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/12/zookeeper/model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -587,8 +621,8 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/mybatis/Mybatis-generator/" itemprop="url">
-                  MyBatis-Generator
+                <a class="post-title-link" href="/2017/08/12/zookeeper/model/" itemprop="url">
+                  Zookeeper 系统模型
                 </a>
               
             
@@ -604,8 +638,8 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:22:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-12T18:00:00+08:00">
+                2017-08-12
               </time>
             
 
@@ -627,8 +661,8 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MyBatis/" itemprop="url" rel="index">
-                    <span itemprop="name">MyBatis</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -639,6 +673,17 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/12/zookeeper/model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/12/zookeeper/model/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -663,16 +708,10 @@ XML 映射配置文件settings这是 MyBatis 中极为重要的调整设置，�
 
       
         
-          
-          
-原文 MyBatis Generator 详解 先膜拜一下大神
-MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻译的不是特别好，觉得拗口的地方建议直接看原文档
-
-配置文件需要命名为 generatorConfig.xml 才能被 MyBatis-Generator 识别
-          ...
+          <p>本节将从数据模型、节点特性、版本、watch和ACL五个方面来讲述 zookeeper 的系统模型。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/mybatis/Mybatis-generator/#more" rel="contents">
+            <a class="btn" href="/2017/08/12/zookeeper/model/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -718,7 +757,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/java_nio/12-nio-demo/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/12/zookeeper/scenario/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -740,8 +779,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/java_nio/12-nio-demo/" itemprop="url">
-                  Java NIO（十二）之 Channel  Demo
+                <a class="post-title-link" href="/2017/08/12/zookeeper/scenario/" itemprop="url">
+                  Zookeeper典型应用场景
                 </a>
               
             
@@ -757,8 +796,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:04:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-12T16:00:00+08:00">
+                2017-08-12
               </time>
             
 
@@ -780,19 +819,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -803,6 +831,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/12/zookeeper/scenario/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/12/zookeeper/scenario/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -827,13 +866,10 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          Demo以下代码使用 ServerSocketChannel 和 SocketChannel 搭建一个 客户端/服务端 通信的示例，客户端发起三个连接，每个连接连续读写三次数据。
-1. 服务端代码：123456789101112131415161718192021222324252627282930
-          ...
+          <p>Zookeeper是一个高可用的分布式数据管理和协调框架，并且能够很好的保证分布式环境中数据的一致性。在越来越多的分布式系统（Hadoop、HBase、Kafka）中，Zookeeper都作为核心组件使用。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/java_nio/12-nio-demo/#more" rel="contents">
+            <a class="btn" href="/2017/08/12/zookeeper/scenario/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -879,7 +915,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/java_nio/11-nio-pipe/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/10/zookeeper/election/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -901,8 +937,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/java_nio/11-nio-pipe/" itemprop="url">
-                  Java NIO（十一）之 Pipe
+                <a class="post-title-link" href="/2017/08/10/zookeeper/election/" itemprop="url">
+                  Zookeeper 的 Leader 选举
                 </a>
               
             
@@ -918,8 +954,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:03:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T18:00:00+08:00">
+                2017-08-10
               </time>
             
 
@@ -941,19 +977,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -964,6 +989,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/10/zookeeper/election/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/10/zookeeper/election/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -988,15 +1024,15 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          PipeJava NIO 管道是2个线程之间的单向数据连接。 Pipe有一个source通道和一个sink通道。数据会被写到sink通道，从source通道读取。
-这里是Pipe原理的图示：
-1. 创建管道通过Pipe.open()方法打开管道。例如：
-1Pipe pipe = Pipe.open(
-          ...
+          <h2 id="Leader选举概述"><a href="#Leader选举概述" class="headerlink" title="Leader选举概述"></a>Leader选举概述</h2><p>Leader选举是保证分布式数据一致性的关键所在。当Zookeeper集群中的一台服务器出现以下两种情况之一时，需要进入Leader选举。</p>
+<ol>
+<li>服务器初始化启动。</li>
+<li>服务器运行期间无法和Leader保持连接。</li>
+</ol>
+<p>下面就两种情况进行分析讲解。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/java_nio/11-nio-pipe/#more" rel="contents">
+            <a class="btn" href="/2017/08/10/zookeeper/election/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1042,7 +1078,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/java_nio/10-nio-dataGramChaanel/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/09/zookeeper/paxos-zab/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1064,8 +1100,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/java_nio/10-nio-dataGramChaanel/" itemprop="url">
-                  Java NIO（十）之 DatagramChannel
+                <a class="post-title-link" href="/2017/08/09/zookeeper/paxos-zab/" itemprop="url">
+                  Zookeeper 与 Paxos
                 </a>
               
             
@@ -1081,8 +1117,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:02:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-09T23:00:00+08:00">
+                2017-08-09
               </time>
             
 
@@ -1104,19 +1140,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -1127,6 +1152,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/09/zookeeper/paxos-zab/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/09/zookeeper/paxos-zab/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1151,14 +1187,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          DatagramChannelJava NIO中的DatagramChannel是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包。
-1. 打开 DatagramChannel下面是 DatagramChannel 的打开方式：
-12D
-          ...
+          <h2 id="Zookeeper-概述"><a href="#Zookeeper-概述" class="headerlink" title="Zookeeper 概述"></a>Zookeeper 概述</h2><p>　　<strong>Zookeeper</strong>是一个开源的分布式协调服务，其设计目标是将那些复杂的且容易出错的分布式一致性服务封装起来，构成一个高效可靠的原语集，并以一些列简单的接口提供给用户使用。其是一个典型的分布式数据一致性的解决方案，分布式应用程序可以基于它实现诸如数据发布/发布、负载均衡、命名服务、分布式协调/通知、集群管理、Master选举、分布式锁和分布式队列等功能。其可以保证如下 <strong>分布式一致性特性</strong>。</p>
+<ol>
+<li><strong>顺序一致性</strong>，从同一个客户端发起的事务请求，最终将会严格地按照其发起顺序被应用到Zookeeper中去。</li>
+<li><strong>原子性</strong>，所有事务请求的处理结果在整个集群中所有机器上的应用情况是一致的，即整个集群要么都成功应用了某个事务，要么都没有应用。</li>
+<li><strong>单一视图</strong>，无论客户端连接的是哪个Zookeeper服务器，其看到的服务端数据模型都是一致的。</li>
+<li><strong>可靠性</strong>，一旦服务端成功地应用了一个事务，并完成对客户端的响应，那么该事务所引起的服务端状态变更将会一直被保留，除非有另一个事务对其进行了变更。</li>
+<li><strong>实时性</strong>，Zookeeper保证在一定的时间段内，客户端最终一定能够从服务端上读取到最新的数据状态。</li>
+</ol>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/java_nio/10-nio-dataGramChaanel/#more" rel="contents">
+            <a class="btn" href="/2017/08/09/zookeeper/paxos-zab/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1204,7 +1243,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/java_nio/9-nio-serverSocketChannel/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/09/zookeeper/zookeeper/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1226,8 +1265,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/java_nio/9-nio-serverSocketChannel/" itemprop="url">
-                  Java NIO（九）之 ServerSocketChannel
+                <a class="post-title-link" href="/2017/08/09/zookeeper/zookeeper/" itemprop="url">
+                  Zookeeper 命令行
                 </a>
               
             
@@ -1243,8 +1282,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:01:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-09T22:00:00+08:00">
+                2017-08-09
               </time>
             
 
@@ -1266,19 +1305,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -1289,6 +1317,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/09/zookeeper/zookeeper/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/09/zookeeper/zookeeper/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1313,14 +1352,10 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          ServerSocketChannelJava NIO中的 ServerSocketChannel 是一个可以监听新进来的TCP连接的通道, 就像标准IO中的ServerSocket一样。ServerSocketChannel类在 java.nio.channels包中。
-这里有个例子：
-12345
-          ...
+          <h2 id="Zookeeper部署"><a href="#Zookeeper部署" class="headerlink" title="Zookeeper部署"></a>Zookeeper部署</h2><p>Zookeeper有三种运行形式：<strong>集群模式、单机模式、伪集群模式</strong>。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/java_nio/9-nio-serverSocketChannel/#more" rel="contents">
+            <a class="btn" href="/2017/08/09/zookeeper/zookeeper/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1366,7 +1401,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/java_nio/8-nio-socketChannel/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/31/RabbitQM/rpc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1388,8 +1423,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/25/java_nio/8-nio-socketChannel/" itemprop="url">
-                  Java NIO（八）之 SocketChannel
+                <a class="post-title-link" href="/2017/07/31/RabbitQM/rpc/" itemprop="url">
+                  RabbitMQ —— RPC
                 </a>
               
             
@@ -1405,8 +1440,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T00:00:00+08:00">
-                2017-04-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-31T17:00:00+08:00">
+                2017-07-31
               </time>
             
 
@@ -1428,19 +1463,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
                   </a>
                 </span>
 
@@ -1451,6 +1475,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/31/RabbitQM/rpc/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/31/RabbitQM/rpc/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1475,16 +1510,12 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          SocketChannelJava NIO中的SocketChannel是一个连接到TCP网络套接字的通道。可以通过以下2种方式创建SocketChannel：
-
-打开一个SocketChannel并连接到互联网上的某台服务器。
-
-一个新连接到达ServerSocketChannel时，会创建一个S
-          ...
+          <p>在第二小节，我们学习了如何使用 Work Queues 将耗时的任务分发到多个 worker 处理。</p>
+<p>但是，当我们需要在远程机计算机上运行一个函数，之前的例子就无法满足了。这种模式一般被称为 <strong>远程方法调用</strong>（<em>Remote Procedure Call</em> or <em>RPC</em>）。</p>
+<p>在这一节，我们将使用 RabbitMQ 来构建一个 RPC 系统：一个客户端和一个可伸缩的 RPC 服务器。因为我们没有耗时的任务需要分布式计算，所以我们将创建一个虚构的 RPC Server 来返回 斐波那契数据列。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/25/java_nio/8-nio-socketChannel/#more" rel="contents">
+            <a class="btn" href="/2017/07/31/RabbitQM/rpc/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1530,7 +1561,7 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/7-nio-fileChannel/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/27/RabbitQM/topic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1552,8 +1583,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
             
               
                 
-                <a class="post-title-link" href="/2017/04/24/java_nio/7-nio-fileChannel/" itemprop="url">
-                  Java NIO（七）之 Selector
+                <a class="post-title-link" href="/2017/07/27/RabbitQM/topic/" itemprop="url">
+                  RabbitMQ —— Topic
                 </a>
               
             
@@ -1569,8 +1600,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T23:00:00+08:00">
-                2017-04-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-27T17:00:00+08:00">
+                2017-07-27
               </time>
             
 
@@ -1592,19 +1623,8 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
                   </a>
                 </span>
 
@@ -1615,6 +1635,17 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/27/RabbitQM/topic/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/27/RabbitQM/topic/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1639,14 +1670,12 @@ MyBatis Generator中文文档 该大神翻译的，个人觉得有些地方翻�
 
       
         
-          
-          FileChannelJava NIO中的FileChannel是一个连接到文件的通道。可以通过文件通道读写文件。
-FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
-1. 打开FileChannel在使用FileChannel之前，必须先打开它。但是，我们无法直接打开一个File
-          ...
+          <p>在前面的小结，我们使用了 <strong>direct</strong> exchange 代替盲目广播的 <strong>fanout</strong> exchagne 使得接受者能够选择需要接收的日志消息。但 <strong>direct</strong> exchange 还是存在局限性——<strong>它无法根据多标准路由</strong>。</p>
+<p>日志系统中，我们可能不止需要根据<strong>日志级别</strong>订阅消息，同时也需要基于 <strong>”日志发送来源“</strong> 来过滤。你可能从  <a href="http://en.wikipedia.org/wiki/Syslog">syslog</a> unix tool 得知可以通过日志的 <strong>严重级别</strong> severity (info/warn/crit…) 和 <strong>来源设备</strong> facility (auth/cron/kern…) 来路由日志。</p>
+<p>这会基于我们更多的灵活性 —— 我们也许只想监听来自 ‘cron’ 的 critical errors 和 所有来自 ‘kern’ 的日志。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/24/java_nio/7-nio-fileChannel/#more" rel="contents">
+            <a class="btn" href="/2017/07/27/RabbitQM/topic/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1692,7 +1721,7 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/java_nio/6-nio-selector/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/26/RabbitQM/publish-subscribe/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Jianzhao Chen">
@@ -1714,8 +1743,8 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
             
               
                 
-                <a class="post-title-link" href="/2017/04/24/java_nio/6-nio-selector/" itemprop="url">
-                  Java NIO（六）之 Selector
+                <a class="post-title-link" href="/2017/07/26/RabbitQM/publish-subscribe/" itemprop="url">
+                  RabbitMQ —— publish/subscribe
                 </a>
               
             
@@ -1731,8 +1760,8 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T22:00:00+08:00">
-                2017-04-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-26T22:00:00+08:00">
+                2017-07-26
               </time>
             
 
@@ -1754,19 +1783,8 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/" itemprop="url" rel="index">
-                    <span itemprop="name">Java Core</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Core/Java-NIO/" itemprop="url" rel="index">
-                    <span itemprop="name">Java NIO</span>
+                  <a href="/categories/RabbitMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RabbitMQ</span>
                   </a>
                 </span>
 
@@ -1777,6 +1795,17 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
           
 
           
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/26/RabbitQM/publish-subscribe/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/07/26/RabbitQM/publish-subscribe/" itemprop="commentCount"></span>
+                </a>
+              </span>
             
           
 
@@ -1801,13 +1830,13 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
 
       
         
-          
-          SelectorSelector（选择器）是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。这样，一个单独的线程可以管理多个channel，从而管理多个网络连接。
-1. 为什么使用Selector?仅用单个线程来处理多个Channels的好处是，只需要更
-          ...
+          <p>在 work queue 一节 我们创建了work queue，其背后的构思是每个任务都分发给一个确定的 worker 。这一节，我们将会把消息交付给多个消费者，这种模式叫做“发布/订阅” （publish/subscribe）模式。</p>
+<p>我们将建立一个简单的日志系统，它由两个程序组成，一个负责发送日志信息，另外一个负责接收并打印日志。</p>
+<p>在日志系统中，每一个运行的接受者程序都将收到消息。通过这种方法，我们可以运行一个接受者直接将日志写入硬盘，同事运行另外一个接受者将日志打印到屏幕上。</p>
+<p>本质上，发布日志消息将广播给所有的接受者。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/04/24/java_nio/6-nio-selector/#more" rel="contents">
+            <a class="btn" href="/2017/07/26/RabbitQM/publish-subscribe/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1848,7 +1877,7 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1893,7 +1922,7 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1904,7 +1933,7 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2048,6 +2077,14 @@ FileChannel无法设置为非阻塞模式，它总是运行在阻塞模式下。
 
   
 
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://chenjianzhao.disqus.com/count.js" async></script>
+    
+
+    
 
   
 
