@@ -89,11 +89,28 @@ chmod +x shadowsocks.sh
 ```
 
 - 期间没出现[{root@vurlt](mailto:%7Broot@vurlt)~}就不要动，这个命令是给服务器装SS。中间会提示你输入你的 `SS SERVER` 的密码和端口。建议你自己输入一个密码和端口(端口范围1-65536，推荐10000以上),如果不输入,系统会启用默认密码端口。然后按任意键继续
+
 - 稍等一会跑完命令后会出来你的SS客户端的信息,记得记下来
+
+  ```
+  Congratulations, shadowsocks install completed!
+  Your Server IP: 00.00.00.00
+  Your Server Port: 433
+  Your Password: 123456
+  Your Local IP: 127.0.0.1
+  Your Local Port: 1080
+  Your Encryption Method: aes-256-cfb
+
+  Welcome to visit:https://teddysun.com/342.html
+  Enjoy it!
+  ```
+
 - 看到以上提示后就表明VPS上SS已经安装成功，并且已经设置了开机启动，VPS重启后不用手工启动SS。
+
 - 此时，你的VPS重新启动，服务端已经完全配置完毕。
 
 
+</br>
 
 #### 手动安装	
 
@@ -158,7 +175,7 @@ $ :wq //写入并退出
 
 </br>
 
-### 防火墙
+#### 防火墙（手动安装需要设置）
 
 ```
 $ firewall-cmd --query-port=443/tcp // 检查端口是不是已经启用了 如果已经占用了换个端口就好, 改一下上面的json文件
