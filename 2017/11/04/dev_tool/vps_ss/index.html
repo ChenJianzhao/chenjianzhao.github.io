@@ -127,7 +127,7 @@ VPN
 VPS 的选择老左常用国内 / 国">
 <meta property="og:image" content="http://yoursite.com/2017/11/04/dev_tool/vps_ss/vps.png">
 <meta property="og:image" content="https://www.vultr.com/media/banner_1.png">
-<meta property="og:updated_time" content="2017-11-14T04:33:16.957Z">
+<meta property="og:updated_time" content="2017-11-15T06:05:58.076Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="VPS 搭建 Shadowsocks">
 <meta name="twitter:description" content="原文：
@@ -455,11 +455,17 @@ VPS 的选择老左常用国内 / 国">
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod +x shadowsocks.sh</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./shadowsocks.sh 2&gt;&amp;1 | tee shadowsocks.log</div></pre></td></tr></table></figure>
 <ul>
-<li>期间没出现<a href="mailto:%7Broot@vurlt" target="_blank" rel="external">{root@vurlt</a>~}就不要动，这个命令是给服务器装SS。中间会提示你输入你的 <code>SS SERVER</code> 的密码和端口。建议你自己输入一个密码和端口(端口范围1-65536，推荐10000以上),如果不输入,系统会启用默认密码端口。然后按任意键继续</li>
-<li>稍等一会跑完命令后会出来你的SS客户端的信息,记得记下来</li>
-<li>看到以上提示后就表明VPS上SS已经安装成功，并且已经设置了开机启动，VPS重启后不用手工启动SS。</li>
-<li>此时，你的VPS重新启动，服务端已经完全配置完毕。</li>
+<li><p>期间没出现<a href="mailto:%7Broot@vurlt" target="_blank" rel="external">{root@vurlt</a>~}就不要动，这个命令是给服务器装SS。中间会提示你输入你的 <code>SS SERVER</code> 的密码和端口。建议你自己输入一个密码和端口(端口范围1-65536，推荐10000以上),如果不输入,系统会启用默认密码端口。然后按任意键继续</p>
+</li>
+<li><p>稍等一会跑完命令后会出来你的SS客户端的信息,记得记下来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Congratulations, shadowsocks install completed!</div><div class="line">Your Server IP: 00.00.00.00</div><div class="line">Your Server Port: 433</div><div class="line">Your Password: 123456</div><div class="line">Your Local IP: 127.0.0.1</div><div class="line">Your Local Port: 1080</div><div class="line">Your Encryption Method: aes-256-cfb</div><div class="line"></div><div class="line">Welcome to visit:https://teddysun.com/342.html</div><div class="line">Enjoy it!</div></pre></td></tr></table></figure>
+</li>
+<li><p>看到以上提示后就表明VPS上SS已经安装成功，并且已经设置了开机启动，VPS重启后不用手工启动SS。</p>
+</li>
+<li><p>此时，你的VPS重新启动，服务端已经完全配置完毕。</p>
+</li>
 </ul>
+<p><br></p>
 <h4 id="手动安装"><a href="#手动安装" class="headerlink" title="手动安装"></a>手动安装</h4><ul>
 <li>安装 shadowsocks</li>
 </ul>
@@ -483,7 +489,7 @@ VPS 的选择老左常用国内 / 国">
 <p>ESC</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ :wq //写入并退出</div></pre></td></tr></table></figure>
 <p><br></p>
-<h3 id="防火墙"><a href="#防火墙" class="headerlink" title="防火墙"></a>防火墙</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ firewall-cmd --query-port=443/tcp // 检查端口是不是已经启用了 如果已经占用了换个端口就好, 改一下上面的json文件</div><div class="line">no</div><div class="line">$ firewall-cmd --zone=public --add-port=443/tcp --permanent // 永久开启443端口(否则重启后连接会超时)</div><div class="line">success</div><div class="line">$ firewall-cmd --reload</div><div class="line">success</div></pre></td></tr></table></figure>
+<h4 id="防火墙（手动安装需要设置）"><a href="#防火墙（手动安装需要设置）" class="headerlink" title="防火墙（手动安装需要设置）"></a>防火墙（手动安装需要设置）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ firewall-cmd --query-port=443/tcp // 检查端口是不是已经启用了 如果已经占用了换个端口就好, 改一下上面的json文件</div><div class="line">no</div><div class="line">$ firewall-cmd --zone=public --add-port=443/tcp --permanent // 永久开启443端口(否则重启后连接会超时)</div><div class="line">success</div><div class="line">$ firewall-cmd --reload</div><div class="line">success</div></pre></td></tr></table></figure>
 <p><br></p>
 <h3 id="启动-SS-服务"><a href="#启动-SS-服务" class="headerlink" title="启动 SS 服务"></a>启动 SS 服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ssserver -c /etc/shadowsocks.json -d start</div><div class="line"># 关闭服务把 start 改 stop</div></pre></td></tr></table></figure>
 <p>后台运行</p>
@@ -622,7 +628,7 @@ VPS 的选择老左常用国内 / 国">
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-count">127</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -670,7 +676,7 @@ VPS 的选择老左常用国内 / 国">
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shadowsocks-和-VPN-的区别"><span class="nav-text">Shadowsocks 和 VPN 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SS"><span class="nav-text">SS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VPN"><span class="nav-text">VPN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VPS-的选择"><span class="nav-text">VPS 的选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建-shadowsocks-服务"><span class="nav-text">搭建 shadowsocks 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-接连你的服务器"><span class="nav-text">SSH 接连你的服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows"><span class="nav-text">Windows</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Mac"><span class="nav-text">Mac</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-shadowsocks-服务"><span class="nav-text">安装 shadowsocks 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#脚本一键安装"><span class="nav-text">脚本一键安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#手动安装"><span class="nav-text">手动安装</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#防火墙"><span class="nav-text">防火墙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动-SS-服务"><span class="nav-text">启动 SS 服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接连-SS"><span class="nav-text">接连 SS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最后"><span class="nav-text">写在最后</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shadowsocks-和-VPN-的区别"><span class="nav-text">Shadowsocks 和 VPN 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SS"><span class="nav-text">SS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VPN"><span class="nav-text">VPN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VPS-的选择"><span class="nav-text">VPS 的选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建-shadowsocks-服务"><span class="nav-text">搭建 shadowsocks 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH-接连你的服务器"><span class="nav-text">SSH 接连你的服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows"><span class="nav-text">Windows</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Mac"><span class="nav-text">Mac</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-shadowsocks-服务"><span class="nav-text">安装 shadowsocks 服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#脚本一键安装"><span class="nav-text">脚本一键安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#手动安装"><span class="nav-text">手动安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#防火墙（手动安装需要设置）"><span class="nav-text">防火墙（手动安装需要设置）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动-SS-服务"><span class="nav-text">启动 SS 服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接连-SS"><span class="nav-text">接连 SS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最后"><span class="nav-text">写在最后</span></a></li></ol></div>
             
 
           </div>
