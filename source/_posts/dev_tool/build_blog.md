@@ -29,6 +29,10 @@ title: Hexo 添加第三方服务
    hypercomments_id: your_id
    ```
 
+![hypercomments](build_blog/hypercomments.png)
+
+
+
 </br>
 
 ## 数据统计与分析
@@ -230,5 +234,9 @@ var INDEXED_PROPERTIES = [
 ];
 ```
 
-于是就可以了。。。
+Finally Done!!!
+
+![algolia_demo](build_blog/algolia_demo.png)
+
+
 
