@@ -340,19 +340,19 @@ han: false
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+baidu_analytics: 115cc913e4f4c226cd41a6c31047075a
 
 # Duoshuo ShortName
 #duoshuo_shortname:
 
 # Disqus
 disqus:
-  enable: true
+  enable: false
   shortname: chenjianzhao
   count: true
 
 # Hypercomments
-#hypercomments_id:
+hypercomments_id: 97963
 
 # changyan
 changyan:
@@ -480,12 +480,12 @@ busuanzi_count:
   enable: true
   # custom uv span for the whole site
   site_uv: true
-  site_uv_header: <i class="fa fa-user"></i> 访客
-  site_uv_footer: 人
+  site_uv_header: <i class="fa fa-user"></i> 访客总数
+  site_uv_footer: 
   # custom pv span for the whole site
   site_pv: true
-  site_pv_header: <i class="fa fa-eye"></i> 访问
-  site_pv_footer: 次
+  site_pv_header: <i class="fa fa-eye"></i> 总访问量
+  site_pv_footer: 
   # custom pv span for one page only
   page_pv: true
   page_pv_header: <i class="fa fa-file-o"></i> 浏览

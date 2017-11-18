@@ -71,19 +71,13 @@ deploy:
   type: git
   repo: git@github.com:ChenJianzhao/chenjianzhao.github.io.git
   branch: master
-  
+
 backup:
     type: git
     repository:
        github: git@github.com:ChenJianzhao/chenjianzhao.github.io.git,backup
 ##gitcafe: git@github.com:ChenJianzhao/chenjianzhao.github.io.git,backup
 
-search:
-  path: search.xml
-  field: post
-  format: html
-  limit: 10000
-  
 algolia:
   applicationID: 70GGZFDHL1
   apiKey: 028312fc665ec44dcfceefa1b06805d5
