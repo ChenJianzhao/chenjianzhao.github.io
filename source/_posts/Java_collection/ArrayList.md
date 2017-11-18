@@ -7,17 +7,22 @@ status: public
 title: Java集合类深入分析之ArrayList
 ---
 
-## 1. ArrayList概述：
+## ArrayList概述：
    ArrayList是List接口的可变数组的实现。实现了所有可选列表操作，并允许包括 null 在内的所有元素。除了实现 List 接口外，此类还提供一些方法来操作内部用来存储列表的数组的大小。
    每个ArrayList实例都有一个容量，该容量是指用来存储列表元素的数组的大小。它总是至少等于列表的大小。随着向ArrayList中不断添加元素，其容量也自动增长。自动增长会带来数据向新数组的重新拷贝，因此，如果可预知数据量的多少，可在构造ArrayList时指定其容量。在添加大量元素前，应用程序也可以使用ensureCapacity操作来增加ArrayList实例的容量，这可以减少递增式再分配的数量。 
    注意，此实现不是同步的。如果多个线程同时访问一个ArrayList实例，而其中至少一个线程从结构上修改了列表，那么它必须保持外部同步。
- 
-## 2. ArrayList的实现：
+
+<!-- more -->
+
+</br>
+
+## ArrayList的实现：
+
 对于ArrayList而言，它实现List接口、底层使用数组保存所有元素。其操作基本上是对数组的操作。下面我们来分析ArrayList的源代码：
 **1) 底层使用数组实现：**
 ```java
 private transient Object[] elementData;  
-```    
+```
 **2) 构造方法： **
 ArrayList提供了三种方式的构造器，可以构造一个默认初始容量为10的空列表、构造一个指定初始容量的空列表以及构造一个包含指定collection的元素的列表，这些元素按照该collection的迭代器返回它们的顺序排列的。
 ```java
@@ -158,7 +163,7 @@ public boolean remove(Object o) {
 }  
 ```
     注意：从数组中移除元素的操作，也会导致被移除的元素以后的所有元素的向左移动一个位置。
-    
+
 **6) 调整数组容量： **
    从上面介绍的向ArrayList中存储元素的代码中，我们看到，每当向数组中添加元素时，都要去检查添加后元素的个数是否会超出当前数组的长度，如果超出，数组将会进行扩容，以满足添加数据的需求。数组扩容通过一个公开的方法ensureCapacity(int minCapacity)来实现。在实际添加大量元素前，我也可以使用ensureCapacity来手动增加ArrayList实例的容量，以减少递增式再分配的数量。
 ```java

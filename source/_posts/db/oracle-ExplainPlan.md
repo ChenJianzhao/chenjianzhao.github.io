@@ -1,17 +1,17 @@
 ---
 categories: 数据库
 date: 2017-03-29 16:29
-status: public
 title: 'Oracle 索引和执行计划详解'
 ---
 
-## 一、几个概念
-***
+## 几个概念
 **Rowid的概念**：
 　　rowid是一个伪列，既然是伪列，那么这个列就不是用户定义，而是系统自己给加上的。 对每个表都有一个rowid的伪列，但是表中并不物理存储ROWID列的值。不过你可以像使用其它列那样使用它，但是不能删除改列，也不能对该列的值进行 修改、插入。一旦一行数据插入数据库，则rowid在该行的生命周期内是唯一的，即即使该行产生行迁移，行的rowid也不会改变。
 
 **Recursive SQL概念**：
 　　有时为了执行用户发出的一个sql语句，Oracle必须执行一些额外的语句，我们将这些额外的语句称之为''recursive calls''或''recursive SQL statements''.如当一个DDL语句发出后，ORACLE总是隐含的发出一些recursive SQL语句，来修改数据字典信息，以便用户可以成功的执行该DDL语句。当需要的数据字典信息没有在共享内存中时，经常会发生Recursive calls，这些Recursive calls会将数据字典信息从硬盘读入内存中。用户不比关心这些recursive SQL语句的执行情况，在需要的时候，ORACLE会自动的在内部执行这些语句。当然DML语句与SELECT都可能引起recursive SQL.简单的说，我们可以将触发器视为recursive SQL.
+
+<!-- more -->
 
 **Row Source（行源）**：
 　　用在查询中，由上一操作返回的符合条件的行的集合，即可以是表的全部行数据的集合；也可以是表的部分行数据的集合；也可以为对上2个row source进行连接操作（如join连接）后得到的行数据集合。
@@ -31,10 +31,11 @@ title: 'Oracle 索引和执行计划详解'
 **可选择性（selectivity）**：
 　　比较一下列中唯一键的数量和表中的行数，就可以判断该列的可选择性。 如果该列的“唯一键的数量/表中的行数”的比值越接近1，则该列的可选择性越高，该列就越适合创建索引，同样索引的可选择性也越高。在可选择性高的列上进 行查询时，返回的数据就较少，比较适合使用索引查询。
 
+</br>
 
-## 二、oracle访问数据的存取方法
-*** 
-### 1.全表扫描（Full Table Scans， FTS）
+## oracle访问数据的存取方法
+
+### 全表扫描（Full Table Scans， FTS）
 　　为实现全表扫描，Oracle读取表中所有的行，并检查每一行是否满足语句的WHERE限制条件一个多块读操作可以使一次I/O能读取多块数据块（db_block_multiblock_read_count参数设定），而不是只读取一个数据块，这极大的减 少了I/O总次数，提高了系统的吞吐量，所以利用多块读的方法可以十分高效地实现全表扫描，而且只有在全表扫描的情况下才能使用多块读操作。在这种访问模 式下，每个数据块只被读一次。
 　　使用FTS的前提条件：在较大的表上不建议使用全表扫描，除非取出数据的比较多，超过总量的5% —— 10%，或你想使用并行查询功能时。
 使用全表扫描的例子： 
@@ -46,7 +47,10 @@ Query Plan
 SELECT STATEMENT[CHOOSE] Cost=
     TABLE ACCESS FULL DUAL
 ```
-### 2.通过ROWID的表存取（Table Access by ROWID或rowid lookup）
+</br>
+
+### 通过ROWID的表存取（Table Access by ROWID或rowid lookup）
+
 　　行的ROWID指出了该行所在的数据文件、数据块以及行在该块中的位置，所以通过ROWID来存取数据可以快速定位到目标数据上，是Oracle存取单行数据的最快方法。
 　　这种存取方法不会用到多块读操作，一次I/O只能读取一个数据块。我们会经常在执行计划中看到该存取方法，如通过索引查询数据。
 使用ROWID存取的方法： 
@@ -58,7 +62,10 @@ Query Plan
 SELECT STATEMENT [CHOOSE] Cost=1
     TABLE ACCESS BY ROWID DEPT [ANALYZED]
 ```
-### 3.索引扫描（Index Scan或index lookup）
+</br>
+
+### 索引扫描（Index Scan或index lookup）
+
 　　我们先通过index查找到数据对应的rowid值（对于非唯一索引可能返回多个rowid值），然后根据rowid直接从表中得到具体的数据，这种查找方式称为索引扫描或索引查找（index lookup）。一个rowid唯一的表示一行数据，该行对应的数据块是通过一次i/o得到的，在此情况下该次i/o只会读取一个数据库块。
 　　**在索引中，除了存储每个索引的值外，索引还存储具有此值的行对应的ROWID值。**
 　　**索引扫描可以由2步组成：**
@@ -98,8 +105,10 @@ SELECT STATEMENT[CHOOSE] Cost=1
 ```
 　　从这个例子中可以看到：因为索引是已经排序了的，所以将按照索引的顺序查询出符合条件的行，因此避免了进一步排序操作。
 
+</br>
 
-### 3.1 索引扫描的分类
+
+### 索引扫描的分类
  根据索引的类型与where限制条件的不同，有4种类型的索引扫描：
 ```
 索引唯一扫描（index unique scan）
@@ -178,9 +187,11 @@ SELECT STATEMENT[CHOOSE] Cost=1
 ```
 
 
-## 三、表之间的连接
-***
- 
+
+</br>
+
+## 表之间的连接
+
 　　Join是一种试图将两个表结合在一起的谓词，一次只能连接2个表，表连接也可以被称为表关联。在后面的叙 述中，我们将会使用“row source”来代替“表”，因为使用row source更严谨一些，并且将参与连接的2个row source分别称为row source1和row source 2.**Join过程的各个步骤经常是串行操作**，即使相关的row source可以被并行访问，即可以并行的读取做join连接的两个row source的数据，但是在将表中符合限制条件的数据读入到内存形成row source后，join的其它步骤一般是串行的。有多种方法可以将2个表连接起来，当然每种方法都有自己的优缺点，每种连接类型只有在特定的条件下才会 发挥出其最大优势。
 　　row source（表）之间的连接顺序对于查询的效率有非常大的影响。**通过首先存取特定的表，即将该表作为驱动表，这样可以先应用某些限制条件，从而得到一个 较小的row source，使连接的效率较高，**这也就是我们常说的要先执行限制条件的原因。一般是在将表读入内存时，应用where子句中对该表的限制条件。
 　　根据2个row source的连接条件的中操作符的不同，可以将连接分为等值连接（如WHERE A.COL3 = B.COL4）、非等值连接（WHERE A.COL3 > B.COL4）、外连接（WHERE A.COL3 = B.COL4（+））。上面的各个连接的连接原理都基本一样，所以为了简单期间，下面以等值连接为例进行介绍。
@@ -193,7 +204,7 @@ WHERE A.COL3 = B.COL4;
 假设A表为Row Soruce1，则其对应的连接操作关联列为COL 3；
 B表为Row Soruce2，则其对应的连接操作关联列为COL 4；
 
-### 连接类型：
+### 连接类型
 　　目前为止，无论连接操作符如何，典型的连接类型共有3种：
 ```
 (1) 排序——合并连接（Sort Merge Join （SMJ） ）
@@ -304,10 +315,11 @@ SLECT STATEMENT [CHOOSE] Cost=5
 ```
 　　CARTESIAN关键字指出了在2个表之间做笛卡尔乘积。假如表emp有n行，dept表有m行，笛卡尔乘积的结果就是得到n * m行结果。
 
+</br>
 
+## 总结
 
-## 最后，总结一下，在哪种情况下用哪种连接方法比较好：
-***
+**在哪种情况下用哪种连接方法比较好：**
 
 **排序 - - 合并连接（Sort Merge Join， SMJ）：**
 　　a） 对于非等值连接，这种连接方式的效率是比较高的。
@@ -322,10 +334,10 @@ SLECT STATEMENT [CHOOSE] Cost=5
 **哈希连接（Hash Join， HJ）：**
 　　a） 这种方法是在oracle7后来引入的，使用了比较先进的连接理论，一般来说，其效率应该好于其它2种连接，但是这种连接只能用在CBO优化器中，而且需要设置合适的hash_area_size参数，才能取得较好的性能。
 　　b） 在2个较大的row source之间连接时会取得相对较好的效率，在一个row source较小时则能取得更好的效率。
-　　c） 只能用于等值连接中
+　　c） 只能用于等值连接
 
+</br>
 
----
 **Oracle执行计划的概述**
 
 Oracle执行计划的相关概念：
@@ -340,7 +352,7 @@ Oracle执行计划的相关概念：
 　　可选择性：表中某列的不同数值数量/表的总行数如果接近于1，则列的可选择性为高。
 
 　　Oracle访问数据的存取方法：
- 
+
 　　Full table scans, FTS(全表扫描)：通过设置db_block_multiblock_read_count可以设置一次IO能读取的数据块个数，从而有效减少全表扫描时的IO总次数，也就是通过预读机制将将要访问的数据块预先读入内存中。只有在全表扫描情况下才能使用多块读操作。
 　　Table Access by rowed（通过rowid存取表，rowid lookup）：由于rowid中记录了行存储的位置，所以这是oracle存取单行数据的最快方法。
 　　Index scan（索引扫描index lookup）：在索引中，除了存储每个索引的值外，索引还存储具有此值的行对应的rowid值，索引扫描分两步1，扫描索引得到rowid；2，通过 rowid读取具体数据。每步都是单独的一次IO，所以如果数据经限制条件过滤后的总量大于原表总行数的5%－10％,则使用索引扫描效率下降很多。而如果结果数据能够全部在索引中找到，则可以避免第二步操作，从而加快检索速度。
@@ -351,7 +363,7 @@ Oracle执行计划的相关概念：
 　　Index fast full scan（索引快速扫描）：与index full scan类似，但是这种方式下不对结果进行排序。
 
 **目前为止，典型的连接类型有3种：**
- 
+
 　　Sort merge join（SMJ排序－合并连接）：首先生产driving table需要的数据，然后对这些数据按照连接操作关联列进行排序；然后生产probed table需要的数据，然后对这些数据按照与driving table对应的连接操作列进行排序；最后两边已经排序的行被放在一起执行合并操作。排序是一个费时、费资源的操作，特别对于大表。所以smj通常不是一个特别有效的连接方法，但是如果driving table和probed table都已经预先排序，则这种连接方法的效率也比较高。
 　　Nested loops（NL嵌套循环）：连接过程就是将driving table和probed table进行一次嵌套循环的过程。就是用driving table的每一行去匹配probed table 的所有行。Nested loops可以先返回已经连接的行，而不必等待所有的连接操作处理完成才返回数据，这可以实现快速的响应时间。
 　　Hash join（哈希连接）：较小的row source被用来构建hash table与bitmap，第二个row source用来被hashed，并与第一个row source生产的hash table进行匹配。以便进行进一步的连接。当被构建的hash table与bitmap能被容纳在内存中时，这种连接方式的效率极高。但需要设置合适的hash_area_size参数且只能用于等值连接中。

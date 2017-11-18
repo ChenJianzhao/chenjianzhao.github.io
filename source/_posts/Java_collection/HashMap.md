@@ -10,7 +10,7 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 整理转载自
 [java集合类深入分析之HashSet, HashMap篇](http://sauzny.iteye.com/blog/2020275)
 
-## 一、HashMap概述：
+## HashMap概述：
 1. HashMap是基于哈希表的Map接口的非同步实现。允许使用**null值和null键**。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
 
 2. 最常见的两种操作方法是``get``, ``put``方法。get方法用于根据Key来取得所需要的Value值，而put方法用于根据特定的Key来放置对应的Value。除了这两个方法以外还有判断Key,Value是否存在的containsKey, containsValue方法。
@@ -30,9 +30,9 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 | values        | Collection<V> values();              | 所有value的集合 |
 | entrySet      | Set<Map.Entry<K, V>> entrySet();     | 键值对集合      |
 
+</br>
 
-
-## 二、HashMap的数据结构：
+## HashMap的数据结构：
 **HashMap 实际上是一个链表数组。**
 ![HashMap](./HashMap/hashmap.jpg)
 
@@ -66,7 +66,9 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 
 
 
-## 三、数组增长调整（Rehashing）
+</br>
+
+## 数组增长调整（Rehashing）
 
 现在再来看一个地方，我们实际中设计HashMap的时候，这里面**数组的长度**该多少合适呢？是否需要进行动态调整呢？如果是固定死的话，如果我们需要放置的元素少了，岂不是浪费空间？如果我们要放的元素太多了，这样也会导致更大程度的hash碰撞，会带来性能方面的损失。
 1. 在HashMap里面保存元素的table是可以**动态增长**的，它有一个**默认的长度16**，还有一个**最大长度 2^30**。
@@ -178,8 +180,10 @@ void transfer(Entry[] newTable) {
 - 那么，我们可以看出来，元素存放的位置是和数组长度相关的。而这其中具体映射的过程和怎么放置元素的呢？我们在这里就可以找到一个入口点了。就是 **indexFor** 方法。
 
 
+</br>
 
-## 四、详细映射过程
+
+## 详细映射过程
 我们要把一个 < K, V >Entry 放到table中间的某个位置，首先是通过计算key的hashCode值，我们都知道。在java里每个对象都有一个hashCode的方法，返回它对应的hash值。HashMap这边通过这个hash值再进行一次hash()方法的计算，得到一个int的结果。再通过indexFor将它映射到数组的某个索引。
 ```java
 static int indexFor(int h, int length) {  
@@ -200,9 +204,9 @@ hash方法就是对传进来的key的hashCode()值再进行一次运算。indexF
 
 　　有了这部分对数组长度调整和映射关系的理解，我们再来看具体的get, put方法就很容易了。
 
+</br>
 
-
-## 五、HashMap 常用方法的实现
+## HashMap 常用方法的实现
 
 1) ``get``的实现
 get方法的定义如下：
@@ -301,8 +305,9 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
     }
 ```
 
-***
-## 六、Set接口、
+</br>
+
+## Set接口
 Set接口里面主要定义了常用的集合操作方法，包括添加元素，判断元素是否在里面和对元素过滤。
 **常用的几个方法如下：**
 
@@ -341,11 +346,13 @@ public boolean contains(Object o) {
     }  
 ```
 
-***
+</br>
+
 ## 总结
 　　 在前面的参考资料里已经对HashMap做了一个很深入透彻的解析。这里在前人的基础上加入一点自己个人的理解体会。希望对以后使用类似的结构有一个更好的利用，也能够充分利用里面的设计思想。
 
-***
+</br>
+
 ## 补充
 
 1) **使用` transient` 关键字**

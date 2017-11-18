@@ -8,13 +8,16 @@ title: 深入理解Java对象序列化
 ---
 
 原文：[理解Java对象序列化——John Jiang](http://www.blogjava.net/jiangshachina/archive/2012/02/13/369898.html)
-## 一、 什么是Java对象序列化
+## 什么是Java对象序列化
 1. Java平台允许我们在内存中创建可复用的Java对象，但一般情况下，只有当JVM处于运行时，这些对象才可能存在，即，这些对象的生命周期不会比JVM的生命周期更长。但在现实应用中，就可能要求在JVM停止运行之后能够保存(持久化)指定的对象，并在将来重新读取被保存的对象。Java对象序列化就能够帮助我们实现该功能。
 2. 使用Java对象序列化，在保存对象时，会把其状态保存为一组字节，在未来，再将这些字节组装成对象。必须注意地是，对象序列化保存的是对象的"状态"，即它的成员变量。由此可知，对象序列化不会关注类中的静态变量。
 3. 除了在持久化对象时会用到对象序列化之外，当使用RMI(远程方法调用)，或在网络中传递对象时，都会用到对象序列化。Java序列化API为处理对象序列化提供了一个标准机制，该API简单易用，在本文的后续章节中将会陆续讲到。
 
-***
-## 二、简单示例
+<!-- more -->
+
+</br>
+
+## 简单示例
 在Java中，只要一个类实现了java.io.Serializable接口，那么它就可以被序列化。此处将创建一个可序列化的类Person，本文中的所有示例将围绕着该类或其修改版。
 Gender类，是一个枚举类型，表示性别
 ```java
@@ -102,8 +105,9 @@ arg constructor
 **此时必须注意的是，当重新读取被保存的Person对象时，并没有调用Person的任何构造器，看起来就像是直接使用字节将Person对象还原出来的。**
 当Person对象被保存到person.out文件中之后，我们可以在其它地方去读取该文件以还原对象，但必须确保该读取程序的CLASSPATH中包含有Person.class(哪怕在读取Person对象时并没有显示地使用Person类，如上例所示)，否则会抛出ClassNotFoundException。
 
-***
-## 三、 Serializable的作用
+</br>
+
+## Serializable的作用
 为什么一个类实现了Serializable接口，它就可以被序列化呢？在上节的示例中，使用ObjectOutputStream来持久化对象，在该类中有如下代码：
 ```java
 private void writeObject0(Object obj, boolean unshared) throws IOException {  
@@ -129,7 +133,10 @@ private void writeObject0(Object obj, boolean unshared) throws IOException {
 ```
 从上述代码可知，如果被写对象的类型是String，或数组，或Enum，或Serializable，那么就可以对该对象进行序列化，否则将抛出NotSerializableException。
 
-## 五、 影响序列化（主要部分）
+</br>
+
+## 影响序列化（主要部分）
+
 在现实应用中，有些时候不能使用默认序列化机制。比如，希望在序列化过程中忽略掉敏感数据，或者简化序列化过程。下面将介绍若干影响序列化的方法。
 **1) transient关键字**
 当某个字段被声明为transient后，默认序列化机制就会忽略该字段。此处将Person类中的age字段声明为transient，如下所示，
@@ -165,7 +172,7 @@ public class Person implements Serializable {
         age = in.readInt();  
     }  
 }
-``` 
+```
 在``writeObject()``方法中会先调用``ObjectOutputStream``中的``defaultWriteObject()``方法，该方法会执行默认的序列化机制，如 1)，此时会忽略掉age字段。然后再调用``writeInt()``方法显示地将age字段写入到``ObjectOutputStream``中。``readObject()``的作用则是针对对象的读取，其原理与writeObject()方法相同。再次执行SimpleSerial应用程序，则又会有如下输出：
 ```java
 arg constructor  
@@ -227,7 +234,7 @@ none-arg constructor
 
 1. Externalizable继承于Serializable，当使用该接口时，**序列化的细节需要由程序员去完成**。如上所示的代码，由于writeExternal()与readExternal()方法未作任何处理，那么该序列化行为将不会保存/读取任何一个字段。这也就是为什么输出结果中所有字段的值均为空。
 2. 另外，使用Externalizable进行序列化时，当读取对象时，会调用被序列化类的无参构造器去创建一个新的对象，然后再将被保存对象的字段的值分别填充到新对象中。这就是为什么在此次序列化过程中Person类的无参构造器会被调用。由于这个原因，**实现Externalizable接口的类必须要提供一个无参的构造器，且它的访问权限为public**。
-对上述Person类进行进一步的修改，使其能够对name与age字段进行序列化，但忽略掉gender字段，如下代码所示：
+  对上述Person类进行进一步的修改，使其能够对name与age字段进行序列化，但忽略掉gender字段，如下代码所示：
 ```java
 public class Person implements Externalizable {  
  
@@ -377,8 +384,12 @@ true
 ```
 无论是实现Serializable接口，或是Externalizable接口，当从I/O流中读取对象时，readResolve()方法都会被调用到。实际上就是用readResolve()中返回的对象直接替换在反序列化过程中创建的对象。
 
-***
+
+
+</br>
+
 ## 总结
+
 1. 介绍了Java对象序列化，可以将Java对象持久化为一组字节，在未来，再将这些字节组装成对象。当使用RMI(远程方法调用)，或在网络中传递对象时，都会用到对象序列化。
 2. 使用序列化要求被序列化的类实现 java.io.Serializable接口，默认序列化机制就会完成序列化过程，当重新读取被保存的序列化对象时，并没有调用序列化对象的任何构造器，看起来就像是直接使用字节将序列化对象还原出来的。
 3. 当某个字段被声明为``transient``后，默认序列化机制就会忽略该字段。

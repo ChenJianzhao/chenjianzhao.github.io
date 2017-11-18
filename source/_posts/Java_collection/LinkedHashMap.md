@@ -9,13 +9,17 @@ title: Java集合类深入分析之LinkedHashMap
 
 原文：[深入Java集合学习系列：LinkedHashMap的实现原理](http://zhangshixi.iteye.com/blog/673789)
 参考：[深入Java集合学习系列：HashMap的实现原理](http://zhangshixi.iteye.com/blog/672697)
-## 1. LinkedHashMap概述：
+## LinkedHashMap概述：
    LinkedHashMap是Map接口的哈希表和链接列表实现，具有可预知的迭代顺序（默认为插入顺序），并允许使用null值和null键。此类不保证映射的顺序，特别是它不保证该顺序恒久不变（这里强调映射顺序，因为是继承的HashMap，底层的结构还是链表数组）。
    LinkedHashMap实现与HashMap的不同之处在于，前者维护着一个运行于所有条目（Entry）的双向链表。此链表定义了迭代顺序，该迭代顺序可以是插入顺序或者是访问顺序（默认为插入顺序）。
    注意，此实现不是同步的。如果多个线程同时访问链接的哈希映射，而其中至少一个线程从结构上修改了该映射，则它必须保持外部同步。
 
-***
-## 2. LinkedHashMap的实现：
+<!--more-->
+
+</br>
+
+## LinkedHashMap的实现：
+
  **LinkedHashMap 的内部结构**
 对于LinkedHashMap而言，它继承与HashMap、底层使用哈希表与双向链表来保存所有元素。其基本操作与父类HashMap相似，它通过重写父类相关的方法，来实现自己的链接列表特性。下面我们来分析LinkedHashMap的源代码：
 

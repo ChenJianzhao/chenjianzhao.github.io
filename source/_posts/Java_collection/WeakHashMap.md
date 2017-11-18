@@ -8,7 +8,7 @@ title: WeakHashMap 简介和示例
 
 
 
-## 1. WeakHashMap简介
+## WeakHashMap简介
 
 - WeakHashMap 继承于AbstractMap，实现了Map接口。
 - 和[HashMap](http://www.cnblogs.com/skywang12345/p/3310835.html)一样，WeakHashMap 也是一个**散列表**，它存储的内容也是**键值对(key-value)映射**，而且**键和值都可以是null**。
@@ -36,7 +36,9 @@ title: WeakHashMap 简介和示例
 
 <!-- more -->
 
-## 2. WeakHashMap 使用示例
+</br>
+
+## WeakHashMap 使用示例
 
 ```java
 import java.util.Map;
@@ -104,9 +106,9 @@ b:b
 Process finished with exit code 0
 ```
 
+</br>
 
-
-## 3. WeakHashMap 关键源码解析
+## WeakHashMap 关键源码解析
 
 - 首先看一下 `WeakHashMap` 中  `Entry` 的定义：
   - `Entry` 继承了 `WeakReference` ，将 `key` 和一个 `ReferenceQueue` 作为参数传入父类的构造器。
