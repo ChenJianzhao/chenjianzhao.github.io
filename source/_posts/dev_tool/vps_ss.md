@@ -186,6 +186,15 @@ $ firewall-cmd --reload
 success
 ```
 
+若需要查看或者删除 ss 的防火墙设置
+
+```
+## 查看
+$ firewall-cmd --zone= public --query-port=80/tcp
+## 删除
+$ firewall-cmd --zone= public --remove-port=80/tcp --permanent
+```
+
 </br>
 
 ### 启动 SS 服务
