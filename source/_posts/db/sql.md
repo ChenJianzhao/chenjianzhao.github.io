@@ -420,14 +420,14 @@ OrderDate date DEFAULT GETDATE()
 
 #### MySQL:
 
-```
+```sql
 ALTER TABLE Persons
 ALTER City SET DEFAULT 'SANDNES'
 ```
 
 ##### SQL Server / Oracle / MS Access:
 
-```
+```sql
 ALTER TABLE Persons
 ALTER COLUMN City SET DEFAULT 'SANDNES'
 ```
@@ -440,14 +440,304 @@ ALTER COLUMN City SET DEFAULT 'SANDNES'
 
 #### MySQL:
 
-```
+```sql
 ALTER TABLE Persons
 ALTER City DROP DEFAULT
 ```
 
 #### SQL Server / Oracle / MS Access:
 
-```
+```sql
 ALTER TABLE Persons
 ALTER COLUMN City DROP DEFAULT
 ```
+</br>
+
+
+
+## SQL CREATE INDEX 语句
+
+**CREATE INDEX 语句用于在表中创建索引。**
+
+- 您可以在表中创建索引，以便更加快速高效地查询数据。
+- 用户无法看到索引，它们只能被用来加速搜索/查询。
+
+> 注释：更新一个包含索引的表需要比更新一个没有索引的表更多的时间，这是由于索引本身也需要更新。因此，理想的做法是仅仅在常常被搜索的列（以及表）上面创建索引。
+
+### SQL CREATE INDEX 语法
+
+在表上创建一个简单的索引。允许使用重复的值：
+
+```sql
+CREATE INDEX index_name
+ON table_name (column_name)
+```
+
+> 注释："column_name" 规定需要索引的列。
+
+### SQL CREATE UNIQUE INDEX 语法
+
+在表上创建一个唯一的索引。唯一的索引意味着两个行不能拥有相同的索引值。
+
+```sql
+CREATE UNIQUE INDEX index_name
+ON table_name (column_name)
+```
+
+如果您希望以*降序*索引某个列中的值，您可以在列名称之后添加保留字 *DESC*：
+
+```sql
+CREATE INDEX PersonIndex
+ON Person (LastName DESC) 
+```
+
+假如您希望索引不止一个列，您可以在括号中列出这些列的名称，用逗号隔开：
+
+```sql
+CREATE INDEX PersonIndex
+ON Person (LastName, FirstName)
+```
+
+</br>
+
+
+
+## SQL 撤销索引、表以及数据库
+
+**通过使用 DROP 语句，可以轻松地删除索引、表和数据库。**
+
+## SQL DROP INDEX 语句
+
+我们可以使用 DROP INDEX 命令删除表格中的索引。
+
+#### 用于 Microsoft SQLJet (以及 Microsoft Access) 的语法:
+
+```sql
+DROP INDEX index_name ON table_name
+```
+
+#### 用于 MS SQL Server 的语法:
+
+```sql
+DROP INDEX table_name.index_name
+```
+
+#### 用于 IBM DB2 和 Oracle 语法:
+
+```sql
+DROP INDEX index_name
+```
+
+#### 用于 MySQL 的语法:
+
+```sql
+ALTER TABLE table_name DROP INDEX index_name
+```
+
+</br>
+
+## SQL DROP TABLE 语句
+
+DROP TABLE 语句用于删除表（表的结构、属性以及索引也会被删除）：
+
+```sql
+DROP TABLE 表名称
+```
+
+</br>
+
+## SQL DROP DATABASE 语句
+
+DROP DATABASE 语句用于删除数据库：
+
+```sql
+DROP DATABASE 数据库名称
+```
+
+</br>
+
+## SQL TRUNCATE TABLE 语句
+
+如果我们仅仅需要除去表内的数据，但并不删除表本身，那么我们该如何做呢？
+
+请使用 TRUNCATE TABLE 命令（仅仅删除表格中的数据）：
+
+```sql
+TRUNCATE TABLE 表名称
+```
+
+</br>
+
+
+
+## SQL ALTER TABLE 语句
+
+ALTER TABLE 语句用于在已有的表中添加、修改或删除列。
+
+### SQL ALTER TABLE 语法
+
+如需在表中添加列，请使用下列语法:
+
+```sql
+ALTER TABLE table_name
+ADD column_name datatype
+```
+
+要删除表中的列，请使用下列语法：
+
+```sql
+ALTER TABLE table_name 
+DROP COLUMN column_name
+```
+
+> 注释：某些数据库系统不允许这种在数据库表中删除列的方式 (DROP COLUMN column_name)。
+
+要改变表中列的数据类型，请使用下列语法：
+
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name datatype
+```
+
+
+
+
+
+## SQL AUTO INCREMENT 字段
+
+**Auto-increment 会在新记录插入表中时生成一个唯一的数字。**
+
+#### AUTO INCREMENT 字段
+
+我们通常希望在每次插入新记录时，自动地创建主键字段的值。我们可以在表中创建一个 auto-increment 字段。
+
+</br>
+
+#### 用于 MySQL 的语法
+
+下列 SQL 语句把 "Persons" 表中的 "P_Id" 列定义为 auto-increment 主键：
+
+```
+CREATE TABLE Persons
+(
+P_Id int NOT NULL AUTO_INCREMENT,
+LastName varchar(255) NOT NULL,
+FirstName varchar(255),
+Address varchar(255),
+City varchar(255),
+PRIMARY KEY (P_Id)
+)
+```
+
+MySQL 使用 AUTO_INCREMENT 关键字来执行 auto-increment 任务。
+
+默认地，AUTO_INCREMENT 的开始值是 1，每条新记录递增 1。
+
+要让 AUTO_INCREMENT 序列以其他的值起始，请使用下列 SQL 语法：
+
+```
+ALTER TABLE Persons AUTO_INCREMENT=100
+```
+
+要在 "Persons" 表中插入新记录，我们不必为 "P_Id" 列规定值（会自动添加一个唯一的值）：
+
+```
+INSERT INTO Persons (FirstName,LastName)
+VALUES ('Bill','Gates')
+```
+
+上面的 SQL 语句会在 "Persons" 表中插入一条新记录。"P_Id" 会被赋予一个唯一的值。"FirstName" 会被设置为 "Bill"，"LastName" 列会被设置为 "Gates"。
+
+</br>
+
+#### 用于 SQL Server 的语法
+
+下列 SQL 语句把 "Persons" 表中的 "P_Id" 列定义为 auto-increment 主键：
+
+```
+CREATE TABLE Persons
+(
+P_Id int PRIMARY KEY IDENTITY,
+LastName varchar(255) NOT NULL,
+FirstName varchar(255),
+Address varchar(255),
+City varchar(255)
+)
+```
+
+MS SQL 使用 IDENTITY 关键字来执行 auto-increment 任务。
+
+默认地，IDENTITY 的开始值是 1，每条新记录递增 1。
+
+要规定 "P_Id" 列以 20 起始且递增 10，请把 identity 改为 IDENTITY(20,10)
+
+要在 "Persons" 表中插入新记录，我们不必为 "P_Id" 列规定值（会自动添加一个唯一的值）：
+
+```
+INSERT INTO Persons (FirstName,LastName)
+VALUES ('Bill','Gates')
+```
+
+上面的 SQL 语句会在 "Persons" 表中插入一条新记录。"P_Id" 会被赋予一个唯一的值。"FirstName" 会被设置为 "Bill"，"LastName" 列会被设置为 "Gates"。
+
+</br>
+
+#### 用于 Access 的语法
+
+下列 SQL 语句把 "Persons" 表中的 "P_Id" 列定义为 auto-increment 主键：
+
+```
+CREATE TABLE Persons
+(
+P_Id int PRIMARY KEY AUTOINCREMENT,
+LastName varchar(255) NOT NULL,
+FirstName varchar(255),
+Address varchar(255),
+City varchar(255)
+)
+```
+
+MS Access 使用 AUTOINCREMENT 关键字来执行 auto-increment 任务。
+
+默认地，AUTOINCREMENT 的开始值是 1，每条新记录递增 1。
+
+要规定 "P_Id" 列以 20 起始且递增 10，请把 autoincrement 改为 AUTOINCREMENT(20,10)
+
+要在 "Persons" 表中插入新记录，我们不必为 "P_Id" 列规定值（会自动添加一个唯一的值）：
+
+```
+INSERT INTO Persons (FirstName,LastName)
+VALUES ('Bill','Gates')
+```
+
+上面的 SQL 语句会在 "Persons" 表中插入一条新记录。"P_Id" 会被赋予一个唯一的值。"FirstName" 会被设置为 "Bill"，"LastName" 列会被设置为 "Gates"。
+
+</br>
+
+#### 用于 Oracle 的语法
+
+在 Oracle 中，代码稍微复杂一点。
+
+您必须通过 sequence 对创建 auto-increment 字段（该对象生成数字序列）。
+
+请使用下面的 CREATE SEQUENCE 语法：
+
+```
+CREATE SEQUENCE seq_person
+MINVALUE 1
+START WITH 1
+INCREMENT BY 1
+CACHE 10
+```
+
+上面的代码创建名为 seq_person 的序列对象，它以 1 起始且以 1 递增。该对象缓存 10 个值以提高性能。CACHE 选项规定了为了提高访问速度要存储多少个序列值。
+
+要在 "Persons" 表中插入新记录，我们必须使用 nextval 函数（该函数从 seq_person 序列中取回下一个值）：
+
+```
+INSERT INTO Persons (P_Id,FirstName,LastName)
+VALUES (seq_person.nextval,'Lars','Monsen')
+
+```
+
+上面的 SQL 语句会在 "Persons" 表中插入一条新记录。"P_Id" 的赋值是来自 seq_person 序列的下一个数字。"FirstName" 会被设置为 "Bill"，"LastName" 列会被设置为 "Gates"。

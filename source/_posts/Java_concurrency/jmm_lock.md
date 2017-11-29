@@ -8,6 +8,8 @@ title: 深入理解Java内存模型（五）——锁
 
 锁是java并发编程中最重要的同步机制。锁除了让临界区互斥执行外，还可以让释放锁的线程向获取同一个锁的线程发送消息。
 
+<!-- more -->
+
 下面是锁释放-获取的示例代码：
 
 ```java
@@ -99,15 +101,19 @@ class ReentrantLockExample {
 
 </br>
 
+### AQS (AbstractQueuedSynchronizer)
+
 ReentrantLock的实现依赖于java同步器框架 `AbstractQueuedSynchronizer`（本文简称之为AQS）。AQS使用一个整型的volatile变量（命名为state）来维护同步状态，马上我们会看到，这个volatile变量是ReentrantLock内存语义实现的关键。 下面是ReentrantLock的类图（仅画出与本文相关的部分）：
 
 ![AQS](jmm_lock/AQS.png)
 
-ReentrantLock分为公平锁和非公平锁，我们首先分析`公平锁`。
+ReentrantLock分为公平锁和非公平锁，我们首先分析公平锁。
 
 </br>
 
-使用公平锁时，加锁方法`lock()`的方法调用轨迹如下：
+### 公平锁
+
+**使用`公平锁`时，加锁方法`lock()`的方法调用轨迹如下：**
 
 1. ReentrantLock : lock()
 2. FairSync : lock()
@@ -142,7 +148,7 @@ protected final boolean tryAcquire(int acquires) {
 
 </br>
 
-在使用公平锁时，解锁方法`unlock()`的方法调用轨迹如下：
+**在使用公平锁时，解锁方法`unlock()`的方法调用轨迹如下：**
 
 1. ReentrantLock : unlock()
 2. AbstractQueuedSynchronizer : release(int arg)
@@ -171,11 +177,13 @@ protected final boolean tryRelease(int releases) {
 
 </br>
 
+### 非公平锁
+
 现在我们分析`非公平锁`的内存语义的实现。
 
 非公平锁的释放和公平锁完全一样，所以这里仅仅分析非公平锁的获取。
 
-使用公平锁时，加锁方法lock()的方法调用轨迹如下：
+**使用公平锁时，加锁方法lock()的方法调用轨迹如下：**
 
 1. ReentrantLock : lock()
 2. NonfairSync : lock()
@@ -192,6 +200,8 @@ protected final boolean compareAndSetState(int expect, int update) {
 该方法以原子操作的方式更新state变量，本文把java的`compareAndSet()`方法调用简称为`CAS`。**JDK文档对该方法的说明如下：如果当前状态值等于预期值，则以原子方式将同步状态设置为给定的更新值。此操作具有 volatile 读和写的内存语义。**
 
 </br>
+
+### CAS (compareAndSet)
 
 这里我们分别从编译器和处理器的角度来分析,CAS如何同时具有volatile读和volatile写的内存语义。
 
@@ -261,14 +271,16 @@ inline jint     Atomic::cmpxchg    (jint     exchange_value, volatile jint*     
 
 ## concurrent包的实现
 
-由于java的CAS同时具有 volatile 读和volatile写的内存语义，因此Java线程之间的通信现在有了下面四种方式：
+**由于java的CAS同时具有 volatile 读和volatile写的内存语义**，因此Java线程之间的通信现在有了下面四种方式：
 
 1. A线程写volatile变量，随后B线程读这个volatile变量。
 2. A线程写volatile变量，随后B线程用CAS更新这个volatile变量。
 3. A线程用CAS更新一个volatile变量，随后B线程用CAS更新这个volatile变量。
 4. A线程用CAS更新一个volatile变量，随后B线程读这个volatile变量。
 
-Java的CAS会使用现代处理器上提供的高效机器级别原子指令，这些原子指令以原子方式对内存执行读-改-写操作，这是在多处理器中实现同步的关键（从本质上来说，能够支持原子性读-改-写指令的计算机器，是顺序计算图灵机的异步等价机器，因此任何现代的多处理器都会去支持某种能对内存执行原子性读-改-写操作的原子指令）。同时，volatile变量的读/写和CAS可以实现线程之间的通信。把这些特性整合在一起，就形成了整个concurrent包得以实现的基石。如果我们仔细分析concurrent包的源代码实现，会发现一个通用化的实现模式：
+**Java的CAS会使用现代处理器上提供的高效机器级别原子指令**，这些原子指令以原子方式对内存执行读-改-写操作，这是在多处理器中实现同步的关键（从本质上来说，能够支持原子性`读-改-写指令`的计算机器，是顺序计算图灵机的异步等价机器，因此任何现代的多处理器都会去支持某种能对内存执行原子性读-改-写操作的原子指令）。
+
+同时，volatile变量的读/写和CAS可以实现线程之间的通信。把这些特性整合在一起，就形成了整个concurrent包得以实现的基石。如果我们仔细分析concurrent包的源代码实现，会发现一个通用化的实现模式：
 
 1. 首先，声明共享变量为volatile；
 2. 然后，使用CAS的原子条件更新来实现线程之间的同步；
@@ -276,7 +288,7 @@ Java的CAS会使用现代处理器上提供的高效机器级别原子指令，�
 
 AQS，非阻塞数据结构和原子变量类（java.util.concurrent.atomic包中的类），这些concurrent包中的基础类都是使用这种模式来实现的，而concurrent包中的高层类又是依赖于这些基础类来实现的。从整体来看，concurrent包的实现示意图如下：
 
-
+![concurrent](jmm_lock/concurrent.png)
 
 
 
