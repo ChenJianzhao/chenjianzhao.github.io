@@ -4,8 +4,6 @@ date: 2017-11-30 14:00
 title: Mac下同时安装多个版本的JDK
 ---
 
-
-
 ## 下载 JDK
 
 [JDK1.6（含源码）](https://download.developer.apple.com/Developer_Tools/java_for_os_x_2013005_developer_package/java_for_os_x_2013005_dp__11m4609.dmg) 需要登录 AppleID
