@@ -1,4 +1,10 @@
-## Mac下同时安装多个版本的JDK
+---
+categories: 开发工具
+date: 2017-11-30 14:00
+title: Mac下同时安装多个版本的JDK
+---
+
+
 
 ## 下载 JDK
 
@@ -12,7 +18,7 @@
 
 [JDK1.8（目前最新版）](https://www.java.com/zh_CN/download/mac_download.jsp)
 
-
+<!-- more -->
 
 ## 配置 JAVA_HOME
 

@@ -4,13 +4,15 @@ date: 2017-10-29 21:00
 title: Dubbo Quick Start
 ---
 
+Dubbo 简介
 
+<!--more-->
 
 ## 入门
 
 ### 架构
 
-![dubbo-architecture](dubbo/dubbo-architecture.png)
+![dubbo-architecture](dubbo-quick-start/dubbo-architecture.png)
 
 
 
@@ -210,7 +212,7 @@ JDK 1.5+
 
 #### 配置之间的关系
 
-![dubbo-config](dubbo/dubbo-config.jpg)
+![dubbo-config](dubbo-quick-start/dubbo-config.jpg)
 
 
 
@@ -243,7 +245,7 @@ JDK 1.5+
 
 
 
-![dubbo-config-override](dubbo/dubbo-config-override.jpg)
+![dubbo-config-override](dubbo-quick-start/dubbo-config-override.jpg)
 
 
 
@@ -291,7 +293,7 @@ dubbo.registry.address=10.20.153.10:9090
 
 #### 覆盖策略
 
-![dubbo-properties-override](dubbo/dubbo-properties-override.jpg)
+![dubbo-properties-override](dubbo-quick-start/dubbo-properties-override.jpg)
 
 - JVM 启动 -D 参数优先，这样可以使用户在部署和启动时进行参数重写，比如在启动时需改变协议的端口。
 - XML 次之，如果在 XML 中有配置，则 dubbo.properties 中的相应配置项无效。

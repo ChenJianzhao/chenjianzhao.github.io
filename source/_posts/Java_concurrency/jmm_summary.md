@@ -1,7 +1,7 @@
 ---
-categories Java Concurrent
-date 2017-11-30 11:00
-title 深入理解Java内存模型（七）——总结
+categories: Java Concurrent
+date: 2017-11-30 11:00
+title: 深入理解Java内存模型（七）——总结
 ---
 
 ## 处理器内存模型
