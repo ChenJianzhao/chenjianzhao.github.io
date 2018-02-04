@@ -6,6 +6,8 @@ title: JDK 自带工具
 
 
 
+## jps
+
 ```
 chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps
 1376 QuorumPeerMain
@@ -41,6 +43,8 @@ chenjianzhaodeMacBook-Pro:zookeeper cjz$ jps -v
 
 
 
+## jstat
+
 ```
 
 chenjianzhaodeMacBook-Pro:zookeeper cjz$ jstat -class 1376
@@ -59,9 +63,7 @@ chenjianzhaodeMacBook-Pro:zookeeper cjz$ jstat -gcnew 1376
 
 
 
-
-
-> $ jinfo -flags  1376
+## jinfo
 
 ```
 chenjianzhaodeMacBook-Pro:zookeeper cjz$ jinfo -flags  1376
@@ -75,7 +77,7 @@ Command line:  -Dzookeeper.log.dir=. -Dzookeeper.root.logger=INFO,CONSOLE -Dcom.
 
 
 
-> $ jmap -heap  1376
+## jmap
 
 ```
 chenjianzhaodeMacBook-Pro:zookeeper cjz$ jmap -heap  1376
