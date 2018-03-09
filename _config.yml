@@ -4,9 +4,9 @@
 
 # Site
 title: Pandora
-subtitle:
+subtitle: 自己挖的坑缺胳膊少腿也得爬出来
 description:
-author: Jianzhao Chen
+author: CJZ
 language: zh-Hans
 timezone:
 
@@ -84,3 +84,9 @@ algolia:
   adminApiKey: 185cf2d8b79bd27edbccabcd8d941973
   indexName: hexo_NAME
   chunkSize: 5000
+
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000

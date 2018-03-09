@@ -7,9 +7,6 @@ status: public
 title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 ---
 
-整理转载自
-[java集合类深入分析之HashSet, HashMap篇](http://sauzny.iteye.com/blog/2020275)
-
 ## HashMap概述：
 1. HashMap是基于哈希表的Map接口的非同步实现。允许使用**null值和null键**。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。
 
@@ -18,7 +15,10 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 3. Map类型的数据结构有一个比较好的地方就是在存取元素的时候都能够有比较高的效率。 因为每次存取元素的时候都是通过计算Key的hash值再通过一定的映射规则来实现，在理想的情况下可以达到一个常量值。
 
    <!-- more -->
-   **下面这部分是Map里面主要方法的列表：**
+
+   </br>
+
+**下面这部分是Map里面主要方法的列表：**
 
 | 方法名           | 方法详细定义                               | 说明         |
 | :------------ | :----------------------------------- | :--------- |
@@ -41,7 +41,7 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
 - 我们根据这种**链表数组**的类型，可以推断它内部肯定是有一个链表的结构。在HashMap内部，有一个``transient`` （不参与序列化，序列化后根据平台Hash算法重新生成映射）Entry[] table。
 - 这样的结构数组，它保存所有Entry的一个列表。而Entry的定义是一个典型的链表结构，不过由于既要有Key也要有Value，所以包含了Key, Value两个值。他们的定义如下：（为何使用 transient 下文补充）
 
-​    
+​  
 
 ```java
  static class Entry<K,V> implements Map.Entry<K,V> {  
@@ -93,7 +93,7 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 ```
 
-
+</br>
 
 在HashMap的构造函数中，可以指定**初始数组的长度**。通过这个初始长度值，构造一个**长度为2的若干次方**的数组：
 
@@ -125,7 +125,7 @@ title: Java集合类深入分析之HashMap(jdk1.6中的实现)
     }   
 ```
 
-
+</br>
 
 在我们需要调整数组长度的时候，它的过程和前面讨论过的List, Queue有些类似，但是又有不同的地方。相同的地方在于，它每次也是**将原来的数组长度翻倍**，同时将元素拷贝过去。**但是由于HashMap本身的独特性质，它需要重新做一次映射。**实现这个过程的方法如下：
 
@@ -208,8 +208,10 @@ hash方法就是对传进来的key的hashCode()值再进行一次运算。indexF
 
 ## HashMap 常用方法的实现
 
-1) ``get``的实现
+### get() 的实现
+
 get方法的定义如下：
+
 ```java
 public V get(Object key) {  
     if (key == null)  
@@ -228,10 +230,13 @@ public V get(Object key) {
 }  
 ```
 　　它这里就是一个映射，查找的过程。找到映射的点之后再和链表里的元素逐个比较，保证找到目标值。因为是hash表，会存在多个值映射到同一个index里面，所以这里还要和链表里的元素做对比。
-​    
-​    
-2) ``put``的实现
+
+</br>
+
+### put() 的实现
+
 　　put元素就是一个放置元素的过程，首先也是找到对应的索引，然后再把元素放到链表里面去。如果链表里有和元素相同的，则更新对应的value，否则就放到链表头。
+
 ```java
 public V put(K key, V value) {  
     if (key == null)  
@@ -254,7 +259,9 @@ public V put(K key, V value) {
     return null;  
 }  
 ```
-　　addEntry方法会判断表长度，如果达到一定的阀值则调整数组的长度，将其翻倍：
+
+
+addEntry方法会判断表长度，如果达到一定的阀值则调整数组的长度，将其翻倍：
 
 ```java
 void addEntry(int hash, K key, V value, int bucketIndex) {  
@@ -265,7 +272,12 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
     }  
 ```
 
-3) ``containsKey`` 的实现
+
+
+</br>
+
+### containsKey() 的实现
+
 ```java
     public boolean containsKey(Object key) {
         return getEntry(key) != null;
@@ -290,7 +302,10 @@ void addEntry(int hash, K key, V value, int bucketIndex) {
     }
 ```
 
-3) ``containsValue`` 的实现
+</br>
+
+### containsValue() 的实现
+
 ```java
  public boolean containsValue(Object value) {
 	if (value == null)
@@ -320,17 +335,19 @@ Set接口里面主要定义了常用的集合操作方法，包括添加元素�
 
 我们知道，集合里面要求保存的元素是不能重复的，所以它里面所有的元素都是唯一的。它的定义就有点不太一样。
 
+</br>
+
 
 **HashSet**
 
-　　HashSet是基于HashMap实现的，在它内部有如下的定义:
+HashSet是基于HashMap实现的，在它内部有如下的定义:
 ```java
 private transient HashMap<E,Object> map;  
 // Dummy value to associate with an Object in the backing Map  
 private static final Object PRESENT = new Object();  
 ```
 
-　　在它里面放置的元素都应到map里面的key部分，而在map中与key对应的value用一个Object()对象保存。因为内部是大量借用HashMap的实现，它本身不过是调用HashMap的一个代理，这些基本方法的实现就显得很简单：
+在它里面放置的元素都应到map里面的key部分，而在map中与key对应的value用一个Object()对象保存。因为内部是大量借用HashMap的实现，它本身不过是调用HashMap的一个代理，这些基本方法的实现就显得很简单：
 
 ```java
 public boolean add(E e) {  
@@ -349,7 +366,7 @@ public boolean contains(Object o) {
 </br>
 
 ## 总结
-　　 在前面的参考资料里已经对HashMap做了一个很深入透彻的解析。这里在前人的基础上加入一点自己个人的理解体会。希望对以后使用类似的结构有一个更好的利用，也能够充分利用里面的设计思想。
+在前面的参考资料里已经对HashMap做了一个很深入透彻的解析。这里在前人的基础上加入一点自己个人的理解体会。希望对以后使用类似的结构有一个更好的利用，也能够充分利用里面的设计思想。
 
 </br>
 
@@ -358,6 +375,8 @@ public boolean contains(Object o) {
 1) **使用` transient` 关键字**
 1. transient 是表明该数据不参与序列化。因为 HashMap 中的存储数据的数组数据成员中，数组还有很多的空间没有被使用，没有被使用到的空间被序列化没有意义。所以需要手动使用 writeObject() 方法，只序列化实际存储元素的数组。
 2. 由于不同的虚拟机对于相同 hashCode 产生的 Code 值可能是不一样的，如果你使用默认的序列化，那么反序列化后，元素的位置和之前的是保持一致的，可是由于 hashCode 的值不一样了，那么定位函数 indexOf（）返回的元素下标就会不同，这样不是我们所想要的结果.
+
+</br>
 
 2) **私有 ``writeObject`` 和 ``readObject`` 方法**
 
@@ -370,6 +389,8 @@ private void readObject(java.io.ObjectInputStream s) throws IOException, ClassNo
 这两个方法有两个共同点：
 1. 都是私有方法
 2. 虽然是私有方法，但是在HashMap内部却找不到任何调用它们的地方
+
+</br>
 
 **疑问**
 这两个方法是干嘛用的？
@@ -427,6 +448,8 @@ private void writeSerialData(Object obj, ObjectStreamClass desc)
 可以看到，实际上在``ObjectOutputStream``中进行序列化操作的时候，会判断被序列化的对象是否自己重写了``writeObject``方法，如果重写了，就会调用被序列化对象自己的``writeObject``方法，如果没有重写，才会调用默认的序列化方法。
 调用关系如下图：
 
+</br>
+
 **2) 为什么HashMap中的readObject和writeObject都是私有的？**
 
 JDK文档中并没有明确说明设置为私有的原因。方法是私有的，那么该方法无法被子类override，这样做有什么好处呢？
@@ -437,7 +460,7 @@ JDK文档中并没有明确说明设置为私有的原因。方法是私有的�
 We don't want these methods to be overridden by subclasses. Instead, each class can have its own writeObject method, and the serialization engine will call all of them one after the other. This is only possible with private methods (these are not overridden). (The same is valid for readObject.)
 ```
 
-
+</br>
 
 **3)为什么HashMap要自己实现writeObject和readObject方法，而不是使用JDK统一的默认序列化和反序列化操作呢？**
 
@@ -456,9 +479,54 @@ For example, consider the case of a hash table. The physical representation is a
 1.  将可能会造成数据不一致的元素使用transient关键字修饰，从而避免JDK中默认序列化方法对该对象的序列化操作。不序列化的包括：Entry[] table,size,modCount。 
 2.  自己实现writeObject方法，从而保证序列化和反序列化结果的一致性。
 
+</br>
+
 **4) 那么，HashMap又是通过什么手段来保证序列化和反序列化数据的一致性的呢？**
 
 首先，HashMap序列化的时候不会将保存数据的数组序列化，而是将元素个数以及每个元素的Key和Value都进行序列化。
 在反序列化的时候，重新计算Key和Value的位置，重新填充一个数组。
 想想看，是不是能够解决序列化和反序列化不一致的情况呢？
 由于不序列化存放元素的Entry数组，而是反序列化的时候重新生成，这样就避免了反序列化之后根据Key获取到的元素与序列化之前获取到的元素不同。
+
+
+
+
+
+## 谈谈HashMap线程不安全的体现
+
+那么，为什么说HashMap是线程不安全的呢？它在多线程环境下，会发生什么情况呢？
+
+### 1. resize死循环
+
+我们都知道HashMap初始容量大小为16,一般来说，当有数据要插入时，都会检查容量有没有超过设定的thredhold，如果超过，需要增大Hash表的尺寸，但是这样一来，整个Hash表里的元素都需要被重算一遍。这叫rehash，这个成本相当的大。
+
+大概看下 `transfer()`：
+
+1. 对索引数组中的元素遍历
+2. 对链表上的每一个节点遍历：用 next 取得要转移那个元素的下一个，将 e 转移到新 Hash 表的头部，使用头插法插入节点。
+3. 循环2，直到链表节点全部转移
+4. 循环1，直到所有索引数组全部转移
+
+经过这几步，我们会发现转移的时候是逆序的。假如转移前链表顺序是1->2->3，那么转移后就会变成3->2->1。这时候就有点头绪了，死锁问题不就是因为1->2的同时2->1造成的吗？所以，HashMap 的死锁问题就出在这个`transfer()`函数上。
+
+
+
+**具体造成死循环的过程看文后链接**
+
+
+
+### 2. fail-fast
+
+如果在使用迭代器的过程中有其他线程修改了map，那么将抛出ConcurrentModificationException，这就是所谓fail-fast策略。
+
+这个异常意在提醒开发者及早意识到线程安全问题，具体原因请查看[ConcurrentModificationException的原因以及解决措施](http://my.oschina.net/hosee/blog/612718)
+
+
+
+
+
+整理转载自
+[java集合类深入分析之HashSet, HashMap篇](http://sauzny.iteye.com/blog/2020275)
+
+[谈谈HashMap线程不安全的体现](http://www.importnew.com/22011.html)
+
